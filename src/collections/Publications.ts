@@ -1,125 +1,75 @@
 import type { CollectionConfig } from 'payload'
+import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { legacyIdField } from '@/fields/legacyId'
+import { visibleInField } from '@/fields/visibleIn'
 
+// A publication is either a stand-alone book (title = book title) or a piece that appeared in a
+// journal or in a book (title = article/chapter, plus the journal or book fields).
 export const Publications: CollectionConfig = {
-  slug: 'publication',
+  slug: 'publications',
+  defaultSort: '-year',
   admin: {
-    useAsTitle: 'name',
-    defaultColumns: ['name', 'year', 'category', 'author'],
+    useAsTitle: 'title',
+    group: 'Content',
+    defaultColumns: ['title', 'year', 'category', 'authors', '_status'],
   },
+  access: { read: publishedOrAuthenticated },
+  versions: { drafts: true },
   fields: [
+    { name: 'category', type: 'relationship', relationTo: 'publication-categories' },
+    { name: 'title', type: 'text', localized: true },
+    { name: 'subtitle', type: 'text', localized: true },
+    { name: 'authors', type: 'text', localized: true },
     {
-      name: 'name',
-      label: 'Name / Book Title',
-      type: 'text',
-      localized: true,
-      admin: {
-        description: 'Legacy name/buch.',
-      },
-    },
-    {
-      name: 'subtitle',
-      type: 'text',
-      localized: true,
-      admin: {
-        description: 'Legacy untertitel/buchuntertitel.',
-      },
-    },
-    {
-      name: 'category',
-      type: 'relationship',
-      relationTo: 'publicationCategory',
-    },
-    {
-      name: 'year',
-      type: 'number',
-      admin: {
-        description: 'Legacy jahr — used as the default sort key (newest first).',
-      },
-    },
-    {
-      name: 'thumbnail',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      type: 'row',
+      type: 'collapsible',
+      label: 'Published in',
       fields: [
+        { name: 'journal', type: 'text', localized: true },
         {
-          name: 'journal',
-          label: 'Journal',
-          type: 'text',
-          localized: true,
-          admin: {
-            width: '50%',
-            description: 'Legacy zeitschrift.',
-          },
+          type: 'row',
+          fields: [
+            { name: 'bookTitle', type: 'text', localized: true, admin: { width: '50%' } },
+            { name: 'bookSubtitle', type: 'text', localized: true, admin: { width: '50%' } },
+          ],
         },
         {
-          name: 'publisher',
-          label: 'Publisher',
-          type: 'text',
-          localized: true,
-          admin: {
-            width: '50%',
-            description: 'Legacy verlag.',
-          },
+          type: 'row',
+          fields: [
+            { name: 'editors', type: 'text', localized: true, admin: { width: '50%' } },
+            { name: 'publisher', type: 'text', localized: true, admin: { width: '50%' } },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'year', type: 'number', admin: { width: '33%' } },
+            { name: 'month', type: 'number', min: 1, max: 12, admin: { width: '33%' } },
+            {
+              name: 'pages',
+              type: 'text',
+              admin: { width: '34%', description: 'A page or range, e.g. "12-34".' },
+            },
+          ],
         },
       ],
     },
     {
       type: 'row',
       fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', admin: { width: '50%' } },
         {
-          name: 'author',
-          label: 'Author',
-          type: 'text',
-          localized: true,
-          admin: {
-            width: '50%',
-            description: 'Legacy autor.',
-          },
-        },
-        {
-          name: 'editor',
-          label: 'Editor',
-          type: 'text',
-          localized: true,
-          admin: {
-            width: '50%',
-            description: 'Legacy hrsg.',
-          },
+          name: 'file',
+          label: 'PDF',
+          type: 'upload',
+          relationTo: 'media',
+          filterOptions: { mimeType: { equals: 'application/pdf' } },
+          admin: { width: '50%' },
         },
       ],
     },
-    {
-      name: 'pages',
-      type: 'text',
-      admin: {
-        description: 'Legacy seiten — kept as text since legacy values include ranges (e.g. "12-34").',
-      },
-    },
-    {
-      name: 'file',
-      label: 'PDF',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'Legacy datei.',
-      },
-    },
-    {
-      name: 'url',
-      label: 'External Website',
-      type: 'text',
-    },
-    {
-      name: 'projects',
-      type: 'relationship',
-      relationTo: 'project',
-      hasMany: true,
-      admin: {
-        description: 'Legacy projekte — pipe-delimited list of project kuerzel codes.',
-      },
-    },
+    { name: 'url', label: 'External URL', type: 'text' },
+    { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true },
+    visibleInField,
+    legacyIdField,
   ],
 }

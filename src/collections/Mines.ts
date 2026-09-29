@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 
 export const Mines: CollectionConfig = {
-  slug: 'mine',
+  slug: 'mines',
   admin: {
     useAsTitle: 'title',
     group: 'Minescapes',
@@ -202,7 +202,7 @@ export const Mines: CollectionConfig = {
             {
               name: 'features',
               type: 'relationship',
-              relationTo: 'mineFeatures',
+              relationTo: 'mine-features',
               hasMany: true,
               label: 'Post-Mining Features',
               admin: {

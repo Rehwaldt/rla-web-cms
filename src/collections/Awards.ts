@@ -1,73 +1,34 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { legacyIdField } from '@/fields/legacyId'
+import { linksField } from '@/fields/links'
+import { richTextField } from '@/fields/richText'
+import { visibleInField } from '@/fields/visibleIn'
 
 export const Awards: CollectionConfig = {
-  slug: 'award',
+  slug: 'awards',
+  defaultSort: '-year',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'year', 'issuer'],
+    group: 'Content',
+    defaultColumns: ['name', 'year', 'issuer', '_status'],
   },
+  access: { read: publishedOrAuthenticated },
+  versions: { drafts: true },
   fields: [
+    { name: 'name', type: 'text', localized: true },
+    { name: 'issuer', type: 'text', localized: true },
     {
-      name: 'name',
-      type: 'text',
-      localized: true,
-    },
-    {
-      name: 'year',
-      type: 'number',
-      admin: {
-        description: 'Legacy jahr — used as the default sort key (newest first).',
-      },
-    },
-    {
-      name: 'thumbnail',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'issuer',
-      label: 'Issuer',
-      type: 'text',
-      localized: true,
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      localized: true,
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
-      }),
-    },
-    {
-      name: 'links',
-      type: 'array',
+      type: 'row',
       fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'label',
-              type: 'text',
-              localized: true,
-              required: true,
-              admin: {
-                width: '40%',
-                placeholder: 'Auszeichnung',
-              },
-            },
-            {
-              name: 'url',
-              type: 'text',
-              required: true,
-              admin: {
-                width: '60%',
-                placeholder: 'https://...',
-              },
-            },
-          ],
-        },
+        { name: 'year', type: 'number', required: true, admin: { width: '25%' } },
+        { name: 'month', type: 'number', min: 1, max: 12, admin: { width: '25%' } },
+        { name: 'image', type: 'upload', relationTo: 'media', admin: { width: '50%' } },
       ],
     },
+    richTextField('description'),
+    linksField,
+    visibleInField,
+    legacyIdField,
   ],
 }

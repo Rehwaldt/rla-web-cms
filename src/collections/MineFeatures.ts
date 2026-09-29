@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const MineFeatures: CollectionConfig = {
-  slug: 'mineFeatures',
+  slug: 'mine-features',
   admin: {
     useAsTitle: 'name',
     group: 'Minescapes',

@@ -67,41 +67,47 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
+    projects: Project;
+    'project-categories': ProjectCategory;
+    topics: Topic;
     news: News;
-    award: Award;
-    publication: Publication;
-    publicationCategory: PublicationCategory;
-    job: Job;
-    theme: Theme;
-    employee: Employee;
-    officeLocation: OfficeLocation;
-    mine: Mine;
-    mineFeatures: MineFeature;
-    project: Project;
-    projectCategory: ProjectCategory;
+    awards: Award;
+    publications: Publication;
+    'publication-categories': PublicationCategory;
+    jobs: Job;
+    pages: Page;
+    employees: Employee;
+    offices: Office;
+    mines: Mine;
+    'mine-features': MineFeature;
+    media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    projects: {
+      listedAsSimilarBy: 'projects';
+    };
+  };
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
+    topics: TopicsSelect<false> | TopicsSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
-    award: AwardSelect<false> | AwardSelect<true>;
-    publication: PublicationSelect<false> | PublicationSelect<true>;
-    publicationCategory: PublicationCategorySelect<false> | PublicationCategorySelect<true>;
-    job: JobSelect<false> | JobSelect<true>;
-    theme: ThemeSelect<false> | ThemeSelect<true>;
-    employee: EmployeeSelect<false> | EmployeeSelect<true>;
-    officeLocation: OfficeLocationSelect<false> | OfficeLocationSelect<true>;
-    mine: MineSelect<false> | MineSelect<true>;
-    mineFeatures: MineFeaturesSelect<false> | MineFeaturesSelect<true>;
-    project: ProjectSelect<false> | ProjectSelect<true>;
-    projectCategory: ProjectCategorySelect<false> | ProjectCategorySelect<true>;
+    awards: AwardsSelect<false> | AwardsSelect<true>;
+    publications: PublicationsSelect<false> | PublicationsSelect<true>;
+    'publication-categories': PublicationCategoriesSelect<false> | PublicationCategoriesSelect<true>;
+    jobs: JobsSelect<false> | JobsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    employees: EmployeesSelect<false> | EmployeesSelect<true>;
+    offices: OfficesSelect<false> | OfficesSelect<true>;
+    mines: MinesSelect<false> | MinesSelect<true>;
+    'mine-features': MineFeaturesSelect<false> | MineFeaturesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -110,10 +116,15 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('de' | 'en') | ('de' | 'en')[];
-  globals: {};
-  globalsSelect: {};
-  locale: 'de' | 'en';
+  fallbackLocale:
+    ('false' | 'none' | 'null') | false | null | ('de' | 'en' | 'zh' | 'cs') | ('de' | 'en' | 'zh' | 'cs')[];
+  globals: {
+    'project-gallery': ProjectGallery;
+  };
+  globalsSelect: {
+    'project-gallery': ProjectGallerySelect<false> | ProjectGallerySelect<true>;
+  };
+  locale: 'de' | 'en' | 'zh' | 'cs';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -143,28 +154,155 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "projects".
  */
-export interface User {
+export interface Project {
   id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+  name?: string | null;
+  /**
+   * Short project code shared across RLA systems and used in website URLs.
+   */
+  code?: string | null;
+  type?: ('competition' | 'object' | 'concept') | null;
+  /**
+   * Still in planning or under construction.
+   */
+  ongoing?: boolean | null;
+  /**
+   * The planned year while the project is ongoing.
+   */
+  completionYear?: number | null;
+  motto?: string | null;
+  /**
+   * Short teaser shown in listings.
+   */
+  summary?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  categories?: (number | ProjectCategory)[] | null;
+  /**
+   * Similarity is symmetric: projects listing this one appear under "Listed as similar by".
+   */
+  similarProjects?: (number | Project)[] | null;
+  listedAsSimilarBy?: {
+    docs?: (number | Project)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Display location, usually the city.
+   */
+  place?: string | null;
+  /**
+   * Optional state or province, shown instead of the country.
+   */
+  region?: string | null;
+  country?: ('AT' | 'CN' | 'CZ' | 'FI' | 'FR' | 'DE' | 'NO' | 'PL' | 'KR' | 'CH') | null;
+  client?: string | null;
+  architect?: string | null;
+  planningPartners?: string | null;
+  /**
+   * In hectares.
+   */
+  area?: number | null;
+  /**
+   * Free-form extra fact, e.g. image credits.
+   */
+  additionalInfo?: string | null;
+  competition?: {
+    year?: number | null;
+    /**
+     * Prize rank, e.g. 1 for first prize.
+     */
+    prize?: number | null;
+    /**
+     * The entry was purchased by the jury.
+     */
+    purchased?: boolean | null;
+  };
+  /**
+   * Large image at the top of the project page.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Tile image in listings and galleries.
+   */
+  previewImage?: (number | null) | Media;
+  /**
+   * Draw the page controls in dark colors, for light hero images.
+   */
+  darkControls?: boolean | null;
+  /**
+   * Grid of images, texts and references.
+   */
+  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  /**
+   * Each language keeps its own list of links.
+   */
+  links?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        kind: 'project' | 'external';
+        /**
+         * Optional for project links — the project name is used instead.
+         */
+        label?: string | null;
+        project?: (number | null) | Project;
+        url?: string | null;
+        id?: string | null;
       }[]
     | null;
-  password?: string | null;
-  collection: 'users';
+  /**
+   * Languages whose website lists this entry.
+   */
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories".
+ */
+export interface ProjectCategory {
+  id: number;
+  _order?: string | null;
+  name: string;
+  /**
+   * Column of the project filter menu this top-level group appears in.
+   */
+  menuColumn?: ('1' | '2' | '3' | '4') | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  parent?: (number | null) | ProjectCategory;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | ProjectCategory;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -172,7 +310,19 @@ export interface User {
  */
 export interface Media {
   id: number;
-  alt: string;
+  alt?: string | null;
+  /**
+   * Photographer or copyright holder.
+   */
+  credit?: string | null;
+  /**
+   * Project the image shows. Flows use it as caption and link target.
+   */
+  project?: (number | null) | Project;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -193,7 +343,39 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
-    card?: {
+    w480?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w768?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w992?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w1382?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w3000?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -205,204 +387,14 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
- */
-export interface News {
-  id: number;
-  name?: string | null;
-  thumbnail?: (number | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  externalLinks?:
-    | {
-        label: string;
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Legacy acf.interner_link (WP post ID into the projekt CPT).
-   */
-  project?: (string | null) | Project;
-  /**
-   * Mixed content stream of images, text, news references, topic references, and separators. No legacy source — net-new capability, not backed by any existing column.
-   */
-  flow?:
-    (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock | FlowSeparatorBlock)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "project".
- */
-export interface Project {
-  id: string;
-  name: string;
-  status?: ('planning' | 'construction' | 'done' | 'partially_done' | 'finished' | 'paused' | 'canceled') | null;
-  /**
-   * can be forecast aswell
-   */
-  yearCompletion?: number | null;
-  /**
-   * in ha
-   */
-  surfaceArea?: number | null;
-  active_in?: {
-    intranet?: boolean | null;
-    werkx?: boolean | null;
-    web?: boolean | null;
-  };
-  /**
-   * Legacy aehnliche_projekte — a symmetric relation on the legacy side (queried both directions), so add the link on either project.
-   */
-  similarProjects?: (string | Project)[] | null;
-  adress?: {
-    /**
-     * @minItems 2
-     * @maxItems 2
-     */
-    coords?: [number, number] | null;
-    details?: {
-      country?: string | null;
-      city?: string | null;
-      zip?: string | null;
-      street?: string | null;
-      more?: string | null;
-    };
-  };
-  /**
-   * Legacy type, derived from als_wettbewerb/als_projekt/objektplanung.
-   */
-  type?: ('competition' | 'object' | 'concept') | null;
-  /**
-   * Legacy dunkle_buttons.
-   */
-  usesDarkTheme?: boolean | null;
-  /**
-   * Legacy kategorie — pipe-delimited list of projektkategorien ids.
-   */
-  categories?: (number | ProjectCategory)[] | null;
-  /**
-   * Legacy ort — a short display location, distinct from the full postal address on the Location tab.
-   */
-  location?: string | null;
-  motto?: string | null;
-  /**
-   * Legacy kurzbeschreibung.
-   */
-  shortDescription?: string | null;
-  /**
-   * Legacy text.
-   */
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Legacy titelbild.
-   */
-  thumbnail?: (number | null) | Media;
-  /**
-   * Legacy auftraggeber.
-   */
-  client?: string | null;
-  /**
-   * Legacy architekt.
-   */
-  architect?: string | null;
-  /**
-   * Legacy planungspartner.
-   */
-  planningPartners?: string | null;
-  /**
-   * Legacy weitere_daten — shown as an unlabeled basic-info row.
-   */
-  additionalInfo?: string | null;
-  competition?: {
-    /**
-     * Legacy wettbewerb.
-     */
-    year?: number | null;
-    /**
-     * Legacy preis.
-     */
-    place?: number | null;
-    /**
-     * Legacy ankauf.
-     */
-    purchased?: boolean | null;
-  };
-  links?:
-    | {
-        label: string;
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Mixed content stream of images, text, news references, topic references, and separators. Legacy projekte.bilder_flow column.
-   */
-  flow?:
-    (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock | FlowSeparatorBlock)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectCategory".
- */
-export interface ProjectCategory {
-  id: number;
-  name: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FlowImageBlock".
  */
 export interface FlowImageBlock {
+  /**
+   * Caption and link come from the image's project (set on the media item).
+   */
   image: number | Media;
-  /**
-   * Optional. Legacy never let editors set this directly — it was computed at render time from the image's project association. Leave blank to match legacy behavior, or set explicitly.
-   */
-  caption?: string | null;
-  /**
-   * Optional click-through override (see caption note).
-   */
-  link?: string | null;
-  /**
-   * Legacy css size token — grid-column span out of 12.
-   */
-  size?: ('one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full') | null;
-  /**
-   * Legacy css modifier tokens — freely combinable.
-   */
+  size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
   modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -429,18 +421,8 @@ export interface FlowTextBlock {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Optional accompanying image. Legacy parsed this (textelemente.bild) but a rendering bug meant it was never actually shown — this field revives the intent; the consuming frontend must be built to render it, unlike legacy.
-   */
-  image?: (number | null) | Media;
-  /**
-   * Legacy css size token — grid-column span out of 12.
-   */
-  size?: ('one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full') | null;
-  /**
-   * Legacy css modifier tokens — freely combinable.
-   */
-  modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
+  size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
+  modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin' | 'separator')[] | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'text';
@@ -451,13 +433,7 @@ export interface FlowTextBlock {
  */
 export interface FlowNewsReferenceBlock {
   news: number | News;
-  /**
-   * Legacy css size token — grid-column span out of 12.
-   */
-  size?: ('one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full') | null;
-  /**
-   * Legacy css modifier tokens — freely combinable.
-   */
+  size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
   modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -465,20 +441,65 @@ export interface FlowNewsReferenceBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  title?: string | null;
+  date: string;
+  image?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Each language keeps its own list of links.
+   */
+  links?:
+    | {
+        kind: 'project' | 'external';
+        /**
+         * Optional for project links — the project name is used instead.
+         */
+        label?: string | null;
+        project?: (number | null) | Project;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Languages whose website lists this entry.
+   */
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FlowTopicReferenceBlock".
  */
 export interface FlowTopicReferenceBlock {
   /**
-   * Renders as an image tile using the theme's own thumbnail + name; always gets the legacy has-overlay caption style (auto-applied, not configurable). No separate caption field — the theme's name is the display caption.
+   * Shown as an image tile with the topic's image and name.
    */
-  theme: number | Theme;
-  /**
-   * Legacy css size token — grid-column span out of 12.
-   */
-  size?: ('one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full') | null;
-  /**
-   * Legacy css modifier tokens — freely combinable.
-   */
+  topic: number | Topic;
+  size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
   modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -486,19 +507,13 @@ export interface FlowTopicReferenceBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "theme".
+ * via the `definition` "topics".
  */
-export interface Theme {
+export interface Topic {
   id: number;
   name?: string | null;
-  /**
-   * Legacy bild.
-   */
-  thumbnail?: (number | null) | Media;
-  /**
-   * Legacy text.
-   */
-  content?: {
+  image?: (number | null) | Media;
+  description?: {
     root: {
       type: string;
       children: {
@@ -513,41 +528,31 @@ export interface Theme {
     };
     [k: string]: unknown;
   } | null;
+  projects?: (number | Project)[] | null;
   /**
-   * Legacy projekte — pipe-delimited list of project kuerzel codes.
+   * Grid of images, texts and references.
    */
-  projects?: (string | Project)[] | null;
+  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
   /**
-   * Mixed content stream of images, text, news references, topic references, and separators. Legacy themen.flow column.
+   * Id in the legacy website database. Set by the importer.
    */
-  flow?:
-    (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock | FlowSeparatorBlock)[] | null;
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowSeparatorBlock".
- */
-export interface FlowSeparatorBlock {
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'separator';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "award".
+ * via the `definition` "awards".
  */
 export interface Award {
   id: number;
   name?: string | null;
-  /**
-   * Legacy jahr — used as the default sort key (newest first).
-   */
-  year?: number | null;
-  thumbnail?: (number | null) | Media;
   issuer?: string | null;
-  content?: {
+  year: number;
+  month?: number | null;
+  image?: (number | null) | Media;
+  description?: {
     root: {
       type: string;
       children: {
@@ -562,90 +567,95 @@ export interface Award {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Each language keeps its own list of links.
+   */
   links?:
     | {
-        label: string;
-        url: string;
+        kind: 'project' | 'external';
+        /**
+         * Optional for project links — the project name is used instead.
+         */
+        label?: string | null;
+        project?: (number | null) | Project;
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Languages whose website lists this entry.
+   */
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publication".
+ * via the `definition` "publications".
  */
 export interface Publication {
   id: number;
-  /**
-   * Legacy name/buch.
-   */
-  name?: string | null;
-  /**
-   * Legacy untertitel/buchuntertitel.
-   */
-  subtitle?: string | null;
   category?: (number | null) | PublicationCategory;
-  /**
-   * Legacy jahr — used as the default sort key (newest first).
-   */
-  year?: number | null;
-  thumbnail?: (number | null) | Media;
-  /**
-   * Legacy zeitschrift.
-   */
+  title?: string | null;
+  subtitle?: string | null;
+  authors?: string | null;
   journal?: string | null;
-  /**
-   * Legacy verlag.
-   */
+  bookTitle?: string | null;
+  bookSubtitle?: string | null;
+  editors?: string | null;
   publisher?: string | null;
+  year?: number | null;
+  month?: number | null;
   /**
-   * Legacy autor.
-   */
-  author?: string | null;
-  /**
-   * Legacy hrsg.
-   */
-  editor?: string | null;
-  /**
-   * Legacy seiten — kept as text since legacy values include ranges (e.g. "12-34").
+   * A page or range, e.g. "12-34".
    */
   pages?: string | null;
-  /**
-   * Legacy datei.
-   */
+  image?: (number | null) | Media;
   file?: (number | null) | Media;
   url?: string | null;
+  projects?: (number | Project)[] | null;
   /**
-   * Legacy projekte — pipe-delimited list of project kuerzel codes.
+   * Languages whose website lists this entry.
    */
-  projects?: (string | Project)[] | null;
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publicationCategory".
+ * via the `definition` "publication-categories".
  */
 export interface PublicationCategory {
   id: number;
+  _order?: string | null;
   name: string;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job".
+ * via the `definition` "jobs".
  */
 export interface Job {
   id: number;
-  name?: string | null;
-  /**
-   * Legacy datum — used as the default sort key (newest first).
-   */
+  title?: string | null;
   date?: string | null;
-  content?: {
+  office?: (number | null) | Office;
+  description?: {
     root: {
       type: string;
       children: {
@@ -660,21 +670,28 @@ export interface Job {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Languages whose website lists this entry.
+   */
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "employee".
+ * via the `definition` "offices".
  */
-export interface Employee {
+export interface Office {
   id: number;
-  firstName: string;
-  lastName: string;
-  fullName?: string | null;
-  birthday?: string | null;
-  office?: (number | null) | OfficeLocation;
-  content?: {
+  _order?: string | null;
+  name: string;
+  image?: (number | null) | Media;
+  description?: {
     root: {
       type: string;
       children: {
@@ -689,73 +706,130 @@ export interface Employee {
     };
     [k: string]: unknown;
   } | null;
-  higherEducation?: {
-    type?: ('bachelor' | 'master' | 'diplom' | 'doctor' | 'professor' | 'vocationalTraining' | 'other') | null;
-    subType?: ('art' | 'sci' | 'eng' | 'ing') | null;
-    name?: string | null;
-    location?: string | null;
-  };
-  email?: string | null;
-  /**
-   * Please enter in international format starting with your country code.
-   */
-  phone?: string | null;
-  /**
-   * Please enter in international format starting with your country code.
-   */
-  mobilePhone?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "officeLocation".
- */
-export interface OfficeLocation {
-  id: number;
-  name?: string | null;
-  leader?: (number | null) | Employee;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  adress?: {
+  address?: {
+    /**
+     * Name on the letterbox.
+     */
+    company?: string | null;
+    street?: string | null;
+    postalCode?: string | null;
+    city?: string | null;
+    country?: ('AT' | 'CN' | 'CZ' | 'FI' | 'FR' | 'DE' | 'NO' | 'PL' | 'KR' | 'CH') | null;
     /**
      * @minItems 2
      * @maxItems 2
      */
-    coords?: [number, number] | null;
-    details?: {
-      country?: string | null;
-      city?: string | null;
-      zip?: string | null;
-      street?: string | null;
-      more?: string | null;
-    };
+    coordinates?: [number, number] | null;
   };
   contact?: {
-    tel?: string | null;
+    phone?: string | null;
     fax?: string | null;
     email?: string | null;
-    emailIntern?: string | null;
   };
+  /**
+   * Extra contact details for one language, e.g. a local contact person.
+   */
+  contactNote?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "mine".
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  /**
+   * Identifier the website uses to fetch this page, e.g. "office-profile".
+   */
+  key: string;
+  title?: string | null;
+  subtitle?: string | null;
+  image?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Grid of images, texts and references. Each language has its own flow.
+   */
+  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees".
+ */
+export interface Employee {
+  id: number;
+  academicTitle?: string | null;
+  firstName: string;
+  lastName: string;
+  fullName?: string | null;
+  office?: (number | null) | Office;
+  /**
+   * Year the person joined the office.
+   */
+  joinedYear?: number | null;
+  email?: string | null;
+  phone?: string | null;
+  portrait?: (number | null) | Media;
+  /**
+   * Degree and field, e.g. "M.Sc. Landscape Architecture".
+   */
+  profession?: string | null;
+  university?: string | null;
+  /**
+   * Membership in a chamber of architects.
+   */
+  chamberMembership?: string | null;
+  qualification?: string | null;
+  /**
+   * Id in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mines".
  */
 export interface Mine {
   id: number;
@@ -802,7 +876,7 @@ export interface Mine {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "mineFeatures".
+ * via the `definition` "mine-features".
  */
 export interface MineFeature {
   id: number;
@@ -811,6 +885,31 @@ export interface MineFeature {
   color?: ('blue' | 'green' | 'grey') | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -837,60 +936,64 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'projects';
+        value: number | Project;
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'project-categories';
+        value: number | ProjectCategory;
+      } | null)
+    | ({
+        relationTo: 'topics';
+        value: number | Topic;
       } | null)
     | ({
         relationTo: 'news';
         value: number | News;
       } | null)
     | ({
-        relationTo: 'award';
+        relationTo: 'awards';
         value: number | Award;
       } | null)
     | ({
-        relationTo: 'publication';
+        relationTo: 'publications';
         value: number | Publication;
       } | null)
     | ({
-        relationTo: 'publicationCategory';
+        relationTo: 'publication-categories';
         value: number | PublicationCategory;
       } | null)
     | ({
-        relationTo: 'job';
+        relationTo: 'jobs';
         value: number | Job;
       } | null)
     | ({
-        relationTo: 'theme';
-        value: number | Theme;
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
-        relationTo: 'employee';
+        relationTo: 'employees';
         value: number | Employee;
       } | null)
     | ({
-        relationTo: 'officeLocation';
-        value: number | OfficeLocation;
+        relationTo: 'offices';
+        value: number | Office;
       } | null)
     | ({
-        relationTo: 'mine';
+        relationTo: 'mines';
         value: number | Mine;
       } | null)
     | ({
-        relationTo: 'mineFeatures';
+        relationTo: 'mine-features';
         value: number | MineFeature;
       } | null)
     | ({
-        relationTo: 'project';
-        value: string | Project;
+        relationTo: 'media';
+        value: number | Media;
       } | null)
     | ({
-        relationTo: 'projectCategory';
-        value: number | ProjectCategory;
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -936,25 +1039,364 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "projects_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface ProjectsSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  type?: T;
+  ongoing?: T;
+  completionYear?: T;
+  motto?: T;
+  summary?: T;
+  description?: T;
+  categories?: T;
+  similarProjects?: T;
+  listedAsSimilarBy?: T;
+  place?: T;
+  region?: T;
+  country?: T;
+  client?: T;
+  architect?: T;
+  planningPartners?: T;
+  area?: T;
+  additionalInfo?: T;
+  competition?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        year?: T;
+        prize?: T;
+        purchased?: T;
       };
+  heroImage?: T;
+  previewImage?: T;
+  darkControls?: T;
+  flow?:
+    | T
+    | {
+        image?: T | FlowImageBlockSelect<T>;
+        text?: T | FlowTextBlockSelect<T>;
+        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
+        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
+      };
+  links?:
+    | T
+    | {
+        kind?: T;
+        label?: T;
+        project?: T;
+        url?: T;
+        id?: T;
+      };
+  visibleIn?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FlowImageBlock_select".
+ */
+export interface FlowImageBlockSelect<T extends boolean = true> {
+  image?: T;
+  size?: T;
+  modifiers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FlowTextBlock_select".
+ */
+export interface FlowTextBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  size?: T;
+  modifiers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FlowNewsReferenceBlock_select".
+ */
+export interface FlowNewsReferenceBlockSelect<T extends boolean = true> {
+  news?: T;
+  size?: T;
+  modifiers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FlowTopicReferenceBlock_select".
+ */
+export interface FlowTopicReferenceBlockSelect<T extends boolean = true> {
+  topic?: T;
+  size?: T;
+  modifiers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories_select".
+ */
+export interface ProjectCategoriesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  menuColumn?: T;
+  legacyId?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics_select".
+ */
+export interface TopicsSelect<T extends boolean = true> {
+  name?: T;
+  image?: T;
+  description?: T;
+  projects?: T;
+  flow?:
+    | T
+    | {
+        image?: T | FlowImageBlockSelect<T>;
+        text?: T | FlowTextBlockSelect<T>;
+        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
+        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
+      };
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  image?: T;
+  content?: T;
+  links?:
+    | T
+    | {
+        kind?: T;
+        label?: T;
+        project?: T;
+        url?: T;
+        id?: T;
+      };
+  visibleIn?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "awards_select".
+ */
+export interface AwardsSelect<T extends boolean = true> {
+  name?: T;
+  issuer?: T;
+  year?: T;
+  month?: T;
+  image?: T;
+  description?: T;
+  links?:
+    | T
+    | {
+        kind?: T;
+        label?: T;
+        project?: T;
+        url?: T;
+        id?: T;
+      };
+  visibleIn?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications_select".
+ */
+export interface PublicationsSelect<T extends boolean = true> {
+  category?: T;
+  title?: T;
+  subtitle?: T;
+  authors?: T;
+  journal?: T;
+  bookTitle?: T;
+  bookSubtitle?: T;
+  editors?: T;
+  publisher?: T;
+  year?: T;
+  month?: T;
+  pages?: T;
+  image?: T;
+  file?: T;
+  url?: T;
+  projects?: T;
+  visibleIn?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publication-categories_select".
+ */
+export interface PublicationCategoriesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs_select".
+ */
+export interface JobsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  office?: T;
+  description?: T;
+  visibleIn?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  key?: T;
+  title?: T;
+  subtitle?: T;
+  image?: T;
+  content?: T;
+  flow?:
+    | T
+    | {
+        image?: T | FlowImageBlockSelect<T>;
+        text?: T | FlowTextBlockSelect<T>;
+        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
+        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
+      };
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees_select".
+ */
+export interface EmployeesSelect<T extends boolean = true> {
+  academicTitle?: T;
+  firstName?: T;
+  lastName?: T;
+  fullName?: T;
+  office?: T;
+  joinedYear?: T;
+  email?: T;
+  phone?: T;
+  portrait?: T;
+  profession?: T;
+  university?: T;
+  chamberMembership?: T;
+  qualification?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "offices_select".
+ */
+export interface OfficesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  image?: T;
+  description?: T;
+  address?:
+    | T
+    | {
+        company?: T;
+        street?: T;
+        postalCode?: T;
+        city?: T;
+        country?: T;
+        coordinates?: T;
+      };
+  contact?:
+    | T
+    | {
+        phone?: T;
+        fax?: T;
+        email?: T;
+      };
+  contactNote?: T;
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mines_select".
+ */
+export interface MinesSelect<T extends boolean = true> {
+  title?: T;
+  location?: T;
+  content?: T;
+  siteType?: T;
+  status?: T;
+  closureYear?: T;
+  extractedMaterials?: T;
+  surface?:
+    | T
+    | {
+        total?: T;
+        lake?: T;
+        forest?: T;
+        agriculture?: T;
+        settlement?: T;
+      };
+  features?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mine-features_select".
+ */
+export interface MineFeaturesSelect<T extends boolean = true> {
+  name?: T;
+  iconName?: T;
+  color?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -962,6 +1404,9 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  credit?: T;
+  project?: T;
+  legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -986,7 +1431,47 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
-        card?:
+        w480?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w768?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w992?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w1382?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w3000?:
           | T
           | {
               url?: T;
@@ -1000,342 +1485,25 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news_select".
+ * via the `definition` "users_select".
  */
-export interface NewsSelect<T extends boolean = true> {
-  name?: T;
-  thumbnail?: T;
-  content?: T;
-  externalLinks?:
-    | T
-    | {
-        label?: T;
-        url?: T;
-        id?: T;
-      };
-  project?: T;
-  flow?:
-    | T
-    | {
-        image?: T | FlowImageBlockSelect<T>;
-        text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
-        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
-        separator?: T | FlowSeparatorBlockSelect<T>;
-      };
+export interface UsersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowImageBlock_select".
- */
-export interface FlowImageBlockSelect<T extends boolean = true> {
-  image?: T;
-  caption?: T;
-  link?: T;
-  size?: T;
-  modifiers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowTextBlock_select".
- */
-export interface FlowTextBlockSelect<T extends boolean = true> {
-  title?: T;
-  body?: T;
-  image?: T;
-  size?: T;
-  modifiers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowNewsReferenceBlock_select".
- */
-export interface FlowNewsReferenceBlockSelect<T extends boolean = true> {
-  news?: T;
-  size?: T;
-  modifiers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowTopicReferenceBlock_select".
- */
-export interface FlowTopicReferenceBlockSelect<T extends boolean = true> {
-  theme?: T;
-  size?: T;
-  modifiers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowSeparatorBlock_select".
- */
-export interface FlowSeparatorBlockSelect<T extends boolean = true> {
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "award_select".
- */
-export interface AwardSelect<T extends boolean = true> {
-  name?: T;
-  year?: T;
-  thumbnail?: T;
-  issuer?: T;
-  content?: T;
-  links?:
-    | T
-    | {
-        label?: T;
-        url?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publication_select".
- */
-export interface PublicationSelect<T extends boolean = true> {
-  name?: T;
-  subtitle?: T;
-  category?: T;
-  year?: T;
-  thumbnail?: T;
-  journal?: T;
-  publisher?: T;
-  author?: T;
-  editor?: T;
-  pages?: T;
-  file?: T;
-  url?: T;
-  projects?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publicationCategory_select".
- */
-export interface PublicationCategorySelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job_select".
- */
-export interface JobSelect<T extends boolean = true> {
-  name?: T;
-  date?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "theme_select".
- */
-export interface ThemeSelect<T extends boolean = true> {
-  name?: T;
-  thumbnail?: T;
-  content?: T;
-  projects?: T;
-  flow?:
-    | T
-    | {
-        image?: T | FlowImageBlockSelect<T>;
-        text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
-        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
-        separator?: T | FlowSeparatorBlockSelect<T>;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "employee_select".
- */
-export interface EmployeeSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
-  fullName?: T;
-  birthday?: T;
-  office?: T;
-  content?: T;
-  higherEducation?:
-    | T
-    | {
-        type?: T;
-        subType?: T;
-        name?: T;
-        location?: T;
-      };
   email?: T;
-  phone?: T;
-  mobilePhone?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "officeLocation_select".
- */
-export interface OfficeLocationSelect<T extends boolean = true> {
-  name?: T;
-  leader?: T;
-  content?: T;
-  adress?:
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
     | T
     | {
-        coords?: T;
-        details?:
-          | T
-          | {
-              country?: T;
-              city?: T;
-              zip?: T;
-              street?: T;
-              more?: T;
-            };
-      };
-  contact?:
-    | T
-    | {
-        tel?: T;
-        fax?: T;
-        email?: T;
-        emailIntern?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "mine_select".
- */
-export interface MineSelect<T extends boolean = true> {
-  title?: T;
-  location?: T;
-  content?: T;
-  siteType?: T;
-  status?: T;
-  closureYear?: T;
-  extractedMaterials?: T;
-  surface?:
-    | T
-    | {
-        total?: T;
-        lake?: T;
-        forest?: T;
-        agriculture?: T;
-        settlement?: T;
-      };
-  features?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "mineFeatures_select".
- */
-export interface MineFeaturesSelect<T extends boolean = true> {
-  name?: T;
-  iconName?: T;
-  color?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "project_select".
- */
-export interface ProjectSelect<T extends boolean = true> {
-  id?: T;
-  name?: T;
-  status?: T;
-  yearCompletion?: T;
-  surfaceArea?: T;
-  active_in?:
-    | T
-    | {
-        intranet?: T;
-        werkx?: T;
-        web?: T;
-      };
-  similarProjects?: T;
-  adress?:
-    | T
-    | {
-        coords?: T;
-        details?:
-          | T
-          | {
-              country?: T;
-              city?: T;
-              zip?: T;
-              street?: T;
-              more?: T;
-            };
-      };
-  type?: T;
-  usesDarkTheme?: T;
-  categories?: T;
-  location?: T;
-  motto?: T;
-  shortDescription?: T;
-  description?: T;
-  thumbnail?: T;
-  client?: T;
-  architect?: T;
-  planningPartners?: T;
-  additionalInfo?: T;
-  competition?:
-    | T
-    | {
-        year?: T;
-        place?: T;
-        purchased?: T;
-      };
-  links?:
-    | T
-    | {
-        label?: T;
-        url?: T;
         id?: T;
+        createdAt?: T;
+        expiresAt?: T;
       };
-  flow?:
-    | T
-    | {
-        image?: T | FlowImageBlockSelect<T>;
-        text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
-        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
-        separator?: T | FlowSeparatorBlockSelect<T>;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectCategory_select".
- */
-export interface ProjectCategorySelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1376,6 +1544,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-gallery".
+ */
+export interface ProjectGallery {
+  id: number;
+  /**
+   * Featured projects in display order. Each language has its own selection.
+   */
+  projects?: (number | Project)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-gallery_select".
+ */
+export interface ProjectGallerySelect<T extends boolean = true> {
+  projects?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -59,5 +59,6 @@ in `docker-compose.yml`).
 
 ## Collections
 
-Users, Media, Projects (+ Project Categories), News, Awards, Publications (+ Publication
-Categories), Jobs, Themes, Employee, Office Location, Mines (+ Mine Features).
+Projects (+ Project Categories, Project Gallery), Topics, News, Awards, Publications
+(+ Publication Categories), Jobs, Pages, Employees, Offices, Mines (+ Mine Features), Media,
+Users. See [CONTEXT.md](./CONTEXT.md) for what each term means.

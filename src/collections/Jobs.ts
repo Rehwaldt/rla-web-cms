@@ -1,36 +1,37 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { legacyIdField } from '@/fields/legacyId'
+import { richTextField } from '@/fields/richText'
+import { visibleInField } from '@/fields/visibleIn'
 
 export const Jobs: CollectionConfig = {
-  slug: 'job',
+  slug: 'jobs',
+  defaultSort: '-date',
   admin: {
-    useAsTitle: 'name',
-    defaultColumns: ['name', 'date'],
+    useAsTitle: 'title',
+    group: 'Content',
+    defaultColumns: ['title', 'office', 'date', '_status'],
   },
+  access: { read: publishedOrAuthenticated },
+  versions: { drafts: true },
   fields: [
+    { name: 'title', type: 'text', localized: true },
     {
-      name: 'name',
-      type: 'text',
-      localized: true,
-    },
-    {
-      name: 'date',
-      type: 'date',
-      admin: {
-        description: 'Legacy datum — used as the default sort key (newest first).',
-        date: {
-          pickerAppearance: 'dayOnly',
-          displayFormat: 'dd.MM.yyyy',
+      type: 'row',
+      fields: [
+        {
+          name: 'date',
+          type: 'date',
+          admin: {
+            width: '50%',
+            date: { pickerAppearance: 'dayOnly', displayFormat: 'dd.MM.yyyy' },
+          },
         },
-      },
+        { name: 'office', type: 'relationship', relationTo: 'offices', admin: { width: '50%' } },
+      ],
     },
-    {
-      name: 'content',
-      type: 'richText',
-      localized: true,
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
-      }),
-    },
+    richTextField('description'),
+    visibleInField,
+    legacyIdField,
   ],
 }
