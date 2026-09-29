@@ -139,14 +139,13 @@ const flowTopicReferenceBlock: Block = {
   ],
 }
 
+// A full-width divider. No configurable options — it always ignores the flow grid and spans full
+// width. (Blocks have no `admin.description`, so this lives in a comment.)
 const flowSeparatorBlock: Block = {
   slug: 'separator',
   interfaceName: 'FlowSeparatorBlock',
   labels: { singular: 'Separator', plural: 'Separators' },
   fields: [],
-  admin: {
-    description: 'A full-width divider. No configurable options — it always ignores the flow grid and spans full width.',
-  },
 }
 
 export const flowField = (legacySourceNote: string): Field => ({

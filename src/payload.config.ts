@@ -18,10 +18,6 @@ import { Employees } from './collections/Employee'
 import { OfficeLocations } from './collections/OfficeLocation'
 
 import { Projects } from './collections/projects/Projects'
-import { ProjectPhases } from './collections/projects/ProjectPhases'
-import { ProjectPartials } from './collections/projects/ProjectPartials'
-import { ProjectServices } from './collections/projects/ProjectServices'
-import { ProjectFlags } from './collections/projects/ProjectFlags'
 import { ProjectCategories } from './collections/projects/ProjectCategories'
 
 import { Mines } from './collections/Mines'
@@ -51,10 +47,6 @@ export default buildConfig({
     Mines,
     MineFeatures,
     Projects,
-    ProjectPhases,
-    ProjectPartials,
-    ProjectServices,
-    ProjectFlags,
     ProjectCategories,
   ],
   editor: lexicalEditor(),

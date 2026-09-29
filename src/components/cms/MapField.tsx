@@ -14,19 +14,19 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 })
 
+// Update the field value when the map is clicked
+function MapEvents({ onPick }: { onPick: (point: [number, number]) => void }) {
+  useMapEvents({
+    click(e) {
+      onPick([e.latlng.lng, e.latlng.lat]) // Payload expects [lng, lat]
+    },
+  })
+  return null
+}
+
 export default function MapFieldClient({ path }: { path: string }) {
   // useField connects our component to Payload's database state
   const { value, setValue } = useField<[number, number]>({ path })
-
-  // Update the field value when the map is clicked
-  const MapEvents = () => {
-    useMapEvents({
-      click(e) {
-        setValue([e.latlng.lng, e.latlng.lat]) // Payload expects [lng, lat]
-      },
-    })
-    return null
-  }
 
   const center: [number, number] = value ? [value[1], value[0]] : [51.505, -0.09]
 
@@ -40,7 +40,7 @@ export default function MapFieldClient({ path }: { path: string }) {
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {value && <Marker position={[value[1], value[0]]} icon={icon} />}
-          <MapEvents />
+          <MapEvents onPick={setValue} />
         </MapContainer>
       </div>
       <label className="field-label" style={{ display: 'block' }}>

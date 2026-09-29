@@ -1,7 +1,7 @@
 {
-  "name": "minescapes",
+  "name": "rla-website-cms",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "Payload CMS replacing the legacy rehwaldt.de website CMS (web MySQL, edited via 3_frontend)",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -15,21 +15,13 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
-    "etl:employees": "tsx src/scripts/employee/run.ts",
-    "etl:employees:extract-wp": "tsx src/scripts/employee/extract-wp.ts",
-    "etl:employees:extract-sql": "tsx src/scripts/employee/extract-sql.ts",
-    "etl:werkx:projects": "tsx src/scripts/werkx/load-projects.ts",
-    "etl:werkx:contracts": "tsx src/scripts/werkx/load-contracts.ts",
-    "etl:news": "tsx src/scripts/news/run.ts",
-    "etl:news:extract": "tsx src/scripts/news/extract.ts"
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.85.0",
     "@payloadcms/next": "3.85.0",
     "@payloadcms/richtext-lexical": "3.85.0",
     "@payloadcms/ui": "3.85.0",
-    "@tailwindcss/postcss": "^4.3.0",
     "@types/leaflet": "^1.9.21",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
@@ -39,12 +31,10 @@
     "mysql2": "^3.22.5",
     "next": "16.2.6",
     "payload": "3.85.0",
-    "postcss": "^8.5.15",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-leaflet": "^5.0.0",
-    "sharp": "0.34.2",
-    "tailwindcss": "^4.3.0"
+    "sharp": "0.34.2"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",

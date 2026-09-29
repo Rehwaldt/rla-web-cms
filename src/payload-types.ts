@@ -80,10 +80,6 @@ export interface Config {
     mine: Mine;
     mineFeatures: MineFeature;
     project: Project;
-    projectPhase: ProjectPhase;
-    projectPartial: ProjectPartial;
-    projectService: ProjectService;
-    projectFlag: ProjectFlag;
     projectCategory: ProjectCategory;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -105,10 +101,6 @@ export interface Config {
     mine: MineSelect<false> | MineSelect<true>;
     mineFeatures: MineFeaturesSelect<false> | MineFeaturesSelect<true>;
     project: ProjectSelect<false> | ProjectSelect<true>;
-    projectPhase: ProjectPhaseSelect<false> | ProjectPhaseSelect<true>;
-    projectPartial: ProjectPartialSelect<false> | ProjectPartialSelect<true>;
-    projectService: ProjectServiceSelect<false> | ProjectServiceSelect<true>;
-    projectFlag: ProjectFlagSelect<false> | ProjectFlagSelect<true>;
     projectCategory: ProjectCategorySelect<false> | ProjectCategorySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -217,10 +209,6 @@ export interface Media {
  */
 export interface News {
   id: number;
-  /**
-   * WordPress news post ID — used by the News ETL for idempotent re-imports.
-   */
-  wpId?: number | null;
   name?: string | null;
   thumbnail?: (number | null) | Media;
   content?: {
@@ -263,7 +251,6 @@ export interface News {
  */
 export interface Project {
   id: string;
-  creationDate?: string | null;
   name: string;
   status?: ('planning' | 'construction' | 'done' | 'partially_done' | 'finished' | 'paused' | 'canceled') | null;
   /**
@@ -274,10 +261,6 @@ export interface Project {
    * in ha
    */
   surfaceArea?: number | null;
-  /**
-   * hex code only
-   */
-  color?: string | null;
   active_in?: {
     intranet?: boolean | null;
     werkx?: boolean | null;
@@ -721,53 +704,6 @@ export interface Employee {
    * Please enter in international format starting with your country code.
    */
   mobilePhone?: string | null;
-  werkx?: {
-    /**
-     * aka Kuerzel
-     */
-    slug?: string | null;
-    /**
-     * hex code only
-     */
-    color?: string | null;
-    entry?: string | null;
-    exit?: string | null;
-    firstWorkYear?: number | null;
-    startTrackingDate?: string | null;
-    formerEmployee?: boolean | null;
-    sollHistory?:
-      | {
-          targetHours: number;
-          /**
-           * Overtime/under-hours at the start of this period.
-           */
-          startingBalance?: number | null;
-          start?: string | null;
-          end?: string | null;
-          distribution?: {
-            mo?: number | null;
-            di?: number | null;
-            mi?: number | null;
-            do?: number | null;
-            fr?: number | null;
-            sa?: number | null;
-            so?: number | null;
-          };
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    vacationClaims?:
-      | {
-          /**
-           * Leave blank for a claim that applies indefinitely (a fallback, not tied to one year).
-           */
-          year?: number | null;
-          days: number;
-          id?: string | null;
-        }[]
-      | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -878,62 +814,6 @@ export interface MineFeature {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectPhase".
- */
-export interface ProjectPhase {
-  id: string;
-  project: string | Project;
-  phase?: string | null;
-  name: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectPartial".
- */
-export interface ProjectPartial {
-  id: number;
-  name: string;
-  project: string | Project;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectService".
- */
-export interface ProjectService {
-  id: number;
-  name: string;
-  project: string | Project;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectFlag".
- */
-export interface ProjectFlag {
-  id: string;
-  name: string;
-  /**
-   * in hours
-   */
-  timeBudget?: number | null;
-  /**
-   * hex code only
-   */
-  color?: string | null;
-  project: string | Project;
-  phase?: string | null;
-  linkedPartial?: (number | null) | ProjectPartial;
-  linkedService?: (number | null) | ProjectService;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1007,22 +887,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'project';
         value: string | Project;
-      } | null)
-    | ({
-        relationTo: 'projectPhase';
-        value: string | ProjectPhase;
-      } | null)
-    | ({
-        relationTo: 'projectPartial';
-        value: number | ProjectPartial;
-      } | null)
-    | ({
-        relationTo: 'projectService';
-        value: number | ProjectService;
-      } | null)
-    | ({
-        relationTo: 'projectFlag';
-        value: string | ProjectFlag;
       } | null)
     | ({
         relationTo: 'projectCategory';
@@ -1139,7 +1003,6 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "news_select".
  */
 export interface NewsSelect<T extends boolean = true> {
-  wpId?: T;
   name?: T;
   thumbnail?: T;
   content?: T;
@@ -1323,45 +1186,6 @@ export interface EmployeeSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   mobilePhone?: T;
-  werkx?:
-    | T
-    | {
-        slug?: T;
-        color?: T;
-        entry?: T;
-        exit?: T;
-        firstWorkYear?: T;
-        startTrackingDate?: T;
-        formerEmployee?: T;
-        sollHistory?:
-          | T
-          | {
-              targetHours?: T;
-              startingBalance?: T;
-              start?: T;
-              end?: T;
-              distribution?:
-                | T
-                | {
-                    mo?: T;
-                    di?: T;
-                    mi?: T;
-                    do?: T;
-                    fr?: T;
-                    sa?: T;
-                    so?: T;
-                  };
-              description?: T;
-              id?: T;
-            };
-        vacationClaims?:
-          | T
-          | {
-              year?: T;
-              days?: T;
-              id?: T;
-            };
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1440,12 +1264,10 @@ export interface MineFeaturesSelect<T extends boolean = true> {
  */
 export interface ProjectSelect<T extends boolean = true> {
   id?: T;
-  creationDate?: T;
   name?: T;
   status?: T;
   yearCompletion?: T;
   surfaceArea?: T;
-  color?: T;
   active_in?:
     | T
     | {
@@ -1503,56 +1325,6 @@ export interface ProjectSelect<T extends boolean = true> {
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
         separator?: T | FlowSeparatorBlockSelect<T>;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectPhase_select".
- */
-export interface ProjectPhaseSelect<T extends boolean = true> {
-  id?: T;
-  project?: T;
-  phase?: T;
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectPartial_select".
- */
-export interface ProjectPartialSelect<T extends boolean = true> {
-  id?: T;
-  name?: T;
-  project?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectService_select".
- */
-export interface ProjectServiceSelect<T extends boolean = true> {
-  id?: T;
-  name?: T;
-  project?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projectFlag_select".
- */
-export interface ProjectFlagSelect<T extends boolean = true> {
-  id?: T;
-  name?: T;
-  timeBudget?: T;
-  color?: T;
-  project?: T;
-  phase?: T;
-  linkedPartial?: T;
-  linkedService?: T;
   updatedAt?: T;
   createdAt?: T;
 }

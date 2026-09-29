@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { locationField } from '@/fields/location'
-import { colorField } from '@/fields/color'
 import { flowField } from '@/fields/flow'
 
 export const Projects: CollectionConfig = {
@@ -9,7 +8,7 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Projects',
-    defaultColumns: ['id', 'name', 'color', 'active'],
+    defaultColumns: ['id', 'name', 'status'],
     listSearchableFields: ['name', 'id'],
   },
   fields: [
@@ -19,13 +18,6 @@ export const Projects: CollectionConfig = {
       required: true,
       access: {
         update: () => false,
-      },
-    },
-    {
-      name: 'creationDate',
-      type: 'date',
-      admin: {
-        hidden: true,
       },
     },
     {
@@ -95,7 +87,6 @@ export const Projects: CollectionConfig = {
                     description: 'in ha',
                   },
                 },
-                colorField,
               ],
             },
             {
