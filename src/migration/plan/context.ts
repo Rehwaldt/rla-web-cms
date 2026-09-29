@@ -47,10 +47,13 @@ export function createPlanContext(
   const dom = new JSDOM('')
   const scratch = dom.window.document.createElement('div')
 
+  // Line breaks are marked with a private-use character before parsing; the HTML parser would
+  // strip a NUL marker.
+  const BREAK = ''
   const htmlToText = (html: string, lineBreak: string): string => {
-    scratch.innerHTML = html.replace(/<br\s*\/?>/gi, '\u0000').replace(/<\/p>\s*<p[^>]*>/gi, '\u0000')
+    scratch.innerHTML = html.replace(/<\/?br\s*\/?>/gi, BREAK).replace(/<\/p>\s*<p[^>]*>/gi, BREAK)
     return (scratch.textContent ?? '')
-      .split('\u0000')
+      .split(BREAK)
       .map((line) => line.replace(/\s+/g, ' ').trim())
       .filter(Boolean)
       .join(lineBreak)

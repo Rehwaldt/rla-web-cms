@@ -13,7 +13,7 @@ export const localesWithFlag = (row: Row, base: string): Locale[] =>
 
 /** Locales whose column is non-null — how news, awards and publications mark visibility. */
 export const localesWithValue = (row: Row, base: string): Locale[] =>
-  LOCALES.filter((locale) => row[`${base}_${LEGACY_SUFFIX[locale]}`] !== null)
+  LOCALES.filter((locale) => str(row, `${base}_${LEGACY_SUFFIX[locale]}`) !== null)
 
 // ---------------------------------------------------------------------------------------------
 // Links: "label;target|label;target", target = URL or "proj:CODE"
