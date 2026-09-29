@@ -3,6 +3,7 @@ import { anyone } from '@/access/publishedOrAuthenticated'
 import { countryField } from '@/fields/country'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
+import { requiredInDefaultLocale } from '@/fields/validation'
 
 // Office locations. Drag-and-drop order in the list view is the order on the website.
 export const Offices: CollectionConfig = {
@@ -15,7 +16,7 @@ export const Offices: CollectionConfig = {
   },
   access: { read: anyone },
   fields: [
-    { name: 'name', type: 'text', localized: true, required: true },
+    { name: 'name', type: 'text', localized: true, validate: requiredInDefaultLocale },
     { name: 'image', type: 'upload', relationTo: 'media' },
     richTextField('description'),
     {

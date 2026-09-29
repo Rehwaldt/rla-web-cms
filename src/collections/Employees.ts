@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
+import { requiredInDefaultLocale } from '@/fields/validation'
 
 // Public team profile. Names are localized because some people have a Chinese spelling of
 // their name; other languages fall back to the German entry.
@@ -23,8 +24,20 @@ export const Employees: CollectionConfig = {
           type: 'text',
           admin: { width: '20%', placeholder: 'Dipl.-Ing.' },
         },
-        { name: 'firstName', type: 'text', localized: true, required: true, admin: { width: '40%' } },
-        { name: 'lastName', type: 'text', localized: true, required: true, admin: { width: '40%' } },
+        {
+          name: 'firstName',
+          type: 'text',
+          localized: true,
+          validate: requiredInDefaultLocale,
+          admin: { width: '40%' },
+        },
+        {
+          name: 'lastName',
+          type: 'text',
+          localized: true,
+          validate: requiredInDefaultLocale,
+          admin: { width: '40%' },
+        },
       ],
     },
     {

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
+import { requiredInDefaultLocale } from '@/fields/validation'
 
 // Two-level tree (top-level groups with child categories). The `parent` and `breadcrumbs` fields
 // come from the nested-docs plugin; drag-and-drop order in the list view is the display order.
@@ -14,7 +15,7 @@ export const ProjectCategories: CollectionConfig = {
   },
   access: { read: anyone },
   fields: [
-    { name: 'name', type: 'text', localized: true, required: true },
+    { name: 'name', type: 'text', localized: true, validate: requiredInDefaultLocale },
     {
       name: 'menuColumn',
       type: 'select',

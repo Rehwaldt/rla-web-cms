@@ -31,6 +31,9 @@ reintroduce those sources here unless asked.
 - `pnpm generate:types`: regenerates `src/payload-types.ts`. Run after any collection or field
   change; never hand-edit that file. `pnpm generate:importmap` after adding admin components.
 - `pnpm test:int` (Vitest) / `pnpm test:e2e` (Playwright) / `pnpm test` (both). `pnpm lint`.
+- `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
+  `src/migration/README.md`). Re-runnable; writes a report to `migration/reports/`.
+  `pnpm migrate:website:verify [projectCode]` spot-checks the result.
 
 ## Schema building blocks (`src/fields`, `src/access`)
 

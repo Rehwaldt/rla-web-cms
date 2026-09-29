@@ -283,7 +283,7 @@ export interface Project {
 export interface ProjectCategory {
   id: number;
   _order?: string | null;
-  name: string;
+  name?: string | null;
   /**
    * Column of the project filter menu this top-level group appears in.
    */
@@ -638,7 +638,7 @@ export interface Publication {
 export interface PublicationCategory {
   id: number;
   _order?: string | null;
-  name: string;
+  name?: string | null;
   /**
    * Id in the legacy website database. Set by the importer.
    */
@@ -689,7 +689,7 @@ export interface Job {
 export interface Office {
   id: number;
   _order?: string | null;
-  name: string;
+  name?: string | null;
   image?: (number | null) | Media;
   description?: {
     root: {
@@ -798,8 +798,8 @@ export interface Page {
 export interface Employee {
   id: number;
   academicTitle?: string | null;
-  firstName: string;
-  lastName: string;
+  firstName?: string | null;
+  lastName?: string | null;
   fullName?: string | null;
   office?: (number | null) | Office;
   /**

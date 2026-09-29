@@ -3,6 +3,26 @@
 The one place in this codebase that knows the legacy website database (German table and column
 names). Everything it writes follows the Payload schema and the vocabulary in `CONTEXT.md`.
 
+```sh
+pnpm migrate:website --dry-run   # read + plan, write only the report
+pnpm migrate:website             # import (re-runnable: updates in place, never re-uploads files)
+pnpm migrate:website:verify BUG  # counts, anonymous visibility, one sample project
+```
+
+Needs `LEGACY_WEB_DB_*` and `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`).
+The report lands in `migration/reports/` (gitignored). A first run takes about 50 minutes,
+mostly generating image sizes; later runs take a few minutes.
+
+## How it's built
+
+- `legacy.ts` reads every table once and cleans values (trim, `''`/`'NULL'` → null).
+- `plan/` maps the snapshot to a **plan**: a list of documents per collection, with per-locale
+  values, that reference each other by legacy key (`ref('projects', 123)`) instead of Payload
+  ids. Planning is pure apart from checking which files exist — that's the part worth testing.
+- `write.ts` applies a plan: phase 1 writes each document without its references, phase 2 fills
+  in references once every id is known, phase 3 writes globals and switches documents that were
+  hidden in the legacy database to draft. Documents are matched by `legacyId` (PDFs by file name).
+
 ## Table → collection mapping
 
 | Legacy table | Rows | Payload |
