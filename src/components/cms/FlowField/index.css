@@ -1,0 +1,334 @@
+/* Editor chrome around the flow preview. The preview itself is styled by flow.css. */
+
+.flow-editor {
+  margin-bottom: var(--spacing-field, 1.5rem);
+}
+
+.flow-editor__header,
+.flow-editor__toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.flow-editor__toolbar {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flow-editor__hint {
+  color: var(--theme-elevation-500);
+  font-size: 0.8125rem;
+}
+
+.flow-editor__segmented {
+  display: inline-flex;
+  flex-shrink: 0;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s, 3px);
+  overflow: hidden;
+}
+.flow-editor__segmented button {
+  padding: 0.3rem 0.8rem;
+  border: 0;
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-800);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.flow-editor__segmented button + button {
+  border-left: 1px solid var(--theme-elevation-150);
+}
+.flow-editor__segmented button.is-active {
+  background: var(--theme-elevation-800);
+  color: var(--theme-elevation-0);
+}
+
+/* The stage is the "page" the grid sits on: always light, like the website. */
+.flow-editor__stage {
+  padding: 3rem 1.5rem 1.5rem; /* room for the toolbar above a block in the first row */
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m, 4px);
+  background: #fff;
+  color: #000;
+}
+.flow-editor__stage--mobile .flow-editor__canvas {
+  max-width: 390px;
+  margin: 0 auto;
+}
+
+.flow-editor__canvas {
+  min-height: 8rem;
+  outline: none;
+}
+
+.flow-editor__empty {
+  grid-column: 1 / -1;
+  padding: 3rem 1rem;
+  border: 2px dashed #ddd;
+  color: #888;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Blocks                                                                                          */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-editor__item {
+  position: relative;
+  cursor: pointer;
+  outline: 1px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 120ms, opacity 120ms;
+}
+.flow-editor__item:hover {
+  outline-color: #9ab;
+}
+.flow-editor__item--selected,
+.flow-editor__item--selected:hover {
+  z-index: 5;
+  outline: 2px solid #1a73e8;
+}
+.flow-editor__item--error {
+  outline: 2px solid #d93025;
+}
+.flow-editor__item--dragging {
+  opacity: 0.35;
+}
+
+.flow-editor__tag {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgb(0 0 0 / 65%);
+  color: #fff;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.flow-editor__item:hover > .flow-editor__tag,
+.flow-editor__item--selected > .flow-editor__tag {
+  opacity: 1;
+}
+.textelement.flow-editor__item > .flow-editor__tag {
+  top: -18px;
+  bottom: auto;
+}
+
+.flow-editor__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  padding: 0.5rem;
+  background: #eee;
+  color: #777;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+.flow-editor__placeholder--missing {
+  background: repeating-linear-gradient(45deg, #fbeaea, #fbeaea 8px, #f6dcdc 8px, #f6dcdc 16px);
+  color: #a33;
+}
+.flow-editor__placeholder-text {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #bbb;
+  color: #888;
+  font-size: 0.8125rem;
+}
+
+.flow-editor__drop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px;
+  background: #1a73e8;
+  pointer-events: none;
+}
+.flow-editor__drop--before {
+  left: calc(var(--flow-gap) / -2 - 2px);
+}
+.flow-editor__drop--after {
+  right: calc(var(--flow-gap) / -2 - 2px);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Toolbar of the selected block                                                                   */
+/* ---------------------------------------------------------------------------------------------- */
+
+/* Sits just above the block so it never hides the block itself. */
+.flow-editor__bar {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: -2px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 25%);
+  color: #222;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: default;
+}
+.flow-editor__bar--right {
+  left: auto;
+  right: -2px;
+}
+
+.flow-editor__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.flow-editor__group + .flow-editor__group {
+  padding-left: 4px;
+  border-left: 1px solid #ddd;
+}
+
+.flow-editor__btn {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 22px;
+  cursor: pointer;
+}
+.flow-editor__btn:hover:not(:disabled) {
+  background: #eef3fd;
+}
+.flow-editor__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.flow-editor__chip {
+  border-color: #ddd;
+}
+.flow-editor__chip--on,
+.flow-editor__chip--on:hover:not(:disabled) {
+  border-color: #1a73e8;
+  background: #1a73e8;
+  color: #fff;
+}
+.flow-editor__btn--danger:hover:not(:disabled) {
+  background: #fde8e7;
+  color: #d93025;
+}
+.flow-editor__size {
+  min-width: 2.2em;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Add bar                                                                                         */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-editor__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  color: var(--theme-elevation-500);
+  font-size: 0.8125rem;
+}
+.flow-editor__add-btn {
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s, 3px);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+  font: inherit;
+  cursor: pointer;
+}
+.flow-editor__add-btn:hover {
+  background: var(--theme-elevation-100);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Tray: the project's images that the flow doesn't use yet                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-editor__tray {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--theme-elevation-150);
+  border-radius: var(--style-radius-m, 4px);
+}
+.flow-editor__tray-title {
+  margin-bottom: 0.5rem;
+  color: var(--theme-elevation-500);
+  font-size: 0.8125rem;
+}
+.flow-editor__tray-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.flow-editor__tray-image {
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border: 2px solid transparent;
+  background: none;
+  cursor: grab;
+}
+.flow-editor__tray-image:hover {
+  border-color: #1a73e8;
+}
+.flow-editor__tray-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Blocks the website doesn't render                                                               */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-editor__offstage {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--theme-warning-200, #f3d9a4);
+  border-radius: var(--style-radius-m, 4px);
+  background: var(--theme-warning-50, #fdf8ec);
+}
+.flow-editor__offstage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 0;
+  font-size: 0.8125rem;
+}
+.flow-editor__offstage-item img,
+.flow-editor__offstage-noimg {
+  width: 48px;
+  height: 32px;
+  object-fit: cover;
+  background: #ddd;
+}
+.flow-editor__offstage-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

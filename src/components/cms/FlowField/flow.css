@@ -1,0 +1,160 @@
+/*
+ * The flow grid as the website renders it: a port of 1_php/assets/css/flow.css plus the figure and
+ * text element rules it depends on from rla.css. Class names are the stored size and modifier
+ * values, so a block renders as <div class="{size} {modifiers}">.
+ *
+ * Differences to the website's file:
+ * - Everything is scoped under .flow-grid, because the class names (clear, right, center, full)
+ *   are too generic to leave global.
+ * - The desktop layout applies under .flow-grid--desktop instead of a 64rem media query, so the
+ *   editor can show either layout at any width. A page using this file adds the class from 64rem.
+ * - Crop heights use container width (cqw) instead of viewport width (vw), since the grid rarely
+ *   spans the viewport in the editor.
+ * - The website's `.one6.clear { grid-column: span 2 / -1 }` is a typo for `.one6.right`; it is
+ *   fixed here.
+ */
+
+.flow-grid {
+  --flow-gap: 0.75rem;
+  --flow-border: #ccc;
+  --flow-fs-2xl: 1.5rem;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--flow-gap);
+  container-type: inline-size;
+}
+
+.flow-grid > * {
+  display: block;
+  min-width: 0;
+}
+
+/* Mobile: two columns, everything from a third upwards spans the row */
+.flow-grid > :is(.full, .two3, .one2, .one3) {
+  grid-column: 1 / -1;
+}
+
+/* Separator: a full-width row with a line on top; its content keeps the block's size */
+.flow-grid > .separator {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  border-top: 1px solid var(--flow-border);
+}
+.flow-grid > .separator > * {
+  grid-column: 1 / -1;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Desktop: 12 columns                                                                             */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-grid--desktop {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.flow-grid--desktop > .center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100% !important;
+}
+
+.flow-grid--desktop > .one6 { grid-column: span 2; }
+.flow-grid--desktop > .one4 { grid-column: span 3; }
+.flow-grid--desktop > .one3 { grid-column: span 4; }
+.flow-grid--desktop > .one2 { grid-column: span 6; }
+.flow-grid--desktop > .two3 { grid-column: span 8; }
+
+.flow-grid--desktop > .one6.clear { grid-column: 1 / span 2; }
+.flow-grid--desktop > .one4.clear { grid-column: 1 / span 3; }
+.flow-grid--desktop > .one3.clear { grid-column: 1 / span 4; }
+.flow-grid--desktop > .one2.clear { grid-column: 1 / span 6; }
+.flow-grid--desktop > .two3.clear { grid-column: 1 / span 8; }
+
+.flow-grid--desktop > .one6.right { grid-column: span 2 / -1; }
+.flow-grid--desktop > .one4.right { grid-column: span 3 / -1; }
+.flow-grid--desktop > .one3.right { grid-column: span 4 / -1; }
+.flow-grid--desktop > .one2.right { grid-column: span 6 / -1; }
+.flow-grid--desktop > .two3.right { grid-column: span 8 / -1; }
+
+.flow-grid--desktop > .separator.one6 > * { grid-column: span 2; }
+.flow-grid--desktop > .separator.one4 > * { grid-column: span 3; }
+.flow-grid--desktop > .separator.one3 > * { grid-column: span 4; }
+.flow-grid--desktop > .separator.one2 > * { grid-column: span 6; }
+.flow-grid--desktop > .separator.two3 > * { grid-column: span 8; }
+
+.flow-grid--desktop > :is(.separator, .full) {
+  grid-column: 1 / -1 !important;
+}
+
+/* Cropped images fill a fixed height */
+.flow-grid--desktop > .crop img {
+  min-height: 100%;
+  object-fit: cover;
+}
+.flow-grid--desktop > .crop.one2 img { height: 28cqw; }
+.flow-grid--desktop > .crop.one3 img { height: 19cqw; }
+.flow-grid--desktop > .crop.one4 img { height: 15cqw; }
+
+.flow-grid--desktop > .topmargin {
+  margin-top: 5em;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Figures and text elements (from rla.css)                                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+.flow-grid .figure-wrapper {
+  position: relative;
+  height: fit-content;
+}
+.flow-grid .figure-wrapper figure {
+  margin: 0;
+  overflow: hidden;
+}
+.flow-grid .figure-wrapper img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.flow-grid .figure-caption {
+  margin: 0.2em 0 0.4em;
+  font-size: 0.875rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.flow-grid--no-captions .figure-caption {
+  display: none;
+}
+.flow-grid .figure-wrapper.has-overlay .figure-caption {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  color: white;
+  font-size: var(--flow-fs-2xl);
+}
+
+.flow-grid .textelement {
+  margin-bottom: 1.6em;
+}
+.flow-grid .textelement__title {
+  margin: 0 0 0.3em;
+  font-size: var(--flow-fs-2xl);
+}
+.flow-grid .textelement.separator {
+  margin-top: 5em;
+}
+.flow-grid .textelement.separator .textelement__title {
+  margin-bottom: 1em;
+}
+.flow-grid--desktop .textelement.separator .textelement__title {
+  font-size: 1.4em;
+}
+.flow-grid .textelement__body {
+  font-size: 0.875rem;
+}

@@ -194,7 +194,7 @@ export const Projects: CollectionConfig = {
               type: 'checkbox',
               admin: { description: 'Draw the page controls in dark colors, for light hero images.' },
             },
-            flowField(),
+            flowField({ captions: false }),
           ],
         },
         {

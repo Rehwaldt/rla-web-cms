@@ -1,27 +1,18 @@
 import type { Block, Field } from 'payload'
+import { FLOW_SIZES, MODIFIER_LABELS, SIZE_COLUMNS, SIZE_LABELS, modifiersFor } from './flowLayout'
 import { richTextField } from './richText'
 
 // A "flow" is a free-form grid of images, text and references to other content. Every block
-// takes a size (columns out of a 12-column grid) and optional layout modifiers.
+// takes a size (columns out of a 12-column grid) and optional layout modifiers. The admin edits it
+// in a visual editor (src/components/cms/FlowField) that renders the grid like the website does.
 
-const SIZE_OPTIONS = [
-  { label: '1/6 (2 columns)', value: 'one6' },
-  { label: '1/4 (3 columns)', value: 'one4' },
-  { label: '1/3 (4 columns)', value: 'one3' },
-  { label: '1/2 (6 columns)', value: 'one2' },
-  { label: '2/3 (8 columns)', value: 'two3' },
-  { label: 'Full width (12 columns)', value: 'full' },
-]
+const SIZE_OPTIONS = FLOW_SIZES.map((value) => ({
+  label: value === 'full' ? 'Full width (12 columns)' : `${SIZE_LABELS[value]} (${SIZE_COLUMNS[value]} columns)`,
+  value,
+}))
 
-const MODIFIER_OPTIONS = [
-  { label: 'Clear (start a new row)', value: 'clear' },
-  { label: 'Right (push to the right edge)', value: 'right' },
-  { label: 'Center', value: 'center' },
-  { label: 'Crop (fixed height, cover)', value: 'crop' },
-  { label: 'Top margin (extra space above)', value: 'topmargin' },
-]
-
-const SEPARATOR_OPTION = { label: 'Separator (full-width divider row)', value: 'separator' }
+const modifierOptions = (blockType: string) =>
+  modifiersFor(blockType).map((value) => ({ label: MODIFIER_LABELS[value], value }))
 
 const sizeField = (defaultValue: string): Field => ({
   name: 'size',
@@ -31,11 +22,11 @@ const sizeField = (defaultValue: string): Field => ({
   options: SIZE_OPTIONS,
 })
 
-const modifiersField = (options = MODIFIER_OPTIONS): Field => ({
+const modifiersField = (blockType: string): Field => ({
   name: 'modifiers',
   type: 'select',
   hasMany: true,
-  options,
+  options: modifierOptions(blockType),
 })
 
 const imageBlock: Block = {
@@ -53,7 +44,7 @@ const imageBlock: Block = {
       },
     },
     sizeField('one3'),
-    modifiersField(),
+    modifiersField('image'),
   ],
 }
 
@@ -65,7 +56,7 @@ const textBlock: Block = {
     { name: 'title', type: 'text', localized: true },
     richTextField('body'),
     sizeField('one2'),
-    modifiersField([...MODIFIER_OPTIONS, SEPARATOR_OPTION]),
+    modifiersField('text'),
   ],
 }
 
@@ -76,7 +67,7 @@ const newsReferenceBlock: Block = {
   fields: [
     { name: 'news', type: 'relationship', relationTo: 'news', required: true },
     sizeField('one3'),
-    modifiersField(),
+    modifiersField('newsReference'),
   ],
 }
 
@@ -93,11 +84,18 @@ const topicReferenceBlock: Block = {
       admin: { description: "Shown as an image tile with the topic's image and name." },
     },
     sizeField('one3'),
-    modifiersField(),
+    modifiersField('topicReference'),
   ],
 }
 
-export const flowField = ({ localized = false }: { localized?: boolean } = {}): Field => ({
+/**
+ * `captions`: whether the website shows image captions under this flow (project pages hide them).
+ * Only affects the editor preview.
+ */
+export const flowField = ({
+  localized = false,
+  captions = true,
+}: { localized?: boolean; captions?: boolean } = {}): Field => ({
   name: 'flow',
   type: 'blocks',
   localized,
@@ -105,6 +103,9 @@ export const flowField = ({ localized = false }: { localized?: boolean } = {}): 
   blocks: [imageBlock, textBlock, newsReferenceBlock, topicReferenceBlock],
   admin: {
     initCollapsed: true,
+    components: {
+      Field: { path: '@/components/cms/FlowField#FlowField', clientProps: { captions } },
+    },
     description: localized
       ? 'Grid of images, texts and references. Each language has its own flow.'
       : 'Grid of images, texts and references.',
