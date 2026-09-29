@@ -10,8 +10,9 @@ pnpm migrate:website:verify BUG  # counts, anonymous visibility, one sample proj
 ```
 
 Needs `LEGACY_WEB_DB_*` and `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`).
-The report lands in `migration/reports/` (gitignored). A first run takes about 50 minutes,
-mostly generating image sizes; later runs take a few minutes.
+The report lands in `migration/reports/` (gitignored). A first run takes about 80 minutes,
+about 50 of them generating image sizes; re-runs skip existing media but still take about 35
+minutes, since every content document is written once per locale and phase.
 
 ## How it's built
 
