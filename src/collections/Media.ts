@@ -3,7 +3,8 @@ import { anyone } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 
 // Widths match the website's responsive image breakpoints. Sizes larger than the original are
-// not generated.
+// not generated (Payload's default; `withoutEnlargement: true` would instead store a full-size
+// copy of the original under that size).
 const RESPONSIVE_WIDTHS = [480, 768, 992, 1382, 3000]
 
 export const Media: CollectionConfig = {
@@ -30,7 +31,7 @@ export const Media: CollectionConfig = {
     staticDir: 'public/media',
     imageSizes: [
       { name: 'thumbnail', width: 300, height: 300, position: 'centre' },
-      ...RESPONSIVE_WIDTHS.map((width) => ({ name: `w${width}`, width, withoutEnlargement: true })),
+      ...RESPONSIVE_WIDTHS.map((width) => ({ name: `w${width}`, width })),
     ],
     adminThumbnail: 'thumbnail',
     mimeTypes: ['image/*', 'application/pdf'],
