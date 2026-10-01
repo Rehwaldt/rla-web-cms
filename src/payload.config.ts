@@ -1,11 +1,14 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { de } from '@payloadcms/translations/languages/de'
+import { en } from '@payloadcms/translations/languages/en'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { translations } from './i18n/translations'
 import { DEFAULT_LOCALE, LOCALES } from './locales'
 
 import { Users } from './collections/Users'
@@ -36,6 +39,8 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Editors asked for light mode only; this also hides the theme switch in account settings.
+    theme: 'light',
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -58,6 +63,13 @@ export default buildConfig({
     Users,
   ],
   globals: [ProjectGallery],
+  // The admin speaks English and German: the browser's language picks one, users can switch in
+  // their account settings, and anyone else gets German. Content locales are separate (below).
+  i18n: {
+    supportedLanguages: { en, de },
+    fallbackLanguage: 'de',
+    translations,
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
