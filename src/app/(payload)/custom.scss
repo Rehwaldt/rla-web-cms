@@ -1,0 +1,18 @@
+// Larger previews in upload fields. Payload's defaults (40px, 25px in hasMany lists) are too
+// small to tell images apart. The admin thumbnail is a 300px square crop, so these stay sharp.
+.upload-field-card {
+  &--size-medium .thumbnail {
+    width: 128px;
+    height: 128px;
+  }
+
+  &--size-small .thumbnail {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.upload--has-many__dragItem .thumbnail {
+  width: 64px;
+  height: 64px;
+}
