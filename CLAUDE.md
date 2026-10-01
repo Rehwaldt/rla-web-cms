@@ -17,9 +17,17 @@ reintroduce those sources here unless asked.
 
 ## Hard rules
 
-- **English only.** Every collection/field/global name, slug, admin label, description, comment
-  and doc is English. German appears only in content data and inside the importer
-  (`src/migration/`), which reads the German-named legacy tables.
+- **English only.** Every collection/field/global name, slug, comment and doc is English. German
+  appears only in content data, inside the importer (`src/migration/`), which reads the
+  German-named legacy tables, and as the `de` side of the admin's translations (below).
+- **Bilingual admin (English, German).** Every label, description, select option, tab, group and
+  collection/global name is an inline `{ en, de }` object, never a plain string, and every named
+  field gets an explicit label (Payload's generated ones are English only). Navigation groups come
+  from `src/i18n/groups.ts`. German terms for domain concepts are listed in
+  [CONTEXT.md](CONTEXT.md); German texts avoid addressing the reader and use gender-neutral words
+  for people. Texts of custom admin components go in `src/i18n/translations.ts` and are read with
+  `useTranslation<Translations, TranslationKeys>()`. `tests/unit/adminTranslations.unit.spec.ts`
+  fails on anything untranslated.
 - **No legacy baggage in the schema.** Collections model the website's concepts, not the legacy
   table layout. Legacy column names, delimiters and quirks are handled in the importer only.
 - Localize human-readable text fields (`localized: true`). Don't localize codes, emails, phone
@@ -40,7 +48,7 @@ reintroduce those sources here unless asked.
 
 Reuse these instead of re-declaring the shapes:
 
-- `richTextField(name)`: localized Lexical rich text with the fixed toolbar.
+- `richTextField(name, label)`: localized Lexical rich text with the fixed toolbar.
 - `flowField({ localized, captions })`: the "flow" grid of image/text/news/topic blocks with size
   and modifiers. An image's caption and link come from the media item's `project`. Edited in a
   visual editor (`src/components/cms/FlowField`) that renders the grid with `flow.css`, a port of
