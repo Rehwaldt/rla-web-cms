@@ -16,12 +16,14 @@ import {
   useListDrawer,
   useLocale,
   useModal,
+  useTranslation,
 } from '@payloadcms/ui'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   type FlowModifier,
+  type FlowSize,
   SIZE_LABELS,
   dropIndex,
   isFlowSize,
@@ -30,6 +32,7 @@ import {
   stepSize,
   toggleModifier,
 } from '@/fields/flowLayout'
+import type { TranslationKeys, Translations } from '@/i18n/translations'
 import { type DocRef, imageSource, useReferencedDocs } from './useReferencedDocs'
 import './flow.css'
 import './index.css'
@@ -54,30 +57,36 @@ type Row = {
   isLoading: boolean
 }
 
-const BLOCK_LABELS: Record<string, string> = {
-  image: 'Image',
-  text: 'Text',
-  newsReference: 'News',
-  topicReference: 'Topic',
+type T = (key: TranslationKeys, options?: Record<string, unknown>) => string
+const useT = (): T => useTranslation<Translations, TranslationKeys>().t
+
+const BLOCK_LABELS: Record<string, TranslationKeys> = {
+  image: 'flow:blockImage',
+  text: 'flow:blockText',
+  newsReference: 'flow:blockNews',
+  topicReference: 'flow:blockTopic',
 }
 
-const SHORT_MODIFIER_LABELS: Record<FlowModifier, string> = {
-  clear: 'New row',
-  right: 'Right',
-  center: 'Center',
-  crop: 'Crop',
-  topmargin: 'Space above',
-  separator: 'Divider',
+const SHORT_MODIFIER_LABELS: Record<FlowModifier, TranslationKeys> = {
+  clear: 'flow:modifierClear',
+  right: 'flow:modifierRight',
+  center: 'flow:modifierCenter',
+  crop: 'flow:modifierCrop',
+  topmargin: 'flow:modifierTopmargin',
+  separator: 'flow:modifierSeparator',
 }
 
-const MODIFIER_HINTS: Record<FlowModifier, string> = {
-  clear: 'Start a new row with this block',
-  right: 'Push to the right edge of the row',
-  center: 'Center the content in its cell',
-  crop: 'Fixed height, image cropped to fill (1/4, 1/3 and 1/2 only)',
-  topmargin: 'Extra space above',
-  separator: 'Full-width divider line above; starts a new section',
+const MODIFIER_HINTS: Record<FlowModifier, TranslationKeys> = {
+  clear: 'flow:hintClear',
+  right: 'flow:hintRight',
+  center: 'flow:hintCenter',
+  crop: 'flow:hintCrop',
+  topmargin: 'flow:hintTopmargin',
+  separator: 'flow:hintSeparator',
 }
+
+const blockLabel = (t: T, blockType: string) => (BLOCK_LABELS[blockType] ? t(BLOCK_LABELS[blockType]) : blockType)
+const sizeLabel = (t: T, size: FlowSize) => (size === 'full' ? t('flow:sizeFull') : SIZE_LABELS[size])
 
 // A constant: the list drawer reloads whenever it gets a new filter object.
 const IMAGES_ONLY = { media: { mimeType: { contains: 'image/' } } }
@@ -92,6 +101,7 @@ const toolbarModifiers = (blockType: string) =>
 export const FlowField: React.FC<Props> = (props) => {
   const { captions = true, field, path: pathFromProps, permissions, readOnly: readOnlyFromProps, schemaPath: schemaPathFromProps } = props
   const [mode, setMode] = useState<'visual' | 'list'>('visual')
+  const t = useT()
 
   const { disabled, errorPaths = [], path, rows = [] } = useField({ hasRows: true, potentiallyStalePath: pathFromProps })
   const schemaPath = schemaPathFromProps ?? field.name
@@ -102,7 +112,7 @@ export const FlowField: React.FC<Props> = (props) => {
       <div>
         {mode === 'visual' && (
           <>
-            <FieldLabel label={field.label || 'Flow'} localized={field.localized} path={path} />
+            <FieldLabel label={field.label} localized={field.localized} path={path} />
             <FieldDescription description={field.admin?.description} path={path} />
           </>
         )}
@@ -111,8 +121,8 @@ export const FlowField: React.FC<Props> = (props) => {
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'visual', label: 'Visual' },
-          { value: 'list', label: 'List' },
+          { value: 'visual', label: t('flow:modeVisual') },
+          { value: 'list', label: t('flow:modeList') },
         ]}
       />
     </div>
@@ -160,6 +170,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
   const { code: locale } = useLocale()
   const { openModal, closeModal, isModalOpen } = useModal()
   const editDrawerSlug = useDrawerSlug('flow-edit')
+  const t = useT()
 
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -350,14 +361,12 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
           value={device}
           onChange={setDevice}
           options={[
-            { value: 'desktop', label: 'Desktop' },
-            { value: 'mobile', label: 'Mobile' },
+            { value: 'desktop', label: t('flow:deviceDesktop') },
+            { value: 'mobile', label: t('flow:deviceMobile') },
           ]}
         />
         <span className="flow-editor__hint">
-          {readOnly
-            ? 'Read only'
-            : 'Click a block to change its layout · drag to reorder · double-click to edit its content'}
+          {readOnly ? t('flow:readOnly') : t('flow:usage')}
         </span>
       </div>
 
@@ -428,15 +437,13 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
               }
             />
           ))}
-          {rows.length === 0 && <div className="flow-editor__empty">The flow is empty. Add images or text below.</div>}
+          {rows.length === 0 && <div className="flow-editor__empty">{t('flow:empty')}</div>}
         </div>
       </div>
 
       {rows.some((row) => !rendersOnWebsite(row.blockType)) && (
         <div className="flow-editor__offstage">
-          <div className="flow-editor__tray-title">
-            Not shown on the website: its flow skips news references, so they take no place in the grid.
-          </div>
+          <div className="flow-editor__tray-title">{t('flow:offstage')}</div>
           {rows.map(
             (row, index) =>
               !rendersOnWebsite(row.blockType) && (
@@ -455,15 +462,15 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
 
       {!readOnly && (
         <div className="flow-editor__add">
-          <span>{selected ? `Add after the selected block:` : 'Add at the end:'}</span>
+          <span>{selected ? t('flow:addAfterSelected') : t('flow:addAtEnd')}</span>
           <button type="button" className="flow-editor__add-btn" onClick={openMediaDrawer}>
-            + Images
+            {t('flow:addImages')}
           </button>
           <button type="button" className="flow-editor__add-btn" onClick={addText}>
-            + Text
+            {t('flow:addText')}
           </button>
           <button type="button" className="flow-editor__add-btn" onClick={openTopicDrawer}>
-            + Topic
+            {t('flow:addTopic')}
           </button>
         </div>
       )}
@@ -471,7 +478,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
       {!readOnly && projectImages.length > 0 && (
         <div className="flow-editor__tray">
           <div className="flow-editor__tray-title">
-            Images of this project not in the flow ({projectImages.length}) · click to add, or drag into place
+            {t('flow:projectImages', { number: projectImages.length })}
           </div>
           <div className="flow-editor__tray-images">
             {projectImages.map((media) => (
@@ -520,7 +527,14 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
         }}
       />
 
-      <Drawer slug={editDrawerSlug} title={editRow ? `Edit ${BLOCK_LABELS[editRow.blockType] ?? 'block'}` : 'Edit block'}>
+      <Drawer
+        slug={editDrawerSlug}
+        title={
+          editRow && BLOCK_LABELS[editRow.blockType]
+            ? t('flow:editBlock', { block: blockLabel(t, editRow.blockType) })
+            : t('flow:editAnyBlock')
+        }
+      >
         {editRow && editBlock && isModalOpen(editDrawerSlug) && (
           <>
             <RenderFields
@@ -533,7 +547,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
               readOnly={readOnly}
             />
             <button type="button" className="flow-editor__add-btn" onClick={() => closeModal(editDrawerSlug)}>
-              Done
+              {t('flow:done')}
             </button>
           </>
         )}
@@ -604,6 +618,7 @@ type FlowItemProps = {
 }
 
 const FlowItem: React.FC<FlowItemProps> = ({ row, docFor, readOnly, selected, dragging, dropSide, toolbar, ...handlers }) => {
+  const t = useT()
   const size = isFlowSize(row.size) ? row.size : 'full'
   const isText = row.blockType === 'text'
   const className = [
@@ -643,7 +658,7 @@ const FlowItem: React.FC<FlowItemProps> = ({ row, docFor, readOnly, selected, dr
     >
       {isText ? <TextContent row={row} /> : <FigureContent row={row} docFor={docFor} />}
       <span className="flow-editor__tag">
-        {BLOCK_LABELS[row.blockType] ?? row.blockType} · {SIZE_LABELS[size]}
+        {blockLabel(t, row.blockType)} · {sizeLabel(t, size)}
       </span>
       {dropSide && <span className={`flow-editor__drop flow-editor__drop--${dropSide}`} />}
       {toolbar}
@@ -658,6 +673,7 @@ const OffstageItem: React.FC<{
   onEdit: () => void
   onRemove: () => void
 }> = ({ row, docFor, readOnly, onEdit, onRemove }) => {
+  const t = useT()
   const news = row.news ? docFor({ collection: 'news', id: row.news }) : null
   const image = imageSource(news?.image)
   return (
@@ -665,15 +681,15 @@ const OffstageItem: React.FC<{
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {image?.src ? <img src={image.src} alt="" /> : <span className="flow-editor__offstage-noimg" />}
       <span className="flow-editor__offstage-title">
-        {BLOCK_LABELS[row.blockType] ?? row.blockType}:{' '}
-        {news === undefined ? 'Loading…' : (news?.title ?? 'not found')}
+        {blockLabel(t, row.blockType)}:{' '}
+        {news === undefined ? t('flow:loading') : (news?.title ?? t('flow:notFound'))}
       </span>
       {!readOnly && (
         <>
           <button type="button" className="flow-editor__btn" onClick={onEdit}>
-            Edit
+            {t('flow:edit')}
           </button>
-          <button type="button" className="flow-editor__btn flow-editor__btn--danger" title="Remove" onClick={onRemove}>
+          <button type="button" className="flow-editor__btn flow-editor__btn--danger" title={t('flow:remove')} onClick={onRemove}>
             ✕
           </button>
         </>
@@ -683,6 +699,7 @@ const OffstageItem: React.FC<{
 }
 
 const TextContent: React.FC<{ row: Row }> = ({ row }) => {
+  const t = useT()
   const hasBody = Boolean(row.body?.root?.children?.length)
   return (
     <div className="col">
@@ -692,7 +709,7 @@ const TextContent: React.FC<{ row: Row }> = ({ row }) => {
           <RichText data={row.body} disableContainer />
         </div>
       )}
-      {!row.title && !hasBody && <p className="flow-editor__placeholder-text">Empty text block. Double-click to write.</p>}
+      {!row.title && !hasBody && <p className="flow-editor__placeholder-text">{t('flow:emptyText')}</p>}
     </div>
   )
 }
@@ -700,22 +717,23 @@ const TextContent: React.FC<{ row: Row }> = ({ row }) => {
 const FigureContent: React.FC<{ row: Row; docFor: ReturnType<typeof useReferencedDocs> }> = ({ row, docFor }) => {
   let media: Record<string, any> | null | undefined
   let caption: string | undefined
-  let missing = 'No image selected'
+  const t = useT()
+  let missing = t('flow:noImage')
 
   if (row.blockType === 'image' && row.image) {
     media = docFor({ collection: 'media', id: row.image })
     caption = media?.project?.name
-    missing = 'Image not found'
+    missing = t('flow:imageNotFound')
   } else if (row.blockType === 'topicReference' && row.topic) {
     const topic = docFor({ collection: 'topics', id: row.topic })
     media = topic === undefined ? undefined : (topic?.image ?? null)
     caption = topic?.name
-    missing = topic ? 'Topic has no image' : 'Topic not found'
+    missing = topic ? t('flow:topicHasNoImage') : t('flow:topicNotFound')
   } else if (row.blockType === 'newsReference' && row.news) {
     const news = docFor({ collection: 'news', id: row.news })
     media = news === undefined ? undefined : (news?.image ?? null)
     caption = news?.title
-    missing = news ? 'News item has no image' : 'News item not found'
+    missing = news ? t('flow:newsHasNoImage') : t('flow:newsNotFound')
   } else {
     media = null
   }
@@ -729,7 +747,7 @@ const FigureContent: React.FC<{ row: Row; docFor: ReturnType<typeof useReference
           <img src={image.src} alt={image.alt} width={image.width} height={image.height} draggable={false} />
         ) : (
           <div className={`flow-editor__placeholder${media === undefined ? '' : ' flow-editor__placeholder--missing'}`}>
-            {media === undefined ? 'Loading…' : missing}
+            {media === undefined ? t('flow:loading') : missing}
           </div>
         )}
       </figure>
@@ -750,6 +768,7 @@ type ItemToolbarProps = {
 }
 
 const ItemToolbar: React.FC<ItemToolbarProps> = ({ row, canMoveBack, canMoveForward, onResize, onToggle, onMove, onEdit, onRemove }) => {
+  const t = useT()
   const ref = useRef<HTMLDivElement>(null)
   const [alignRight, setAlignRight] = useState(false)
   const size = isFlowSize(row.size) ? row.size : 'full'
@@ -780,12 +799,12 @@ const ItemToolbar: React.FC<ItemToolbarProps> = ({ row, canMoveBack, canMoveForw
         event.stopPropagation()
       }}
     >
-      <div className="flow-editor__group" title="Width">
-        <button type="button" className="flow-editor__btn" title="Narrower (−)" disabled={size === 'one6'} onClick={() => onResize(-1)}>
+      <div className="flow-editor__group" title={t('flow:width')}>
+        <button type="button" className="flow-editor__btn" title={t('flow:narrower')} disabled={size === 'one6'} onClick={() => onResize(-1)}>
           −
         </button>
-        <span className="flow-editor__size">{SIZE_LABELS[size]}</span>
-        <button type="button" className="flow-editor__btn" title="Wider (+)" disabled={size === 'full'} onClick={() => onResize(1)}>
+        <span className="flow-editor__size">{sizeLabel(t, size)}</span>
+        <button type="button" className="flow-editor__btn" title={t('flow:wider')} disabled={size === 'full'} onClick={() => onResize(1)}>
           +
         </button>
       </div>
@@ -795,25 +814,25 @@ const ItemToolbar: React.FC<ItemToolbarProps> = ({ row, canMoveBack, canMoveForw
             key={modifier}
             type="button"
             className={`flow-editor__btn flow-editor__chip${active.has(modifier) ? ' flow-editor__chip--on' : ''}`}
-            title={MODIFIER_HINTS[modifier]}
+            title={t(MODIFIER_HINTS[modifier])}
             aria-pressed={active.has(modifier)}
             onClick={() => onToggle(modifier)}
           >
-            {SHORT_MODIFIER_LABELS[modifier]}
+            {t(SHORT_MODIFIER_LABELS[modifier])}
           </button>
         ))}
       </div>
       <div className="flow-editor__group">
-        <button type="button" className="flow-editor__btn" title="Move earlier (Alt+←)" disabled={!canMoveBack} onClick={() => onMove(-1)}>
+        <button type="button" className="flow-editor__btn" title={t('flow:moveEarlier')} disabled={!canMoveBack} onClick={() => onMove(-1)}>
           ←
         </button>
-        <button type="button" className="flow-editor__btn" title="Move later (Alt+→)" disabled={!canMoveForward} onClick={() => onMove(1)}>
+        <button type="button" className="flow-editor__btn" title={t('flow:moveLater')} disabled={!canMoveForward} onClick={() => onMove(1)}>
           →
         </button>
-        <button type="button" className="flow-editor__btn" title="Edit content (Enter)" onClick={onEdit}>
-          Edit
+        <button type="button" className="flow-editor__btn" title={t('flow:editContent')} onClick={onEdit}>
+          {t('flow:edit')}
         </button>
-        <button type="button" className="flow-editor__btn flow-editor__btn--danger" title="Remove (Delete)" onClick={onRemove}>
+        <button type="button" className="flow-editor__btn flow-editor__btn--danger" title={t('flow:removeWithKey')} onClick={onRemove}>
           ✕
         </button>
       </div>

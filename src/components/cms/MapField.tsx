@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react'
-import { useField } from '@payloadcms/ui'
+import { useField, useTranslation } from '@payloadcms/ui'
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import type { TranslationKeys, Translations } from '@/i18n/translations'
 
 // Safe to define here because this file is only loaded in the browser
 const icon = L.icon({
@@ -27,6 +28,7 @@ function MapEvents({ onPick }: { onPick: (point: [number, number]) => void }) {
 export default function MapFieldClient({ path }: { path: string }) {
   // useField connects our component to Payload's database state
   const { value, setValue } = useField<[number, number]>({ path })
+  const { t } = useTranslation<Translations, TranslationKeys>()
 
   const center: [number, number] = value ? [value[1], value[0]] : [51.505, -0.09]
 
@@ -44,11 +46,15 @@ export default function MapFieldClient({ path }: { path: string }) {
         </MapContainer>
       </div>
       <label className="field-label" style={{ display: 'block' }}>
-        Location Picker (Click map to set)
+        {t('map:pick')}
       </label>
       <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-        <code>Longitude: {value?.[0]}</code>
-        <code>Latitude: {value?.[1]}</code>
+        <code>
+          {t('map:longitude')}: {value?.[0]}
+        </code>
+        <code>
+          {t('map:latitude')}: {value?.[1]}
+        </code>
       </div>
     </div>
   )
