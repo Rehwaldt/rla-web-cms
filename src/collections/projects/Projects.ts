@@ -5,6 +5,7 @@ import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
 import { linksField } from '@/fields/links'
 import { richTextField } from '@/fields/richText'
+import { childrenOnly } from '@/fields/validation'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
 
@@ -117,6 +118,8 @@ export const Projects: CollectionConfig = {
               type: 'relationship',
               relationTo: 'project-categories',
               hasMany: true,
+              validate: childrenOnly('project-categories'),
+              admin: { components: { Field: '@/components/cms/CategoryPicker#CategoryPicker' } },
             },
             {
               name: 'similarProjects',

@@ -65,6 +65,13 @@ const en = {
     editContent: 'Edit content (Enter)',
     removeWithKey: 'Remove (Delete)',
   },
+  categories: {
+    loading: 'Loading categories…',
+    loadFailed: 'The categories could not be loaded.',
+    empty: 'No categories yet.',
+    edit: 'Edit categories',
+    childrenOnly: 'Only categories within a group can be selected, not the groups themselves.',
+  },
   map: {
     loading: 'Loading map…',
     pick: 'Click the map to set the location.',
@@ -134,6 +141,13 @@ const de: typeof en = {
     moveLater: 'Nach hinten (Alt+→)',
     editContent: 'Inhalt bearbeiten (Enter)',
     removeWithKey: 'Entfernen (Entf)',
+  },
+  categories: {
+    loading: 'Kategorien werden geladen…',
+    loadFailed: 'Die Kategorien konnten nicht geladen werden.',
+    empty: 'Noch keine Kategorien vorhanden.',
+    edit: 'Kategorien bearbeiten',
+    childrenOnly: 'Auswählbar sind nur Kategorien innerhalb einer Gruppe, nicht die Gruppen selbst.',
   },
   map: {
     loading: 'Karte wird geladen…',

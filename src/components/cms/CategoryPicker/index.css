@@ -1,0 +1,89 @@
+/* Category picker: groups in the four menu columns of the website's project filter. Columns
+   follow the field's own width, which the document sidebar narrows. */
+
+.category-picker {
+  position: relative;
+  container-type: inline-size;
+  margin-bottom: var(--spacing-field, 1.5rem);
+}
+
+.category-picker__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.category-picker__edit {
+  color: var(--theme-elevation-500);
+  font-size: 0.8125rem;
+}
+.category-picker__edit:hover {
+  color: var(--theme-elevation-800);
+}
+
+.category-picker__note {
+  margin: 0.5rem 0;
+  color: var(--theme-elevation-500);
+}
+
+.category-picker__columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s, 3px);
+}
+.category-picker.error .category-picker__columns {
+  border-color: var(--theme-error-400);
+}
+
+.category-picker__column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.category-picker__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.category-picker__group-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-weight: 600;
+}
+
+.category-picker__count {
+  color: var(--theme-elevation-500);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+/* Keeps the box square when its label wraps. */
+.category-picker__option .checkbox-input__input {
+  flex-shrink: 0;
+}
+
+@container (max-width: 700px) {
+  .category-picker__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 400px) {
+  .category-picker__columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
