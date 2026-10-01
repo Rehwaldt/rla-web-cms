@@ -4,13 +4,13 @@
 export const FLOW_SIZES = ['one6', 'one4', 'one3', 'one2', 'two3', 'full'] as const
 export type FlowSize = (typeof FLOW_SIZES)[number]
 
-export const SIZE_LABELS: Record<FlowSize, string> = {
+// Fractions read the same in every language; "full" is translated where it's shown.
+export const SIZE_LABELS: Record<Exclude<FlowSize, 'full'>, string> = {
   one6: '1/6',
   one4: '1/4',
   one3: '1/3',
   one2: '1/2',
   two3: '2/3',
-  full: 'Full',
 }
 
 export const SIZE_COLUMNS: Record<FlowSize, number> = {
@@ -25,13 +25,13 @@ export const SIZE_COLUMNS: Record<FlowSize, number> = {
 export const FLOW_MODIFIERS = ['clear', 'right', 'center', 'crop', 'topmargin', 'separator'] as const
 export type FlowModifier = (typeof FLOW_MODIFIERS)[number]
 
-export const MODIFIER_LABELS: Record<FlowModifier, string> = {
-  clear: 'Clear (start a new row)',
-  right: 'Right (push to the right edge)',
-  center: 'Center',
-  crop: 'Crop (fixed height, cover)',
-  topmargin: 'Top margin (extra space above)',
-  separator: 'Separator (full-width divider row)',
+export const MODIFIER_LABELS: Record<FlowModifier, { en: string; de: string }> = {
+  clear: { en: 'Clear (start a new row)', de: 'Neue Zeile' },
+  right: { en: 'Right (push to the right edge)', de: 'Rechtsbündig (an den rechten Rand)' },
+  center: { en: 'Center', de: 'Zentriert' },
+  crop: { en: 'Crop (fixed height, cover)', de: 'Zuschneiden (feste Höhe, füllend)' },
+  topmargin: { en: 'Top margin (extra space above)', de: 'Abstand oben (zusätzlicher Abstand darüber)' },
+  separator: { en: 'Separator (full-width divider row)', de: 'Trennlinie (Trennzeile über die volle Breite)' },
 }
 
 // Only text blocks can open a separator row.

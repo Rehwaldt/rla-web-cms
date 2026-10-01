@@ -160,7 +160,7 @@ export interface Project {
   id: number;
   name?: string | null;
   /**
-   * Short project code shared across RLA systems and used in website URLs.
+   * Short code shared across RLA systems and used in website URLs.
    */
   code?: string | null;
   type?: ('competition' | 'object' | 'concept') | null;
@@ -265,11 +265,11 @@ export interface Project {
       }[]
     | null;
   /**
-   * Languages whose website lists this entry.
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
   visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -289,7 +289,7 @@ export interface ProjectCategory {
    */
   menuColumn?: ('1' | '2' | '3' | '4') | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   parent?: (number | null) | ProjectCategory;
@@ -320,7 +320,7 @@ export interface Media {
    */
   project?: (number | null) | Project;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -479,11 +479,11 @@ export interface News {
       }[]
     | null;
   /**
-   * Languages whose website lists this entry.
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
   visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -534,7 +534,7 @@ export interface Topic {
    */
   flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -583,11 +583,11 @@ export interface Award {
       }[]
     | null;
   /**
-   * Languages whose website lists this entry.
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
   visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -620,11 +620,11 @@ export interface Publication {
   url?: string | null;
   projects?: (number | Project)[] | null;
   /**
-   * Languages whose website lists this entry.
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
   visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -640,7 +640,7 @@ export interface PublicationCategory {
   _order?: string | null;
   name?: string | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -671,11 +671,11 @@ export interface Job {
     [k: string]: unknown;
   } | null;
   /**
-   * Languages whose website lists this entry.
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
   visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -745,7 +745,7 @@ export interface Office {
     [k: string]: unknown;
   } | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -784,7 +784,7 @@ export interface Page {
    */
   flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -820,7 +820,7 @@ export interface Employee {
   chamberMembership?: string | null;
   qualification?: string | null;
   /**
-   * Id in the legacy website database. Set by the importer.
+   * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
   updatedAt: string;
@@ -881,6 +881,9 @@ export interface Mine {
 export interface MineFeature {
   id: number;
   name: string;
+  /**
+   * File name of the icon, e.g. fishing.svg.
+   */
   iconName?: string | null;
   color?: ('blue' | 'green' | 'grey') | null;
   updatedAt: string;

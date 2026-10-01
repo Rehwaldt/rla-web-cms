@@ -6,13 +6,16 @@ import { LOCALES, LOCALE_CODES } from '@/locales'
 // selected languages only (and stays reachable by direct link in all of them).
 export const visibleInField: Field = {
   name: 'visibleIn',
-  label: 'Listed in',
+  label: { en: 'Listed in', de: 'Aufgeführt in' },
   type: 'select',
   hasMany: true,
   defaultValue: LOCALE_CODES,
   options: LOCALES.map(({ code, label }) => ({ label, value: code })),
   admin: {
     position: 'sidebar',
-    description: 'Languages whose website lists this entry.',
+    description: {
+      en: 'Languages whose website lists this entry. It stays reachable by direct link in all of them.',
+      de: 'Sprachen, deren Website diesen Eintrag aufführt. Per direktem Link bleibt er in allen erreichbar.',
+    },
   },
 }

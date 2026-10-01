@@ -1,31 +1,44 @@
 import type { CollectionConfig } from 'payload'
+import { GROUPS } from '@/i18n/groups'
 
 export const MineFeatures: CollectionConfig = {
   slug: 'mine-features',
+  labels: {
+    singular: { en: 'Mine feature', de: 'Nachnutzung' },
+    plural: { en: 'Mine features', de: 'Nachnutzungen' },
+  },
   admin: {
     useAsTitle: 'name',
-    group: 'Minescapes',
+    group: GROUPS.minescapes,
     defaultColumns: ['name', 'iconName', 'color'],
   },
   fields: [
     {
       name: 'name',
+      label: { en: 'Name', de: 'Name' },
       type: 'text',
       localized: true,
       required: true,
     },
     {
       name: 'iconName',
+      label: { en: 'Icon file', de: 'Icon-Datei' },
       type: 'text',
-      label: 'Icon File Name (e.g., fishing.svg)',
+      admin: {
+        description: {
+          en: 'File name of the icon, e.g. fishing.svg.',
+          de: 'Dateiname des Icons, z. B. fishing.svg.',
+        },
+      },
     },
     {
       name: 'color',
+      label: { en: 'Color', de: 'Farbe' },
       type: 'select',
       options: [
-        { label: 'Blue (Water)', value: 'blue' },
-        { label: 'Green (Recreation)', value: 'green' },
-        { label: 'Grey (Infrastructure)', value: 'grey' },
+        { label: { en: 'Blue (water)', de: 'Blau (Wasser)' }, value: 'blue' },
+        { label: { en: 'Green (recreation)', de: 'Grün (Freizeit)' }, value: 'green' },
+        { label: { en: 'Grey (infrastructure)', de: 'Grau (Infrastruktur)' }, value: 'grey' },
       ],
     },
   ],

@@ -2,52 +2,100 @@ import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { visibleInField } from '@/fields/visibleIn'
+import { GROUPS } from '@/i18n/groups'
 
 // A publication is either a stand-alone book (title = book title) or a piece that appeared in a
 // journal or in a book (title = article/chapter, plus the journal or book fields).
 export const Publications: CollectionConfig = {
   slug: 'publications',
+  labels: {
+    singular: { en: 'Publication', de: 'Publikation' },
+    plural: { en: 'Publications', de: 'Publikationen' },
+  },
   defaultSort: '-year',
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: GROUPS.content,
     defaultColumns: ['title', 'year', 'category', 'authors', '_status'],
   },
   access: { read: publishedOrAuthenticated },
   versions: { drafts: true },
   fields: [
-    { name: 'category', type: 'relationship', relationTo: 'publication-categories' },
-    { name: 'title', type: 'text', localized: true },
-    { name: 'subtitle', type: 'text', localized: true },
-    { name: 'authors', type: 'text', localized: true },
+    {
+      name: 'category',
+      label: { en: 'Category', de: 'Kategorie' },
+      type: 'relationship',
+      relationTo: 'publication-categories',
+    },
+    { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
+    { name: 'subtitle', label: { en: 'Subtitle', de: 'Untertitel' }, type: 'text', localized: true },
+    { name: 'authors', label: { en: 'Authors', de: 'Autorschaft' }, type: 'text', localized: true },
     {
       type: 'collapsible',
-      label: 'Published in',
+      label: { en: 'Published in', de: 'Erschienen in' },
       fields: [
-        { name: 'journal', type: 'text', localized: true },
+        { name: 'journal', label: { en: 'Journal', de: 'Zeitschrift' }, type: 'text', localized: true },
         {
           type: 'row',
           fields: [
-            { name: 'bookTitle', type: 'text', localized: true, admin: { width: '50%' } },
-            { name: 'bookSubtitle', type: 'text', localized: true, admin: { width: '50%' } },
+            {
+              name: 'bookTitle',
+              label: { en: 'Book title', de: 'Buchtitel' },
+              type: 'text',
+              localized: true,
+              admin: { width: '50%' },
+            },
+            {
+              name: 'bookSubtitle',
+              label: { en: 'Book subtitle', de: 'Untertitel des Buchs' },
+              type: 'text',
+              localized: true,
+              admin: { width: '50%' },
+            },
           ],
         },
         {
           type: 'row',
           fields: [
-            { name: 'editors', type: 'text', localized: true, admin: { width: '50%' } },
-            { name: 'publisher', type: 'text', localized: true, admin: { width: '50%' } },
+            {
+              name: 'editors',
+              label: { en: 'Editors', de: 'Herausgeberschaft' },
+              type: 'text',
+              localized: true,
+              admin: { width: '50%' },
+            },
+            {
+              name: 'publisher',
+              label: { en: 'Publisher', de: 'Verlag' },
+              type: 'text',
+              localized: true,
+              admin: { width: '50%' },
+            },
           ],
         },
         {
           type: 'row',
           fields: [
-            { name: 'year', type: 'number', admin: { width: '33%' } },
-            { name: 'month', type: 'number', min: 1, max: 12, admin: { width: '33%' } },
+            { name: 'year', label: { en: 'Year', de: 'Jahr' }, type: 'number', admin: { width: '33%' } },
+            {
+              name: 'month',
+              label: { en: 'Month', de: 'Monat' },
+              type: 'number',
+              min: 1,
+              max: 12,
+              admin: { width: '33%' },
+            },
             {
               name: 'pages',
+              label: { en: 'Pages', de: 'Seiten' },
               type: 'text',
-              admin: { width: '34%', description: 'A page or range, e.g. "12-34".' },
+              admin: {
+                width: '34%',
+                description: {
+                  en: 'A page or range, e.g. "12-34".',
+                  de: 'Eine Seite oder ein Bereich, z. B. „12-34“.',
+                },
+              },
             },
           ],
         },
@@ -56,10 +104,16 @@ export const Publications: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'image', type: 'upload', relationTo: 'media', admin: { width: '50%' } },
+        {
+          name: 'image',
+          label: { en: 'Image', de: 'Bild' },
+          type: 'upload',
+          relationTo: 'media',
+          admin: { width: '50%' },
+        },
         {
           name: 'file',
-          label: 'PDF',
+          label: { en: 'PDF', de: 'PDF' },
           type: 'upload',
           relationTo: 'media',
           filterOptions: { mimeType: { equals: 'application/pdf' } },
@@ -67,8 +121,14 @@ export const Publications: CollectionConfig = {
         },
       ],
     },
-    { name: 'url', label: 'External URL', type: 'text' },
-    { name: 'projects', type: 'relationship', relationTo: 'projects', hasMany: true },
+    { name: 'url', label: { en: 'External URL', de: 'Externe URL' }, type: 'text' },
+    {
+      name: 'projects',
+      label: { en: 'Projects', de: 'Projekte' },
+      type: 'relationship',
+      relationTo: 'projects',
+      hasMany: true,
+    },
     visibleInField,
     legacyIdField,
   ],

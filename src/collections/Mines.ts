@@ -1,11 +1,16 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { richTextField } from '@/fields/richText'
+import { GROUPS } from '@/i18n/groups'
 
 export const Mines: CollectionConfig = {
   slug: 'mines',
+  labels: {
+    singular: { en: 'Mine', de: 'Bergbaustandort' },
+    plural: { en: 'Mines', de: 'Bergbaustandorte' },
+  },
   admin: {
     useAsTitle: 'title',
-    group: 'Minescapes',
+    group: GROUPS.minescapes,
   },
   fields: [
     {
@@ -13,93 +18,75 @@ export const Mines: CollectionConfig = {
       tabs: [
         // general
         {
-          label: 'General',
-          description: 'Enter the mines name, center & description here.',
+          label: { en: 'General', de: 'Allgemein' },
+          description: {
+            en: "The mine's name, location and description.",
+            de: 'Name, Lage und Beschreibung des Standorts.',
+          },
           fields: [
             {
               name: 'title',
+              label: { en: 'Name', de: 'Name' },
               type: 'text',
               localized: true,
               required: true,
             },
             {
               name: 'location',
+              label: { en: 'Location', de: 'Lage' },
               type: 'point',
-              label: 'Location',
               admin: {
                 components: {
-                  Field: '@/components/cms/MapFieldLoader', // Path to your component
+                  Field: '@/components/cms/MapFieldLoader',
                 },
               },
             },
-            {
-              name: 'content',
-              type: 'richText',
-              localized: true,
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
-              }),
-            },
+            richTextField('content', { en: 'Content', de: 'Inhalt' }),
           ],
         },
         // details
         {
-          label: 'Details',
-          description: 'Enter all historical & industrial data here.',
+          label: { en: 'Details', de: 'Details' },
+          description: {
+            en: 'Historical and industrial data.',
+            de: 'Historische und industrielle Daten.',
+          },
           fields: [
             {
               name: 'siteType',
+              label: { en: 'Site type', de: 'Standorttyp' },
               type: 'select',
-              label: 'Site / Mine Type',
               hasMany: true, // Recommended because a site often includes both a pit and a dump
               options: [
+                { label: { en: 'Open-cast / open-pit mine', de: 'Tagebau' }, value: 'open_cast' },
+                { label: { en: 'External dump / spoil tip', de: 'Außenhalde' }, value: 'external_dump' },
+                { label: { en: 'Underground mine', de: 'Tiefbau (unter Tage)' }, value: 'underground' },
+                { label: { en: 'Quarry', de: 'Steinbruch' }, value: 'quarry' },
                 {
-                  label: 'Open-Cast / Open-Pit Mine',
-                  value: 'open_cast',
-                },
-                {
-                  label: 'External Dump / Spoil Tip',
-                  value: 'external_dump',
-                },
-                {
-                  label: 'Underground Mine',
-                  value: 'underground',
-                },
-                {
-                  label: 'Quarry',
-                  value: 'quarry',
-                },
-                {
-                  label: 'Mountaintop Removal',
+                  label: { en: 'Mountaintop removal', de: 'Bergkuppenabbau' },
                   value: 'mountaintop_removal',
                 },
               ],
             },
             {
               name: 'status',
+              label: { en: 'Status', de: 'Status' },
               type: 'select',
-              label: 'Status',
               options: [
+                { label: { en: 'In use', de: 'In Betrieb' }, value: 'in_use' },
                 {
-                  label: 'in use',
-                  value: 'in_use',
-                },
-                {
-                  label: 'in revitalization',
+                  label: { en: 'In revitalization', de: 'In Rekultivierung' },
                   value: 'in_revitalization',
                 },
-                {
-                  label: 'revitalized',
-                  value: 'revitalized',
-                },
+                { label: { en: 'Revitalized', de: 'Rekultiviert' }, value: 'revitalized' },
               ],
             },
             {
               name: 'closureYear',
+              label: { en: 'Year of closure', de: 'Jahr der Stilllegung' },
               type: 'number',
-              label: 'Year of Closure',
               admin: {
-                placeholder: 'e.g. 1984',
+                placeholder: { en: 'e.g. 1984', de: 'z. B. 1984' },
                 condition: (data) => data?.status && data?.status !== 'in_use',
               },
               min: 1800,
@@ -107,88 +94,58 @@ export const Mines: CollectionConfig = {
             },
             {
               name: 'extractedMaterials',
+              label: { en: 'Extracted materials', de: 'Abgebaute Rohstoffe' },
               type: 'select',
-              label: 'Extracted Materials',
               hasMany: true,
               options: [
-                {
-                  label: 'Coal',
-                  value: 'coal',
-                },
-                {
-                  label: 'Iron',
-                  value: 'iron',
-                },
-                {
-                  label: 'Bauxite',
-                  value: 'bauxite',
-                },
-                {
-                  label: 'Copper',
-                  value: 'copper',
-                },
-                {
-                  label: 'Gold',
-                  value: 'gold',
-                },
-                {
-                  label: 'Lithium',
-                  value: 'lithium',
-                },
-                {
-                  label: 'Nickel',
-                  value: 'nickel',
-                },
-                {
-                  label: 'Phosphorite',
-                  value: 'phosphorite',
-                },
-                {
-                  label: 'Silver',
-                  value: 'silver',
-                },
-                {
-                  label: 'Zinc',
-                  value: 'zinc',
-                },
+                { label: { en: 'Coal', de: 'Kohle' }, value: 'coal' },
+                { label: { en: 'Iron', de: 'Eisen' }, value: 'iron' },
+                { label: { en: 'Bauxite', de: 'Bauxit' }, value: 'bauxite' },
+                { label: { en: 'Copper', de: 'Kupfer' }, value: 'copper' },
+                { label: { en: 'Gold', de: 'Gold' }, value: 'gold' },
+                { label: { en: 'Lithium', de: 'Lithium' }, value: 'lithium' },
+                { label: { en: 'Nickel', de: 'Nickel' }, value: 'nickel' },
+                { label: { en: 'Phosphorite', de: 'Phosphorit' }, value: 'phosphorite' },
+                { label: { en: 'Silver', de: 'Silber' }, value: 'silver' },
+                { label: { en: 'Zinc', de: 'Zink' }, value: 'zinc' },
               ],
             },
           ],
         },
         // topography
         {
-          label: 'Topography',
-          description: 'Enter all surface data here.',
+          label: { en: 'Topography', de: 'Topografie' },
+          description: { en: 'Surface data.', de: 'Flächendaten.' },
           fields: [
             {
               name: 'surface',
+              label: { en: 'Surface area', de: 'Flächen' },
               type: 'group',
-              label: 'Surface Area',
               fields: [
                 {
                   name: 'total',
+                  label: { en: 'Total area (ha)', de: 'Gesamtfläche (ha)' },
                   type: 'number',
-                  label: 'Total Size (in ha)',
                 },
                 {
                   name: 'lake',
+                  label: { en: 'Lake area (ha)', de: 'Seefläche (ha)' },
                   type: 'number',
-                  label: 'Lake Size (in ha)',
                 },
                 {
                   name: 'forest',
+                  label: { en: 'Forest area (ha)', de: 'Waldfläche (ha)' },
                   type: 'number',
-                  label: 'Forest Size (in ha)',
                 },
                 {
                   name: 'agriculture',
+                  label: { en: 'Agricultural area (ha)', de: 'Landwirtschaftsfläche (ha)' },
                   type: 'number',
-                  label: 'Agriculture Size (in ha)',
                 },
                 {
                   name: 'settlement',
+                  label: { en: 'Settlement area (ha)', de: 'Siedlungsfläche (ha)' },
                   type: 'number',
-                  label: 'Settlement Size (in ha)',
                 },
               ],
             },
@@ -196,17 +153,23 @@ export const Mines: CollectionConfig = {
         },
         // recreational usage
         {
-          label: 'Recreational Usage',
-          description: 'Enter all recreational usage data here.',
+          label: { en: 'Recreational use', de: 'Freizeitnutzung' },
+          description: {
+            en: 'How the site is used for recreation.',
+            de: 'Wie der Standort für die Freizeit genutzt wird.',
+          },
           fields: [
             {
               name: 'features',
+              label: { en: 'Post-mining features', de: 'Nachnutzungen' },
               type: 'relationship',
               relationTo: 'mine-features',
               hasMany: true,
-              label: 'Post-Mining Features',
               admin: {
-                description: 'What is this site used for now?',
+                description: {
+                  en: 'What is this site used for now?',
+                  de: 'Wofür wird der Standort heute genutzt?',
+                },
               },
             },
           ],

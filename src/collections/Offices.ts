@@ -4,43 +4,75 @@ import { countryField } from '@/fields/country'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
 import { requiredInDefaultLocale } from '@/fields/validation'
+import { GROUPS } from '@/i18n/groups'
 
 // Office locations. Drag-and-drop order in the list view is the order on the website.
 export const Offices: CollectionConfig = {
   slug: 'offices',
+  labels: {
+    singular: { en: 'Office', de: 'Büro' },
+    plural: { en: 'Offices', de: 'Büros' },
+  },
   orderable: true,
   admin: {
     useAsTitle: 'name',
-    group: 'Office',
+    group: GROUPS.office,
     defaultColumns: ['name', 'address.city'],
   },
   access: { read: anyone },
   fields: [
-    { name: 'name', type: 'text', localized: true, validate: requiredInDefaultLocale },
-    { name: 'image', type: 'upload', relationTo: 'media' },
-    richTextField('description'),
+    {
+      name: 'name',
+      label: { en: 'Name', de: 'Name' },
+      type: 'text',
+      localized: true,
+      validate: requiredInDefaultLocale,
+    },
+    { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
+    richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     {
       type: 'tabs',
       tabs: [
         {
-          label: 'Address',
+          label: { en: 'Address', de: 'Adresse' },
           fields: [
             {
               name: 'address',
+              label: { en: 'Address', de: 'Adresse' },
               type: 'group',
               fields: [
-                { name: 'company', type: 'text', localized: true, admin: { description: 'Name on the letterbox.' } },
-                { name: 'street', type: 'text' },
+                {
+                  name: 'company',
+                  label: { en: 'Company', de: 'Firma' },
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description: { en: 'Name on the letterbox.', de: 'Name auf dem Briefkasten.' },
+                  },
+                },
+                { name: 'street', label: { en: 'Street', de: 'Straße' }, type: 'text' },
                 {
                   type: 'row',
                   fields: [
-                    { name: 'postalCode', type: 'text', admin: { width: '30%' } },
-                    { name: 'city', type: 'text', localized: true, admin: { width: '40%' } },
+                    {
+                      name: 'postalCode',
+                      label: { en: 'Postal code', de: 'PLZ' },
+                      type: 'text',
+                      admin: { width: '30%' },
+                    },
+                    {
+                      name: 'city',
+                      label: { en: 'City', de: 'Ort' },
+                      type: 'text',
+                      localized: true,
+                      admin: { width: '40%' },
+                    },
                     countryField({ admin: { width: '30%' } }),
                   ],
                 },
                 {
                   name: 'coordinates',
+                  label: { en: 'Coordinates', de: 'Koordinaten' },
                   type: 'point',
                   admin: { components: { Field: '@/components/cms/MapFieldLoader' } },
                 },
@@ -49,24 +81,35 @@ export const Offices: CollectionConfig = {
           ],
         },
         {
-          label: 'Contact',
+          label: { en: 'Contact', de: 'Kontakt' },
           fields: [
             {
               name: 'contact',
+              label: { en: 'Contact', de: 'Kontakt' },
               type: 'group',
               fields: [
                 {
                   type: 'row',
                   fields: [
-                    { name: 'phone', type: 'text', admin: { width: '50%', placeholder: '+49 351 1234567' } },
-                    { name: 'fax', type: 'text', admin: { width: '50%' } },
+                    {
+                      name: 'phone',
+                      label: { en: 'Phone', de: 'Telefon' },
+                      type: 'text',
+                      admin: { width: '50%', placeholder: '+49 351 1234567' },
+                    },
+                    { name: 'fax', label: { en: 'Fax', de: 'Fax' }, type: 'text', admin: { width: '50%' } },
                   ],
                 },
-                { name: 'email', type: 'email' },
+                { name: 'email', label: { en: 'Email', de: 'E-Mail' }, type: 'email' },
               ],
             },
-            richTextField('contactNote', {
-              admin: { description: 'Extra contact details for one language, e.g. a local contact person.' },
+            richTextField('contactNote', { en: 'Contact note', de: 'Kontakthinweis' }, {
+              admin: {
+                description: {
+                  en: 'Extra contact details for one language, e.g. a local contact person.',
+                  de: 'Zusätzliche Kontaktangaben für eine Sprache, z. B. eine Ansprechperson vor Ort.',
+                },
+              },
             }),
           ],
         },

@@ -2,15 +2,20 @@ import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { requiredInDefaultLocale } from '@/fields/validation'
+import { GROUPS } from '@/i18n/groups'
 
 // Public team profile. Names are localized because some people have a Chinese spelling of
 // their name; other languages fall back to the German entry.
 export const Employees: CollectionConfig = {
   slug: 'employees',
+  labels: {
+    singular: { en: 'Employee', de: 'Mitarbeitende' },
+    plural: { en: 'Employees', de: 'Mitarbeitende' },
+  },
   defaultSort: 'lastName',
   admin: {
     useAsTitle: 'fullName',
-    group: 'Office',
+    group: GROUPS.office,
     defaultColumns: ['fullName', 'office', 'email', '_status'],
   },
   access: { read: publishedOrAuthenticated },
@@ -21,11 +26,13 @@ export const Employees: CollectionConfig = {
       fields: [
         {
           name: 'academicTitle',
+          label: { en: 'Academic title', de: 'Akademischer Titel' },
           type: 'text',
           admin: { width: '20%', placeholder: 'Dipl.-Ing.' },
         },
         {
           name: 'firstName',
+          label: { en: 'First name', de: 'Vorname' },
           type: 'text',
           localized: true,
           validate: requiredInDefaultLocale,
@@ -33,6 +40,7 @@ export const Employees: CollectionConfig = {
         },
         {
           name: 'lastName',
+          label: { en: 'Last name', de: 'Nachname' },
           type: 'text',
           localized: true,
           validate: requiredInDefaultLocale,
@@ -42,6 +50,7 @@ export const Employees: CollectionConfig = {
     },
     {
       name: 'fullName',
+      label: { en: 'Name', de: 'Name' },
       type: 'text',
       localized: true,
       admin: { hidden: true },
@@ -54,40 +63,76 @@ export const Employees: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'office', type: 'relationship', relationTo: 'offices', admin: { width: '50%' } },
+        {
+          name: 'office',
+          label: { en: 'Office', de: 'Büro' },
+          type: 'relationship',
+          relationTo: 'offices',
+          admin: { width: '50%' },
+        },
         {
           name: 'joinedYear',
+          label: { en: 'Year joined', de: 'Eintrittsjahr' },
           type: 'number',
-          admin: { width: '50%', description: 'Year the person joined the office.' },
+          admin: {
+            width: '50%',
+            description: {
+              en: 'Year the person joined the office.',
+              de: 'Jahr, in dem die Person ins Büro kam.',
+            },
+          },
         },
       ],
     },
     {
       type: 'row',
       fields: [
-        { name: 'email', type: 'email', admin: { width: '50%' } },
+        {
+          name: 'email',
+          label: { en: 'Email', de: 'E-Mail' },
+          type: 'email',
+          admin: { width: '50%' },
+        },
         {
           name: 'phone',
+          label: { en: 'Phone', de: 'Telefon' },
           type: 'text',
           admin: { width: '50%', placeholder: '+49 351 1234567' },
         },
       ],
     },
-    { name: 'portrait', type: 'upload', relationTo: 'media' },
+    { name: 'portrait', label: { en: 'Portrait', de: 'Porträt' }, type: 'upload', relationTo: 'media' },
     {
       name: 'profession',
+      label: { en: 'Profession', de: 'Beruf' },
       type: 'text',
       localized: true,
-      admin: { description: 'Degree and field, e.g. "M.Sc. Landscape Architecture".' },
+      admin: {
+        description: {
+          en: 'Degree and field, e.g. "M.Sc. Landscape Architecture".',
+          de: 'Abschluss und Fachrichtung, z. B. „M.Sc. Landschaftsarchitektur“.',
+        },
+      },
     },
-    { name: 'university', type: 'text', localized: true },
+    { name: 'university', label: { en: 'University', de: 'Hochschule' }, type: 'text', localized: true },
     {
       name: 'chamberMembership',
+      label: { en: 'Chamber membership', de: 'Kammermitgliedschaft' },
       type: 'text',
       localized: true,
-      admin: { description: 'Membership in a chamber of architects.' },
+      admin: {
+        description: {
+          en: 'Membership in a chamber of architects.',
+          de: 'Mitgliedschaft in einer Architektenkammer.',
+        },
+      },
     },
-    { name: 'qualification', type: 'text', localized: true },
+    {
+      name: 'qualification',
+      label: { en: 'Qualification', de: 'Qualifikation' },
+      type: 'text',
+      localized: true,
+    },
     legacyIdField,
   ],
 }
