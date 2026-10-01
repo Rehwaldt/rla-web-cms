@@ -25,6 +25,7 @@
     "@payloadcms/next": "3.85.0",
     "@payloadcms/plugin-nested-docs": "3.85.0",
     "@payloadcms/richtext-lexical": "3.85.0",
+    "@payloadcms/translations": "3.85.0",
     "@payloadcms/ui": "3.85.0",
     "@types/leaflet": "^1.9.21",
     "cross-env": "^7.0.3",

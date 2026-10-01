@@ -1,10 +1,13 @@
 // The website's languages. Missing translations fall back to English, then German, matching the
-// legacy site's behavior.
+// legacy site's behavior. Each language is named in itself, which reads the same in the English
+// and the German admin.
+const endonym = (name: string) => ({ en: name, de: name })
+
 export const LOCALES = [
-  { code: 'de', label: 'German' },
-  { code: 'en', label: 'English', fallbackLocale: 'de' },
-  { code: 'zh', label: 'Chinese', fallbackLocale: ['en', 'de'] },
-  { code: 'cs', label: 'Czech', fallbackLocale: ['en', 'de'] },
+  { code: 'de', label: endonym('Deutsch') },
+  { code: 'en', label: endonym('English'), fallbackLocale: 'de' },
+  { code: 'zh', label: endonym('中文'), fallbackLocale: ['en', 'de'] },
+  { code: 'cs', label: endonym('Čeština'), fallbackLocale: ['en', 'de'] },
 ]
 
 export const DEFAULT_LOCALE = 'de'
