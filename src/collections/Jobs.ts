@@ -14,7 +14,7 @@ export const Jobs: CollectionConfig = {
   defaultSort: '-date',
   admin: {
     useAsTitle: 'title',
-    group: GROUPS.content,
+    group: GROUPS.office,
     defaultColumns: ['title', 'office', 'date', '_status'],
   },
   access: { read: publishedOrAuthenticated },

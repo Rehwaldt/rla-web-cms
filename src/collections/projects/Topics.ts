@@ -14,7 +14,7 @@ export const Topics: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    group: GROUPS.projects,
+    group: GROUPS.content,
     defaultColumns: ['name', '_status'],
   },
   access: { read: publishedOrAuthenticated },

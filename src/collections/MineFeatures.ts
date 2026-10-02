@@ -10,6 +10,8 @@ export const MineFeatures: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: GROUPS.minescapes,
+    // Hidden until the Minescapes section goes live.
+    hidden: true,
     defaultColumns: ['name', 'iconName', 'color'],
   },
   fields: [

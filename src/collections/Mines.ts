@@ -11,6 +11,8 @@ export const Mines: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: GROUPS.minescapes,
+    // Hidden until the Minescapes section goes live.
+    hidden: true,
   },
   fields: [
     {

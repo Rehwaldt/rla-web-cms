@@ -8,11 +8,12 @@ import { GROUPS } from '@/i18n/groups'
 // Two-level tree (top-level groups with child categories). The `parent` and `breadcrumbs` fields
 // come from the nested-docs plugin, declared here so they get translated labels; drag-and-drop
 // order in the list view is the display order.
+// Labelled just "Categories": the collection only appears under the Projects group.
 export const ProjectCategories: CollectionConfig = {
   slug: 'project-categories',
   labels: {
-    singular: { en: 'Project category', de: 'Projektkategorie' },
-    plural: { en: 'Project categories', de: 'Projektkategorien' },
+    singular: { en: 'Category', de: 'Kategorie' },
+    plural: { en: 'Categories', de: 'Kategorien' },
   },
   orderable: true,
   admin: {

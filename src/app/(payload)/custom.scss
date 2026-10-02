@@ -16,3 +16,40 @@
   width: 64px;
   height: 64px;
 }
+
+// Icons in the admin navigation (Lucide, ISC license, files in nav-icons/). Payload has no icon
+// option for collections, but every nav link has a stable id: nav-<slug> for collections and
+// nav-global-<slug> for globals. The icon is a mask, so it takes the link's text colour.
+$nav-icons: (
+  'nav-projects': 'drafting-compass',
+  'nav-project-categories': 'tags',
+  'nav-global-project-gallery': 'gallery-horizontal-end',
+  'nav-news': 'newspaper',
+  'nav-topics': 'lightbulb',
+  'nav-awards': 'award',
+  'nav-publications': 'book-open',
+  'nav-publication-categories': 'tags',
+  'nav-pages': 'file-text',
+  'nav-employees': 'users',
+  'nav-offices': 'building-2',
+  'nav-jobs': 'briefcase',
+  'nav-media': 'image',
+  'nav-users': 'user-cog',
+);
+
+%nav-icon::before {
+  content: '';
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-inline-end: 10px;
+  background-color: currentColor;
+  mask: var(--nav-icon) center / contain no-repeat;
+}
+
+@each $id, $icon in $nav-icons {
+  ##{$id} {
+    @extend %nav-icon;
+    --nav-icon: url('./nav-icons/#{$icon}.svg');
+  }
+}
