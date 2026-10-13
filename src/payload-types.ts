@@ -69,12 +69,12 @@ export interface Config {
   collections: {
     projects: Project;
     'project-categories': ProjectCategory;
+    pages: Page;
     news: News;
     topics: Topic;
     awards: Award;
     publications: Publication;
     'publication-categories': PublicationCategory;
-    pages: Page;
     employees: Employee;
     offices: Office;
     jobs: Job;
@@ -95,12 +95,12 @@ export interface Config {
   collectionsSelect: {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     awards: AwardsSelect<false> | AwardsSelect<true>;
     publications: PublicationsSelect<false> | PublicationsSelect<true>;
     'publication-categories': PublicationCategoriesSelect<false> | PublicationCategoriesSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
     offices: OfficesSelect<false> | OfficesSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
@@ -543,6 +543,46 @@ export interface Topic {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  /**
+   * Identifier the website uses to fetch this page, e.g. "office-profile".
+   */
+  key: string;
+  title?: string | null;
+  subtitle?: string | null;
+  image?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Grid of images, texts and references. Each language has its own flow.
+   */
+  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  /**
+   * ID in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "awards".
  */
 export interface Award {
@@ -645,46 +685,6 @@ export interface PublicationCategory {
   legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: number;
-  /**
-   * Identifier the website uses to fetch this page, e.g. "office-profile".
-   */
-  key: string;
-  title?: string | null;
-  subtitle?: string | null;
-  image?: (number | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Grid of images, texts and references. Each language has its own flow.
-   */
-  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
-  /**
-   * ID in the legacy website database. Set by the importer.
-   */
-  legacyId?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -947,6 +947,10 @@ export interface PayloadLockedDocument {
         value: number | ProjectCategory;
       } | null)
     | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
         relationTo: 'news';
         value: number | News;
       } | null)
@@ -965,10 +969,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'publication-categories';
         value: number | PublicationCategory;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: number | Page;
       } | null)
     | ({
         relationTo: 'employees';
@@ -1165,6 +1165,29 @@ export interface ProjectCategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  key?: T;
+  title?: T;
+  subtitle?: T;
+  image?: T;
+  content?: T;
+  flow?:
+    | T
+    | {
+        image?: T | FlowImageBlockSelect<T>;
+        text?: T | FlowTextBlockSelect<T>;
+        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
+        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
+      };
+  legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news_select".
  */
 export interface NewsSelect<T extends boolean = true> {
@@ -1272,29 +1295,6 @@ export interface PublicationCategoriesSelect<T extends boolean = true> {
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  key?: T;
-  title?: T;
-  subtitle?: T;
-  image?: T;
-  content?: T;
-  flow?:
-    | T
-    | {
-        image?: T | FlowImageBlockSelect<T>;
-        text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
-        topicReference?: T | FlowTopicReferenceBlockSelect<T>;
-      };
-  legacyId?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

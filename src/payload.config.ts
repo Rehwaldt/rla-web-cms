@@ -49,12 +49,12 @@ export default buildConfig({
   collections: [
     Projects,
     ProjectCategories,
+    Pages,
     News,
     Topics,
     Awards,
     Publications,
     PublicationCategories,
-    Pages,
     Employees,
     Offices,
     Jobs,

@@ -7,13 +7,13 @@ import { GROUPS } from '@/i18n/groups'
 export const PublicationCategories: CollectionConfig = {
   slug: 'publication-categories',
   labels: {
-    singular: { en: 'Publication category', de: 'Publikationskategorie' },
-    plural: { en: 'Publication categories', de: 'Publikationskategorien' },
+    singular: { en: 'Category', de: 'Kategorie' },
+    plural: { en: 'Categories', de: 'Kategorien' },
   },
   orderable: true,
   admin: {
     useAsTitle: 'name',
-    group: GROUPS.content,
+    group: GROUPS.publications,
   },
   access: { read: anyone },
   fields: [

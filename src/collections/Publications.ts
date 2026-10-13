@@ -15,7 +15,7 @@ export const Publications: CollectionConfig = {
   defaultSort: '-year',
   admin: {
     useAsTitle: 'title',
-    group: GROUPS.content,
+    group: GROUPS.publications,
     defaultColumns: ['title', 'year', 'category', 'authors', '_status'],
   },
   access: { read: publishedOrAuthenticated },
@@ -28,13 +28,23 @@ export const Publications: CollectionConfig = {
       relationTo: 'publication-categories',
     },
     { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
-    { name: 'subtitle', label: { en: 'Subtitle', de: 'Untertitel' }, type: 'text', localized: true },
+    {
+      name: 'subtitle',
+      label: { en: 'Subtitle', de: 'Untertitel' },
+      type: 'text',
+      localized: true,
+    },
     { name: 'authors', label: { en: 'Authors', de: 'Autorschaft' }, type: 'text', localized: true },
     {
       type: 'collapsible',
       label: { en: 'Published in', de: 'Erschienen in' },
       fields: [
-        { name: 'journal', label: { en: 'Journal', de: 'Zeitschrift' }, type: 'text', localized: true },
+        {
+          name: 'journal',
+          label: { en: 'Journal', de: 'Zeitschrift' },
+          type: 'text',
+          localized: true,
+        },
         {
           type: 'row',
           fields: [
@@ -76,7 +86,12 @@ export const Publications: CollectionConfig = {
         {
           type: 'row',
           fields: [
-            { name: 'year', label: { en: 'Year', de: 'Jahr' }, type: 'number', admin: { width: '33%' } },
+            {
+              name: 'year',
+              label: { en: 'Year', de: 'Jahr' },
+              type: 'number',
+              admin: { width: '33%' },
+            },
             {
               name: 'month',
               label: { en: 'Month', de: 'Monat' },
