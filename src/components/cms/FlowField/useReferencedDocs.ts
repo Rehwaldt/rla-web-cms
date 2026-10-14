@@ -2,10 +2,10 @@
 
 import { useConfig } from '@payloadcms/ui'
 import { useEffect, useMemo, useState } from 'react'
+import type { FlowCollection } from '@/fields/flowBlocks'
 
 // Loads the media, news and topics a flow points at, with just the fields the preview needs.
 
-export type FlowCollection = 'media' | 'news' | 'topics'
 export type DocRef = { collection: FlowCollection; id: number | string }
 
 const IMAGE_FIELDS = ['filename', 'url', 'width', 'height', 'sizes', 'alt']

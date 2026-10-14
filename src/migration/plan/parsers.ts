@@ -1,3 +1,11 @@
+import {
+  FLOW_BLOCKS,
+  type FlowBlockType,
+  type FlowModifier,
+  type FlowSize,
+  isFlowModifier,
+  isFlowSize,
+} from '../../fields/flowBlocks'
 import type { Row } from '../legacy'
 import { num, str } from '../legacy'
 import type { PlanContext } from './context'
@@ -52,16 +60,18 @@ export function parseLinks(ctx: PlanContext, value: string | null, where: string
 // Flows: "size modifier…:ref|…", ref = image id, t… text element, f… topic, a… news
 // ---------------------------------------------------------------------------------------------
 
-const SIZES = new Set(['one6', 'one4', 'one3', 'one2', 'two3', 'full'])
-const MODIFIERS = new Set(['clear', 'right', 'center', 'crop', 'topmargin'])
+// The prefix of a legacy reference tells the block type; an image has none.
+const BLOCK_TYPE_BY_PREFIX = { '': 'image', t: 'text', f: 'topicReference', a: 'newsReference' } as const
 // Class name the legacy editor kept appending to text items; carries no meaning.
 const IGNORED_TOKENS = new Set(['textelement'])
 
 type FlowItem = {
-  kind: 'image' | 'text' | 'news' | 'topic'
+  blockType: FlowBlockType
+  /** The reference as the legacy flow spells it, e.g. `t12`. */
+  target: string
   id: number
-  size: string | null
-  modifiers: string[]
+  size: FlowSize
+  modifiers: FlowModifier[]
 }
 
 function parseFlowItems(ctx: PlanContext, value: string | null, where: string): FlowItem[] {
@@ -76,23 +86,28 @@ function parseFlowItems(ctx: PlanContext, value: string | null, where: string): 
       ctx.report.add('Flow item without a valid reference (dropped)', `${where}: "${entry}"`)
       continue
     }
-    const kind = ({ '': 'image', t: 'text', f: 'topic', a: 'news' } as const)[match[1] as '' | 't' | 'f' | 'a']
+    const blockType = BLOCK_TYPE_BY_PREFIX[match[1] as keyof typeof BLOCK_TYPE_BY_PREFIX]
+    const block = FLOW_BLOCKS[blockType]
     const tokens = parts.length > 1 ? parts[0].split(/\s+/).filter(Boolean) : []
-    let size: string | null = null
-    const modifiers: string[] = []
+    let size: FlowSize = block.defaultSize
+    const modifiers = new Set<FlowModifier>()
     for (const token of tokens) {
       if (IGNORED_TOKENS.has(token)) continue
-      if (SIZES.has(token)) size = token
-      else if (MODIFIERS.has(token)) modifiers.push(token)
-      else if (token === 'separator' && kind === 'text') modifiers.push(token)
-      else ctx.report.add('Unknown flow layout token (dropped)', `${where}: "${token}" in "${entry}"`)
+      if (isFlowSize(token)) size = token
+      else if (!isFlowModifier(token)) ctx.report.add('Unknown flow layout token (dropped)', `${where}: "${token}" in "${entry}"`)
+      else if ((block.modifiers as readonly FlowModifier[]).includes(token)) modifiers.add(token)
+      else ctx.report.add('Flow modifier not allowed on this block type (dropped)', `${where}: "${token}" in "${entry}"`)
     }
-    items.push({ kind, id: Number(match[2]), size, modifiers })
+    items.push({
+      blockType,
+      target,
+      id: Number(match[2]),
+      size,
+      modifiers: block.modifiers.filter((modifier) => modifiers.has(modifier)),
+    })
   }
   return items
 }
-
-const DEFAULT_SIZE: Record<FlowItem['kind'], string> = { image: 'one3', text: 'one2', news: 'one3', topic: 'one3' }
 
 /**
  * Turns a flow column into blocks for one locale. Text blocks take their title/body from the
@@ -107,8 +122,10 @@ export function flowBlocks(
   { fallback, rowIdPrefix }: { fallback: boolean; rowIdPrefix: string },
 ): Data[] {
   const textElements = new Map(ctx.snapshot.textelemente.map((row) => [num(row, 'index'), row]))
-  const newsIds = new Set(ctx.snapshot.aktuell.map((row) => num(row, 'index')))
-  const topicIds = new Set(ctx.snapshot.themen.map((row) => num(row, 'index')))
+  const referenced = {
+    newsReference: { name: 'news item', ids: new Set(ctx.snapshot.aktuell.map((row) => num(row, 'index'))) },
+    topicReference: { name: 'topic', ids: new Set(ctx.snapshot.themen.map((row) => num(row, 'index'))) },
+  }
 
   const pick = (row: Row, base: string): string | null => {
     const chain: Locale[] = fallback ? [locale, 'en', 'de'] : [locale]
@@ -123,37 +140,33 @@ export function flowBlocks(
   parseFlowItems(ctx, value, where).forEach((item, index) => {
     const common = {
       id: ctx.rowId(rowIdPrefix, index),
-      size: item.size ?? DEFAULT_SIZE[item.kind],
+      blockType: item.blockType,
+      size: item.size,
       modifiers: item.modifiers,
     }
-    if (item.kind === 'image') {
+    if (item.blockType === 'image') {
       const image = ctx.imageRef(item.id, `${where} flow`)
-      if (image) blocks.push({ ...common, blockType: 'image', image })
-    } else if (item.kind === 'text') {
+      if (image) blocks.push({ ...common, [FLOW_BLOCKS.image.reference.field]: image })
+    } else if (item.blockType === 'text') {
       const element = textElements.get(item.id)
       if (!element) {
-        ctx.report.add('Flow references an unknown text element (dropped)', `${where}: t${item.id}`)
+        ctx.report.add('Flow references an unknown text element (dropped)', `${where}: ${item.target}`)
         return
       }
       const elementWhere = `text element ${item.id}`
       blocks.push({
         ...common,
-        blockType: 'text',
         title: ctx.plain(pick(element, 'titel'), elementWhere),
         body: ctx.richText(pick(element, 'text'), elementWhere),
       })
-    } else if (item.kind === 'news') {
-      if (!newsIds.has(item.id)) {
-        ctx.report.add('Flow references an unknown news item (dropped)', `${where}: a${item.id}`)
-        return
-      }
-      blocks.push({ ...common, blockType: 'newsReference', news: ref('news', item.id) })
     } else {
-      if (!topicIds.has(item.id)) {
-        ctx.report.add('Flow references an unknown topic (dropped)', `${where}: f${item.id}`)
+      const { name, ids } = referenced[item.blockType]
+      if (!ids.has(item.id)) {
+        ctx.report.add(`Flow references an unknown ${name} (dropped)`, `${where}: ${item.target}`)
         return
       }
-      blocks.push({ ...common, blockType: 'topicReference', topic: ref('topics', item.id) })
+      const { field, collection } = FLOW_BLOCKS[item.blockType].reference
+      blocks.push({ ...common, [field]: ref(collection, item.id) })
     }
   })
   return blocks

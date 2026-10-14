@@ -52,7 +52,8 @@ Reuse these instead of re-declaring the shapes:
 - `flowField({ localized, captions })`: the "flow" grid of image/text/news/topic blocks with size
   and modifiers. An image's caption and link come from the media item's `project`. Edited in a
   visual editor (`src/components/cms/FlowField`) that renders the grid with `flow.css`, a port of
-  the website's stylesheet; sizes and modifiers live in `src/fields/flowLayout.ts`.
+  the website's stylesheet; sizes, modifiers and block types live in `src/fields/flowBlocks.ts`,
+  which the schema, the editor and the importer all read.
 - `linksField`: per-language list of links, each either a project reference or an external URL.
 - `visibleInField`: languages whose website lists the entry. Together with drafts
   (`versions: { drafts: true }`) it replaces every legacy visibility flag.

@@ -105,10 +105,25 @@ describe('flowBlocks', () => {
     expect(issues('Flow references an unknown topic (dropped)')).toHaveLength(1)
     expect(issues('Flow references an unknown text element (dropped)')).toHaveLength(1)
     expect(issues('Flow item without a valid reference (dropped)')).toHaveLength(1)
-    expect(issues('Unknown flow layout token (dropped)')).toEqual([
-      'p: "huge" in "huge separator:3"',
+    expect(issues('Unknown flow layout token (dropped)')).toEqual(['p: "huge" in "huge separator:3"'])
+    expect(issues('Flow modifier not allowed on this block type (dropped)')).toEqual([
       'p: "separator" in "huge separator:3"',
     ])
+  })
+
+  it('keeps only the modifiers a block type allows, in the canonical order', () => {
+    const { blocks, issues } = plan('topmargin crop clear:3|topmargin crop clear separator:t1')
+    expect(blocks.map((block) => block.modifiers)).toEqual([
+      ['clear', 'crop', 'topmargin'],
+      ['clear', 'topmargin', 'separator'],
+    ])
+    expect(issues('Flow modifier not allowed on this block type (dropped)')).toEqual([
+      'p: "crop" in "topmargin crop clear separator:t1"',
+    ])
+  })
+
+  it("sizes an item without a size as its block type's default", () => {
+    expect(plan('3|t1|a4').blocks.map((block) => block.size)).toEqual(['one3', 'one2', 'one3'])
   })
 
   it('uses only the requested locale unless fallback is on', () => {

@@ -1,10 +1,23 @@
 import type { Block, Field } from 'payload'
-import { FLOW_SIZES, MODIFIER_LABELS, SIZE_COLUMNS, SIZE_LABELS, modifiersFor } from './flowLayout'
+import {
+  FLOW_BLOCKS,
+  FLOW_BLOCK_TYPES,
+  FLOW_MODIFIERS,
+  FLOW_SIZES,
+  type FlowBlockType,
+  type FlowModifier,
+  type ReferencingBlockType,
+  SIZE_COLUMNS,
+  SIZE_LABELS,
+} from './flowBlocks'
 import { richTextField } from './richText'
 
 // A "flow" is a free-form grid of images, text and references to other content. Every block
 // takes a size (columns out of a 12-column grid) and optional layout modifiers. The admin edits it
 // in a visual editor (src/components/cms/FlowField) that renders the grid like the website does.
+// What a block type points at, its default size and its modifiers come from ./flowBlocks.
+
+type Label = { en: string; de: string }
 
 const SIZE_OPTIONS = FLOW_SIZES.map((value) => ({
   label:
@@ -17,105 +30,113 @@ const SIZE_OPTIONS = FLOW_SIZES.map((value) => ({
   value,
 }))
 
-const modifierOptions = (blockType: string) =>
-  modifiersFor(blockType).map((value) => ({ label: MODIFIER_LABELS[value], value }))
+const MODIFIER_LABELS: Record<FlowModifier, Label> = {
+  clear: { en: 'Clear (start a new row)', de: 'Neue Zeile' },
+  right: { en: 'Right (push to the right edge)', de: 'Rechtsbündig (an den rechten Rand)' },
+  center: { en: 'Center', de: 'Zentriert' },
+  crop: { en: 'Crop (fixed height, cover)', de: 'Zuschneiden (feste Höhe, füllend)' },
+  topmargin: { en: 'Top margin (extra space above)', de: 'Abstand oben (zusätzlicher Abstand darüber)' },
+  separator: { en: 'Separator (full-width divider row)', de: 'Trennlinie (Trennzeile über die volle Breite)' },
+}
 
-const sizeField = (defaultValue: string): Field => ({
-  name: 'size',
-  label: { en: 'Size', de: 'Breite' },
-  type: 'select',
-  required: true,
-  defaultValue,
-  options: SIZE_OPTIONS,
+// TEMPORARY: the database still stores `crop` as an option of text blocks, and one imported project
+// uses it (plus its version history). Dropping the option before those rows are gone would make
+// the schema push fail on them. Once the database holds none (e.g. after a fresh import), this goes
+// and the options are FLOW_BLOCKS[blockType].modifiers.
+const STILL_STORED: Partial<Record<FlowBlockType, FlowModifier[]>> = { text: ['crop'] }
+
+const modifierOptions = (blockType: FlowBlockType) => {
+  const offered: readonly FlowModifier[] = [...FLOW_BLOCKS[blockType].modifiers, ...(STILL_STORED[blockType] ?? [])]
+  return FLOW_MODIFIERS.filter((value) => offered.includes(value)).map((value) => ({
+    label: MODIFIER_LABELS[value],
+    value,
+  }))
+}
+
+const layoutFields = (blockType: FlowBlockType): Field[] => [
+  {
+    name: 'size',
+    label: { en: 'Size', de: 'Breite' },
+    type: 'select',
+    required: true,
+    defaultValue: FLOW_BLOCKS[blockType].defaultSize,
+    options: SIZE_OPTIONS,
+  },
+  {
+    name: 'modifiers',
+    label: { en: 'Modifiers', de: 'Optionen' },
+    type: 'select',
+    hasMany: true,
+    options: modifierOptions(blockType),
+  },
+]
+
+const referenceField = (blockType: ReferencingBlockType, label: Label, description?: Label): Field => {
+  const { field: name, collection: relationTo } = FLOW_BLOCKS[blockType].reference
+  const shared = { name, label, required: true, ...(description && { admin: { description } }) }
+  // Media is the upload collection; the others are plain relationships.
+  return relationTo === 'media'
+    ? { ...shared, type: 'upload', relationTo }
+    : { ...shared, type: 'relationship', relationTo }
+}
+
+const block = (
+  blockType: FlowBlockType,
+  { fields, ...config }: Pick<Block, 'fields' | 'interfaceName' | 'labels'>,
+): Block => ({
+  slug: blockType,
+  ...config,
+  fields: [...fields, ...layoutFields(blockType)],
 })
 
-const modifiersField = (blockType: string): Field => ({
-  name: 'modifiers',
-  label: { en: 'Modifiers', de: 'Optionen' },
-  type: 'select',
-  hasMany: true,
-  options: modifierOptions(blockType),
-})
-
-const imageBlock: Block = {
-  slug: 'image',
-  interfaceName: 'FlowImageBlock',
-  labels: { singular: { en: 'Image', de: 'Bild' }, plural: { en: 'Images', de: 'Bilder' } },
-  fields: [
-    {
-      name: 'image',
-      label: { en: 'Image', de: 'Bild' },
-      type: 'upload',
-      relationTo: 'media',
-      required: true,
-      admin: {
-        description: {
+const BLOCKS: Record<FlowBlockType, Block> = {
+  image: block('image', {
+    interfaceName: 'FlowImageBlock',
+    labels: { singular: { en: 'Image', de: 'Bild' }, plural: { en: 'Images', de: 'Bilder' } },
+    fields: [
+      referenceField(
+        'image',
+        { en: 'Image', de: 'Bild' },
+        {
           en: "Caption and link come from the image's project (set on the media item).",
           de: 'Bildunterschrift und Link kommen vom Projekt des Bildes (am Medium festgelegt).',
         },
-      },
+      ),
+    ],
+  }),
+  text: block('text', {
+    interfaceName: 'FlowTextBlock',
+    labels: { singular: { en: 'Text', de: 'Text' }, plural: { en: 'Texts', de: 'Texte' } },
+    fields: [
+      { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
+      richTextField('body', { en: 'Text', de: 'Text' }),
+    ],
+  }),
+  newsReference: block('newsReference', {
+    interfaceName: 'FlowNewsReferenceBlock',
+    labels: {
+      singular: { en: 'News reference', de: 'News-Verweis' },
+      plural: { en: 'News references', de: 'News-Verweise' },
     },
-    sizeField('one3'),
-    modifiersField('image'),
-  ],
-}
-
-const textBlock: Block = {
-  slug: 'text',
-  interfaceName: 'FlowTextBlock',
-  labels: { singular: { en: 'Text', de: 'Text' }, plural: { en: 'Texts', de: 'Texte' } },
-  fields: [
-    { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
-    richTextField('body', { en: 'Text', de: 'Text' }),
-    sizeField('one2'),
-    modifiersField('text'),
-  ],
-}
-
-const newsReferenceBlock: Block = {
-  slug: 'newsReference',
-  interfaceName: 'FlowNewsReferenceBlock',
-  labels: {
-    singular: { en: 'News reference', de: 'News-Verweis' },
-    plural: { en: 'News references', de: 'News-Verweise' },
-  },
-  fields: [
-    {
-      name: 'news',
-      label: { en: 'News', de: 'News' },
-      type: 'relationship',
-      relationTo: 'news',
-      required: true,
+    fields: [referenceField('newsReference', { en: 'News', de: 'News' })],
+  }),
+  topicReference: block('topicReference', {
+    interfaceName: 'FlowTopicReferenceBlock',
+    labels: {
+      singular: { en: 'Topic reference', de: 'Themen-Verweis' },
+      plural: { en: 'Topic references', de: 'Themen-Verweise' },
     },
-    sizeField('one3'),
-    modifiersField('newsReference'),
-  ],
-}
-
-const topicReferenceBlock: Block = {
-  slug: 'topicReference',
-  interfaceName: 'FlowTopicReferenceBlock',
-  labels: {
-    singular: { en: 'Topic reference', de: 'Themen-Verweis' },
-    plural: { en: 'Topic references', de: 'Themen-Verweise' },
-  },
-  fields: [
-    {
-      name: 'topic',
-      label: { en: 'Topic', de: 'Thema' },
-      type: 'relationship',
-      relationTo: 'topics',
-      required: true,
-      admin: {
-        description: {
+    fields: [
+      referenceField(
+        'topicReference',
+        { en: 'Topic', de: 'Thema' },
+        {
           en: "Shown as an image tile with the topic's image and name.",
           de: 'Erscheint als Bildkachel mit dem Bild und dem Namen des Themas.',
         },
-      },
-    },
-    sizeField('one3'),
-    modifiersField('topicReference'),
-  ],
+      ),
+    ],
+  }),
 }
 
 /**
@@ -131,7 +152,7 @@ export const flowField = ({
   type: 'blocks',
   localized,
   labels: { singular: { en: 'Block', de: 'Block' }, plural: { en: 'Flow', de: 'Flow' } },
-  blocks: [imageBlock, textBlock, newsReferenceBlock, topicReferenceBlock],
+  blocks: FLOW_BLOCK_TYPES.map((blockType) => BLOCKS[blockType]),
   admin: {
     initCollapsed: true,
     components: {

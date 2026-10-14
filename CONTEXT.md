@@ -37,10 +37,14 @@ labels use these words so that one concept never gets two German names.
 
 ## Presentation
 
-- **Flow** (de: *Flow*): a grid of blocks (image, text, news reference, topic reference). Each
-  block has a **size** (de: *Breite*; columns out of 12) and **modifiers** (de: *Optionen*:
-  `clear` *Neue Zeile*, `right` *Rechtsbündig*, `center` *Zentriert*, `crop` *Zuschneiden*,
-  `topmargin` *Abstand oben*; text blocks also `separator` *Trennlinie*).
+- **Flow** (de: *Flow*): a grid of blocks. Each block has a **block type**, a **size** (de:
+  *Breite*; columns out of 12) and **modifiers** (de: *Optionen*: `clear` *Neue Zeile*, `right`
+  *Rechtsbündig*, `center` *Zentriert*, `topmargin` *Abstand oben*; `crop` *Zuschneiden* only on
+  block types that show an image; `separator` *Trennlinie* only on text).
+- **Block type** (de: *Blocktyp*): what a flow block shows. **Image** (de: *Bild*), **text** (de:
+  *Text*), **topic reference** (de: *Themen-Verweis*; an image tile with the topic's image and
+  name) or **news reference** (de: *News-Verweis*; kept in the flow, but the website doesn't show
+  it).
 - **Hero image** (de: *Titelbild*): large image at the top of a project page. **Preview image**
   (de: *Vorschaubild*): the tile image in listings.
 - **Credit** (de: *Copyright*): photographer or copyright holder of a media item.

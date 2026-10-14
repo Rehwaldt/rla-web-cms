@@ -22,16 +22,20 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  FLOW_BLOCKS,
+  type FlowBlockType,
+  type FlowCollection,
   type FlowModifier,
   type FlowSize,
+  type ReferencingBlockType,
   SIZE_LABELS,
   dropIndex,
-  isFlowSize,
-  modifiersFor,
-  rendersOnWebsite,
+  flowBlock,
+  isFlowBlockType,
+  sizeOf,
   stepSize,
   toggleModifier,
-} from '@/fields/flowLayout'
+} from '@/fields/flowBlocks'
 import type { TranslationKeys, Translations } from '@/i18n/translations'
 import { type DocRef, imageSource, useReferencedDocs } from './useReferencedDocs'
 import './flow.css'
@@ -48,9 +52,8 @@ type Row = {
   blockType: string
   size?: string
   modifiers?: string[]
-  image?: number | string
-  news?: number | string
-  topic?: number | string
+  /** Id of the document the block points at, for block types that point at one. */
+  reference?: number | string
   title?: string
   body?: any
   hasError: boolean
@@ -60,11 +63,42 @@ type Row = {
 type T = (key: TranslationKeys, options?: Record<string, unknown>) => string
 const useT = (): T => useTranslation<Translations, TranslationKeys>().t
 
-const BLOCK_LABELS: Record<string, TranslationKeys> = {
+const BLOCK_LABELS: Record<FlowBlockType, TranslationKeys> = {
   image: 'flow:blockImage',
   text: 'flow:blockText',
   newsReference: 'flow:blockNews',
   topicReference: 'flow:blockTopic',
+}
+
+// How the document a block points at shows in the preview: its image, its caption, and what to
+// say when the document or its image is missing.
+const PREVIEWS: Record<
+  FlowCollection,
+  {
+    image: (doc: Record<string, any>) => Record<string, any> | null | undefined
+    caption: (doc: Record<string, any>) => string | undefined
+    notFound: TranslationKeys
+    noImage: TranslationKeys
+  }
+> = {
+  media: {
+    image: (media) => media,
+    caption: (media) => media.project?.name,
+    notFound: 'flow:imageNotFound',
+    noImage: 'flow:imageNotFound',
+  },
+  news: {
+    image: (news) => news.image,
+    caption: (news) => news.title,
+    notFound: 'flow:newsNotFound',
+    noImage: 'flow:newsHasNoImage',
+  },
+  topics: {
+    image: (topic) => topic.image,
+    caption: (topic) => topic.name,
+    notFound: 'flow:topicNotFound',
+    noImage: 'flow:topicHasNoImage',
+  },
 }
 
 const SHORT_MODIFIER_LABELS: Record<FlowModifier, TranslationKeys> = {
@@ -85,7 +119,7 @@ const MODIFIER_HINTS: Record<FlowModifier, TranslationKeys> = {
   separator: 'flow:hintSeparator',
 }
 
-const blockLabel = (t: T, blockType: string) => (BLOCK_LABELS[blockType] ? t(BLOCK_LABELS[blockType]) : blockType)
+const blockLabel = (t: T, blockType: string) => (isFlowBlockType(blockType) ? t(BLOCK_LABELS[blockType]) : blockType)
 const sizeLabel = (t: T, size: FlowSize) => (size === 'full' ? t('flow:sizeFull') : SIZE_LABELS[size])
 
 // A constant: the list drawer reloads whenever it gets a new filter object.
@@ -94,9 +128,14 @@ const IMAGES_ONLY = { media: { mimeType: { contains: 'image/' } } }
 const idOf = (value: unknown) =>
   value && typeof value === 'object' && 'id' in value ? (value as { id: number | string }).id : (value as number | string | undefined)
 
-// Crop has no effect on text; the website only defines crop heights for images.
-const toolbarModifiers = (blockType: string) =>
-  modifiersFor(blockType).filter((m) => m !== 'crop' || blockType !== 'text')
+/** The document a row points at, if its block type points at one and it's set. */
+const referenceOf = (row: Row): DocRef | null => {
+  const reference = flowBlock(row.blockType)?.reference
+  return reference && row.reference ? { collection: reference.collection, id: row.reference } : null
+}
+
+// A row whose block type isn't known (yet) stays in the grid rather than disappearing.
+const rendersOnWebsite = (row: Row) => flowBlock(row.blockType)?.rendersOnWebsite ?? true
 
 export const FlowField: React.FC<Props> = (props) => {
   const { captions = true, field, path: pathFromProps, permissions, readOnly: readOnlyFromProps, schemaPath: schemaPathFromProps } = props
@@ -182,20 +221,18 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
 
   // The values the preview needs, as a string so unrelated form changes don't re-render.
   const snapshot = useFormFields(([fields]) => {
-    const count = fields[path]?.rows?.length ?? 0
-    const out = []
-    for (let i = 0; i < count; i++) {
+    const formRows = fields[path]?.rows ?? []
+    const out = formRows.map((formRow, i) => {
       const at = (key: string) => fields[`${path}.${i}.${key}`]?.value
-      out.push({
+      const reference = flowBlock(formRow.blockType)?.reference
+      return {
         size: at('size'),
         modifiers: at('modifiers'),
-        image: idOf(at('image')),
-        news: idOf(at('news')),
-        topic: idOf(at('topic')),
+        reference: reference ? idOf(at(reference.field)) : undefined,
         title: at('title'),
         body: at('body'),
-      })
-    }
+      }
+    })
     return JSON.stringify(out)
   })
 
@@ -210,15 +247,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
     }))
   }, [snapshot, rowMeta, errorPaths, path])
 
-  const refs = useMemo(() => {
-    const out: DocRef[] = []
-    for (const row of rows) {
-      if (row.image) out.push({ collection: 'media', id: row.image })
-      if (row.news) out.push({ collection: 'news', id: row.news })
-      if (row.topic) out.push({ collection: 'topics', id: row.topic })
-    }
-    return out
-  }, [rows])
+  const refs = useMemo(() => rows.map(referenceOf).filter((ref) => ref !== null), [rows])
   const docFor = useReferencedDocs(refs, locale)
 
   const selectedIndex = rows.findIndex((row) => row.id === selectedId)
@@ -250,8 +279,8 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
   // New blocks go after the selected one, or at the end.
   const insertIndex = () => (selectedIndex === -1 ? rows.length : selectedIndex + 1)
 
-  const addBlock = (blockType: string, values: Record<string, unknown>[], start = insertIndex()) => {
-    const defaultSize = blockType === 'text' ? 'one2' : 'one3'
+  const addBlock = (blockType: FlowBlockType, values: Record<string, unknown>[], start = insertIndex()) => {
+    const { defaultSize } = FLOW_BLOCKS[blockType]
     values.forEach((value, offset) => {
       const subFieldState: Record<string, { initialValue: unknown; valid: true; value: unknown }> = {}
       for (const [key, v] of Object.entries({ size: defaultSize, ...value })) {
@@ -273,12 +302,13 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows])
 
-  const addReferences = (blockType: string, key: string, ids: (number | string)[], at = insertIndex()) => {
+  const addReferences = (blockType: ReferencingBlockType, ids: (number | string)[], at = insertIndex()) => {
     if (ids.length === 0) return
+    const { field } = FLOW_BLOCKS[blockType].reference
     pendingSelect.current = { index: at + ids.length - 1, edit: false }
     addBlock(
       blockType,
-      ids.map((id) => ({ [key]: id })),
+      ids.map((id) => ({ [field]: id })),
       at,
     )
   }
@@ -335,7 +365,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
       if (to !== null) move(dragFrom, to)
     }
     if (dragMedia !== null) {
-      addReferences('image', 'image', [dragMedia], dropAt ? dropAt.index + (dropAt.after ? 1 : 0) : rows.length)
+      addReferences('image', [dragMedia], dropAt ? dropAt.index + (dropAt.after ? 1 : 0) : rows.length)
     }
     endDrag()
   }
@@ -399,7 +429,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
             if (event.target === event.currentTarget) setSelectedId(null)
           }}
         >
-          {rows.map((row, index) => rendersOnWebsite(row.blockType) && (
+          {rows.map((row, index) => rendersOnWebsite(row) && (
             <FlowItem
               key={row.id}
               row={row}
@@ -441,12 +471,12 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
         </div>
       </div>
 
-      {rows.some((row) => !rendersOnWebsite(row.blockType)) && (
+      {rows.some((row) => !rendersOnWebsite(row)) && (
         <div className="flow-editor__offstage">
           <div className="flow-editor__tray-title">{t('flow:offstage')}</div>
           {rows.map(
             (row, index) =>
-              !rendersOnWebsite(row.blockType) && (
+              !rendersOnWebsite(row) && (
                 <OffstageItem
                   key={row.id}
                   row={row}
@@ -488,7 +518,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
                 className="flow-editor__tray-image"
                 title={media.filename}
                 draggable
-                onClick={() => addReferences('image', 'image', [media.id])}
+                onClick={() => addReferences('image', [media.id])}
                 onDragStart={(event) => {
                   event.dataTransfer.effectAllowed = 'copy'
                   event.dataTransfer.setData('text/plain', String(media.id))
@@ -508,12 +538,11 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
         allowCreate
         enableRowSelections
         onSelect={({ doc }) => {
-          addReferences('image', 'image', [doc.id])
+          addReferences('image', [doc.id])
           closeMediaDrawer()
         }}
         onBulkSelect={(selection) => {
           addReferences(
-            'image',
             'image',
             [...selection.entries()].filter(([, on]) => on).map(([id]) => id),
           )
@@ -522,7 +551,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
       />
       <TopicDrawer
         onSelect={({ doc }) => {
-          addReferences('topicReference', 'topic', [doc.id])
+          addReferences('topicReference', [doc.id])
           closeTopicDrawer()
         }}
       />
@@ -530,7 +559,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
       <Drawer
         slug={editDrawerSlug}
         title={
-          editRow && BLOCK_LABELS[editRow.blockType]
+          editRow && isFlowBlockType(editRow.blockType)
             ? t('flow:editBlock', { block: blockLabel(t, editRow.blockType) })
             : t('flow:editAnyBlock')
         }
@@ -595,7 +624,12 @@ const useProjectImages = (rows: Row[]) => {
   }, [collectionSlug, id, serverURL, api])
 
   return useMemo(() => {
-    const used = new Set(rows.map((row) => String(row.image)))
+    const used = new Set(
+      rows
+        .map(referenceOf)
+        .filter((ref) => ref?.collection === 'media')
+        .map((ref) => String(ref?.id)),
+    )
     return images.filter((media) => !used.has(String(media.id)))
   }, [images, rows])
 }
@@ -619,7 +653,7 @@ type FlowItemProps = {
 
 const FlowItem: React.FC<FlowItemProps> = ({ row, docFor, readOnly, selected, dragging, dropSide, toolbar, ...handlers }) => {
   const t = useT()
-  const size = isFlowSize(row.size) ? row.size : 'full'
+  const size = sizeOf(row.size)
   const isText = row.blockType === 'text'
   const className = [
     isText ? 'textelement' : 'figure-wrapper',
@@ -674,15 +708,17 @@ const OffstageItem: React.FC<{
   onRemove: () => void
 }> = ({ row, docFor, readOnly, onEdit, onRemove }) => {
   const t = useT()
-  const news = row.news ? docFor({ collection: 'news', id: row.news }) : null
-  const image = imageSource(news?.image)
+  const ref = referenceOf(row)
+  const doc = ref ? docFor(ref) : null
+  const preview = ref && PREVIEWS[ref.collection]
+  const image = imageSource(doc && preview ? preview.image(doc) : null)
   return (
     <div className={`flow-editor__offstage-item${row.hasError ? ' flow-editor__item--error' : ''}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {image?.src ? <img src={image.src} alt="" /> : <span className="flow-editor__offstage-noimg" />}
       <span className="flow-editor__offstage-title">
         {blockLabel(t, row.blockType)}:{' '}
-        {news === undefined ? t('flow:loading') : (news?.title ?? t('flow:notFound'))}
+        {doc === undefined ? t('flow:loading') : ((doc && preview?.caption(doc)) ?? t('flow:notFound'))}
       </span>
       {!readOnly && (
         <>
@@ -715,28 +751,14 @@ const TextContent: React.FC<{ row: Row }> = ({ row }) => {
 }
 
 const FigureContent: React.FC<{ row: Row; docFor: ReturnType<typeof useReferencedDocs> }> = ({ row, docFor }) => {
-  let media: Record<string, any> | null | undefined
-  let caption: string | undefined
   const t = useT()
-  let missing = t('flow:noImage')
-
-  if (row.blockType === 'image' && row.image) {
-    media = docFor({ collection: 'media', id: row.image })
-    caption = media?.project?.name
-    missing = t('flow:imageNotFound')
-  } else if (row.blockType === 'topicReference' && row.topic) {
-    const topic = docFor({ collection: 'topics', id: row.topic })
-    media = topic === undefined ? undefined : (topic?.image ?? null)
-    caption = topic?.name
-    missing = topic ? t('flow:topicHasNoImage') : t('flow:topicNotFound')
-  } else if (row.blockType === 'newsReference' && row.news) {
-    const news = docFor({ collection: 'news', id: row.news })
-    media = news === undefined ? undefined : (news?.image ?? null)
-    caption = news?.title
-    missing = news ? t('flow:newsHasNoImage') : t('flow:newsNotFound')
-  } else {
-    media = null
-  }
+  const ref = referenceOf(row)
+  const preview = ref && PREVIEWS[ref.collection]
+  // `undefined` while the document loads, `null` when there's none.
+  const doc = ref ? docFor(ref) : null
+  const media = doc === undefined ? undefined : doc && preview ? (preview.image(doc) ?? null) : null
+  const caption = doc && preview ? preview.caption(doc) : undefined
+  const missing = preview ? t(doc ? preview.noImage : preview.notFound) : t('flow:noImage')
 
   const image = imageSource(media)
   return (
@@ -771,7 +793,7 @@ const ItemToolbar: React.FC<ItemToolbarProps> = ({ row, canMoveBack, canMoveForw
   const t = useT()
   const ref = useRef<HTMLDivElement>(null)
   const [alignRight, setAlignRight] = useState(false)
-  const size = isFlowSize(row.size) ? row.size : 'full'
+  const size = sizeOf(row.size)
   const active = new Set(row.modifiers ?? [])
 
   // Open towards the side with room, so toolbars of blocks near the right edge stay visible.
@@ -809,7 +831,7 @@ const ItemToolbar: React.FC<ItemToolbarProps> = ({ row, canMoveBack, canMoveForw
         </button>
       </div>
       <div className="flow-editor__group">
-        {toolbarModifiers(row.blockType).map((modifier) => (
+        {(flowBlock(row.blockType)?.modifiers ?? []).map((modifier) => (
           <button
             key={modifier}
             type="button"
