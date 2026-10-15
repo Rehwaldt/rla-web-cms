@@ -1,3 +1,4 @@
+import { JSDOM } from 'jsdom'
 import {
   FLOW_BLOCKS,
   type FlowBlockType,
@@ -71,6 +72,61 @@ export function legacyHref(href: string): { project: string } | { url: string } 
   if (page) return { url: page[1].toLowerCase() === 'index' ? '/' : `/${page[1]}` }
   if (/^[^\s@/:]+@[^\s@/:]+\.[a-z]{2,}$/i.test(href)) return { url: `mailto:${href}` }
   return null
+}
+
+// ---------------------------------------------------------------------------------------------
+// Timeline: a page's definition list (<dt>period</dt><dd>entry</dd>…), e.g. the founder's CV
+// ---------------------------------------------------------------------------------------------
+
+let timelineDom: JSDOM | undefined
+
+// Only <br> breaks a line; line breaks in the HTML source are plain whitespace.
+const LINE_BREAK = ''
+const elementText = (element: Element): string => {
+  element.querySelectorAll('br').forEach((br) => br.replaceWith(LINE_BREAK))
+  return (element.textContent ?? '')
+    .split(LINE_BREAK)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
+}
+
+/**
+ * Moves the definition lists out of a page's HTML into timeline entries, since Lexical has no
+ * definition list. Returns the remaining HTML (null if nothing is left). The legacy lists leave
+ * some `<dd>` unclosed and have stray empty ones; the HTML parser and the empty-entry check
+ * absorb that.
+ */
+export function splitTimeline(
+  ctx: PlanContext,
+  html: string | null,
+  where: string,
+): { html: string | null; timeline: Data[] } {
+  if (!html || !/<dl\b/i.test(html)) return { html, timeline: [] }
+  timelineDom ??= new JSDOM('')
+  const container = timelineDom.window.document.createElement('div')
+  container.innerHTML = html
+  const timeline: { period: string; text: string }[] = []
+  for (const list of container.querySelectorAll('dl')) {
+    for (const item of list.children) {
+      const text = elementText(item)
+      if (item.tagName === 'DT') timeline.push({ period: text, text: '' })
+      else if (item.tagName === 'DD' && text) {
+        const entry = timeline.at(-1)
+        if (entry) entry.text = entry.text ? `${entry.text}\n${text}` : text
+        else ctx.report.add('Timeline entry without a period (dropped)', `${where}: ${text}`)
+      }
+    }
+    list.remove()
+  }
+  for (const { period, text } of timeline) {
+    if (!period || !text) ctx.report.add('Incomplete timeline entry (dropped)', `${where}: "${period}" "${text}"`)
+  }
+  ctx.report.add('Definition list (moved to the timeline)', where)
+  return {
+    html: container.textContent?.trim() ? container.innerHTML.trim() : null,
+    timeline: timeline.filter(({ period, text }) => period && text),
+  }
 }
 
 // ---------------------------------------------------------------------------------------------

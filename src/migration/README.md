@@ -67,6 +67,9 @@ minutes, since every content document is written once per locale and phase.
 - **Read more** (`projekte.text_{lang}`): the comment `<!--RM-->` marks where the project text is
   cut. Lexical drops comments, so it becomes a horizontal rule at the same spot, splitting the
   paragraph it sits in. The website cuts at the first rule.
+- **Definition lists** (`buero.text_{lang}`, only `buero-vita`): `<dt>`/`<dd>` pairs →
+  `pages.timeline` (per language, the lists differ), since Lexical has no definition list. Empty
+  and unclosed `<dd>`s in the legacy lists are absorbed.
 - **Image → project** (`bilder.projekt`): project code → `media.project`; folder names starting
   with `_` (`_aktuell`, `_Team`) mean no project.
 - **Dropped, not rendered by the current site**: `galeriebild`, `titelbilder`,

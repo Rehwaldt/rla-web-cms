@@ -31,7 +31,9 @@ labels use these words so that one concept never gets two German names.
 - **Publication** (de: *Publikation*): a book, or a piece published in a journal or in a book.
 - **Job** (de: *Stellenangebot*): open position at an office.
 - **Page** (de: *Seite*): stand-alone website page (office profile, contact, imprint, …) fetched
-  by its **key** (de: *Seitenschlüssel*).
+  by its **key** (de: *Seitenschlüssel*). A page can carry a **timeline** (de: *Zeitleiste*):
+  periods (de: *Zeitraum*) with an entry (de: *Eintrag*) each, shown in two columns, e.g. the
+  founder's CV.
 - **Employee** (de: *Mitarbeitende*): public team profile.
 - **Office** (de: *Büro*): an office location (Dresden, Berlin, Prague, Beijing, …).
 

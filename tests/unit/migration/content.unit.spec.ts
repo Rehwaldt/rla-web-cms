@@ -172,6 +172,24 @@ describe('planPages', () => {
     expect(issues('Page with an unmapped key (skipped)')).toEqual(['page 3 (unknown)'])
   })
 
+  it('turns the CV definition list into a timeline per language', () => {
+    const { ctx } = harness({
+      buero: [
+        {
+          index: 5,
+          seite: 'buero-vita',
+          text_de: '<dl><dt>2006</dt><dd>Büro in Peking</dd></dl>',
+          text_zh: '<dl><dt>1965年</dt><dd>出生于罗斯托克</dd></dl>',
+        },
+      ],
+    })
+    const [page] = planPages(ctx)
+    expect(page.data).toMatchObject({ key: 'founder-vita', timeline: [{ period: '2006', text: 'Büro in Peking' }] })
+    expect(page.data.content).toBeUndefined()
+    expect(page.localized.zh?.timeline).toEqual([{ period: '1965年', text: '出生于罗斯托克' }])
+    expect(page.localized.en).toBeUndefined()
+  })
+
   it('gives each language its own flow, with text falling back to en, then de', () => {
     const [page] = plan().plans
     expect(page.data.flow).toMatchObject([{ blockType: 'text', title: 'Titel' }])

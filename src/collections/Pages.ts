@@ -39,6 +39,43 @@ export const Pages: CollectionConfig = {
     { name: 'subtitle', label: { en: 'Subtitle', de: 'Untertitel' }, type: 'textarea', localized: true },
     { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
     ...richTextField('content', { en: 'Content', de: 'Inhalt' }),
+    {
+      name: 'timeline',
+      label: { en: 'Timeline', de: 'Zeitleiste' },
+      labels: {
+        singular: { en: 'Entry', de: 'Eintrag' },
+        plural: { en: 'Entries', de: 'Einträge' },
+      },
+      type: 'array',
+      localized: true,
+      admin: {
+        description: {
+          en: 'Periods and what happened in them, shown as two columns after the content, e.g. a CV.',
+          de: 'Zeiträume und was in ihnen geschah, zweispaltig nach dem Inhalt dargestellt, z. B. ein Lebenslauf.',
+        },
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'period',
+              label: { en: 'Period', de: 'Zeitraum' },
+              type: 'text',
+              required: true,
+              admin: { width: '25%' },
+            },
+            {
+              name: 'text',
+              label: { en: 'Entry', de: 'Eintrag' },
+              type: 'textarea',
+              required: true,
+              admin: { width: '75%' },
+            },
+          ],
+        },
+      ],
+    },
     flowField({ localized: true }),
     legacyIdField,
   ],

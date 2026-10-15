@@ -7,6 +7,7 @@ import {
   localesWithValue,
   parseLinks,
   resolveCountry,
+  splitTimeline,
 } from '@/migration/plan/parsers'
 import { ref } from '@/migration/plan/types'
 import { harness } from './fixtures'
@@ -44,6 +45,40 @@ describe('legacyHref', () => {
     expect(legacyHref('https://example.com/a.php')).toBeNull()
     expect(legacyHref('mailto:mail@rehwaldt.de')).toBeNull()
     expect(legacyHref('projekt.php?id=3')).toBeNull()
+  })
+})
+
+describe('splitTimeline', () => {
+  it('moves definition-list pairs into timeline entries and keeps the rest', () => {
+    const { ctx, issues } = harness()
+    const html = '<p>Intro</p><dl class="curriculum">\n  <dt>1985-1990</dt>\n  <dd>Studium,\n TU Dresden</dd><dt>seit 1993</dt><dd>a<br />b</dd></dl>'
+    expect(splitTimeline(ctx, html, 'page 1')).toEqual({
+      html: '<p>Intro</p>',
+      timeline: [
+        { period: '1985-1990', text: 'Studium, TU Dresden' },
+        { period: 'seit 1993', text: 'a\nb' },
+      ],
+    })
+    expect(issues('Definition list (moved to the timeline)')).toEqual(['page 1'])
+  })
+
+  it('absorbs unclosed and empty <dd>s, and leaves nothing if the list was all', () => {
+    const { ctx, issues } = harness()
+    const html = '<dl><dd>orphan</dd><dt>2016</dt><dd>Prag<dt>2019</dt><dd>Berlin<dd>\n</dl>'
+    expect(splitTimeline(ctx, html, 'p')).toEqual({
+      html: null,
+      timeline: [
+        { period: '2016', text: 'Prag' },
+        { period: '2019', text: 'Berlin' },
+      ],
+    })
+    expect(issues('Timeline entry without a period (dropped)')).toEqual(['p: orphan'])
+  })
+
+  it('passes HTML without a definition list through', () => {
+    const { ctx } = harness()
+    expect(splitTimeline(ctx, '<p>x</p>', 'p')).toEqual({ html: '<p>x</p>', timeline: [] })
+    expect(splitTimeline(ctx, null, 'p')).toEqual({ html: null, timeline: [] })
   })
 })
 
