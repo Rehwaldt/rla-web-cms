@@ -111,7 +111,18 @@ export const Projects: CollectionConfig = {
                 },
               },
             },
-            ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+            ...richTextField(
+              'description',
+              { en: 'Description', de: 'Beschreibung' },
+              {
+                admin: {
+                  description: {
+                    en: 'The website shows the text up to the first horizontal rule; the rest opens with "…". Without a rule, it cuts after the third paragraph.',
+                    de: 'Die Website zeigt den Text bis zur ersten horizontalen Linie, der Rest öffnet sich über „…“. Ohne Linie wird nach dem dritten Absatz gekürzt.',
+                  },
+                },
+              },
+            ),
             {
               name: 'categories',
               label: { en: 'Categories', de: 'Kategorien' },

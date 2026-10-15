@@ -60,6 +60,9 @@ minutes, since every content document is written once per locale and phase.
   `completionYear`.
 - **Country** (`land_{lang}`): free text in four languages → ISO code; region names
   (`Sachsen`, `Provinz Guangdong`, …) → `region` + their country.
+- **Read more** (`projekte.text_{lang}`): the comment `<!--RM-->` marks where the project text is
+  cut. Lexical drops comments, so it becomes a horizontal rule at the same spot, splitting the
+  paragraph it sits in. The website cuts at the first rule.
 - **Image → project** (`bilder.projekt`): project code → `media.project`; folder names starting
   with `_` (`_aktuell`, `_Team`) mean no project.
 - **Dropped, not rendered by the current site**: `galeriebild`, `titelbilder`,

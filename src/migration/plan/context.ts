@@ -37,6 +37,8 @@ export const cleanProjectCode = (code: string | null): string | null =>
   !code || code.toLowerCase() === PROJECT_CODE_PLACEHOLDER ? null : code
 
 const HTML_PATTERN = /<[a-z/!][^>]*>|&[a-z#0-9]+;/i
+// Elements that stay inside a paragraph; anything else ends a run of loose inline content.
+const INLINE_TAGS = new Set(['A', 'B', 'BR', 'EM', 'FONT', 'I', 'SMALL', 'SPAN', 'STRONG', 'SUB', 'SUP', 'U'])
 
 export function createPlanContext(
   snapshot: LegacySnapshot,
@@ -72,11 +74,53 @@ export function createPlanContext(
   const escapeHtml = (text: string) =>
     text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
+  // Legacy project texts mark where "read more" cuts them with `<!--RM-->`. Lexical has no comment
+  // node, so the marker becomes a horizontal rule, splitting the paragraph it sits in. The legacy
+  // markers sit either in a top-level paragraph or loose between top-level nodes.
+  const { document, Node, NodeFilter } = dom.window
+  const isBlank = (node: Node | null) =>
+    node !== null && (node.nodeName === 'BR' || (node.nodeType === Node.TEXT_NODE && !node.textContent?.trim()))
+  const isInline = (node: Node | null) =>
+    node !== null && (node.nodeType !== Node.ELEMENT_NODE || INLINE_TAGS.has(node.nodeName))
+  const markReadMore = (html: string, where: string): string => {
+    if (!html.includes('<!--')) return html
+    scratch.innerHTML = html
+    const walker = document.createTreeWalker(scratch, NodeFilter.SHOW_COMMENT)
+    let marker: Node | null
+    while ((marker = walker.nextNode()) && marker.nodeValue?.trim() !== 'RM');
+    if (!marker) return html
+    let block = marker.parentNode as Element
+    if (block === scratch) {
+      // Loose text with line breaks: put the inline run around the marker into a paragraph first.
+      let first: Node = marker
+      let last: Node = marker
+      while (isInline(first.previousSibling)) first = first.previousSibling!
+      while (isInline(last.nextSibling)) last = last.nextSibling!
+      block = document.createElement('p')
+      scratch.insertBefore(block, first)
+      for (let node: Node | null = first, end = last.nextSibling; node !== end; ) {
+        const next: Node | null = node!.nextSibling
+        block.appendChild(node!)
+        node = next
+      }
+    }
+    const before = block.cloneNode(false) as Element
+    const after = block.cloneNode(false) as Element
+    while (block.firstChild !== marker) before.appendChild(block.firstChild!)
+    marker.parentNode!.removeChild(marker)
+    while (block.firstChild) after.appendChild(block.firstChild)
+    while (isBlank(before.lastChild)) before.removeChild(before.lastChild!)
+    while (isBlank(after.firstChild)) after.removeChild(after.firstChild!)
+    block.replaceWith(...[before, document.createElement('hr'), after].filter((node) => node.nodeName === 'HR' || node.textContent?.trim()))
+    report.add('Read-more marker (converted to a horizontal rule)', where)
+    return scratch.innerHTML
+  }
+
   const richText: PlanContext['richText'] = (value, where) => {
     if (!value) return null
     const isHtml = /<[a-z/!][^>]*>/i.test(value)
     const html = isHtml
-      ? value
+      ? markReadMore(value, where)
       : `<p>${escapeHtml(value).replace(/\r?\n/g, '<br>')}</p>`
     if (isHtml) {
       const oldLinks = value.match(/href=["'][^"']*\.php[^"']*["']/gi)

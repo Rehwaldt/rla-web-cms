@@ -34,6 +34,32 @@ describe('richText', () => {
     expect(ctx.richText('a < b\nc', 'x')).toEqual({ html: '<p>a &lt; b<br>c</p>' })
   })
 
+  describe('read-more marker', () => {
+    const html = (value: string) => (harness().ctx.richText(value, 'x') as { html: string }).html
+
+    it('splits the paragraph at the marker with a horizontal rule', () => {
+      expect(html('<p>a.<!--RM--><br>b</p>')).toBe('<p>a.</p><hr><p>b</p>')
+      expect(html('<p>a</p>\n<p><!--RM-->b</p>')).toBe('<p>a</p>\n<hr><p>b</p>')
+      expect(html('<p>a.<!--RM--></p>\n<p>b</p>')).toBe('<p>a.</p><hr>\n<p>b</p>')
+    })
+
+    it('replaces a paragraph holding only the marker', () => {
+      expect(html('<p>a</p><p><!--RM--></p><p>b</p>')).toBe('<p>a</p><hr><p>b</p>')
+    })
+
+    it('wraps loose text around the marker in paragraphs', () => {
+      expect(html('a<br>b. <!--RM-->c<br>d')).toBe('<p>a<br>b. </p><hr><p>c<br>d</p>')
+      expect(html('<p>a</p><!--RM--> <p>b</p>')).toBe('<p>a</p><hr><p>b</p>')
+    })
+
+    it('reports each converted marker and leaves other comments alone', () => {
+      const { ctx, issues } = harness()
+      ctx.richText('<p>a<!--RM-->b</p>', 'project 1')
+      expect(issues('Read-more marker (converted to a horizontal rule)')).toEqual(['project 1'])
+      expect(ctx.richText('<p>a<!-- note --></p>', 'x')).toEqual({ html: '<p>a<!-- note --></p>' })
+    })
+  })
+
   it('flags old *.php links and structured HTML', () => {
     const { ctx, issues } = harness()
     ctx.richText('<p><a href="projekt.php?id=1">x</a></p><table></table>', 'x')
