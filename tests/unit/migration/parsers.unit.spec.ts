@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   flowBlocks,
   flowTextElementIds,
+  legacyHref,
   localesWithFlag,
   localesWithValue,
   parseLinks,
@@ -21,6 +22,28 @@ describe('localesWithFlag / localesWithValue', () => {
   it('treats any non-null value as visible', () => {
     const row = { titel_de: 'x', titel_en: null, titel_zh: 0, titel_cz: null }
     expect(localesWithValue(row, 'titel')).toEqual(['de', 'zh'])
+  })
+})
+
+describe('legacyHref', () => {
+  it('maps old project URLs to the project code, with or without a language', () => {
+    expect(legacyHref('projekt.php?proj=CWD')).toEqual({ project: 'CWD' })
+    expect(legacyHref('projekt.php?lang=en&proj=GYB')).toEqual({ project: 'GYB' })
+  })
+
+  it('maps old pages to language-less website paths', () => {
+    expect(legacyHref('aktuell.php')).toEqual({ url: '/aktuell' })
+    expect(legacyHref('projekte.php?lang=en')).toEqual({ url: '/projekte' })
+  })
+
+  it('adds mailto: to bare e-mail addresses', () => {
+    expect(legacyHref('mail@rehwaldt.de')).toEqual({ url: 'mailto:mail@rehwaldt.de' })
+  })
+
+  it('keeps everything else', () => {
+    expect(legacyHref('https://example.com/a.php')).toBeNull()
+    expect(legacyHref('mailto:mail@rehwaldt.de')).toBeNull()
+    expect(legacyHref('projekt.php?id=3')).toBeNull()
   })
 })
 

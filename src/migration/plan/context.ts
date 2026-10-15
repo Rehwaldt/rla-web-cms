@@ -2,12 +2,16 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import { JSDOM } from 'jsdom'
+import { validateUrl } from '@payloadcms/richtext-lexical'
 import type { LegacySnapshot, Row } from '../legacy'
 import { num, str } from '../legacy'
 import type { Report } from '../report'
+import { legacyHref } from './parsers'
 import { type Locale, LEGACY_SUFFIX, type Ref, ref } from './types'
 
 export type RichTextConverter = (html: string) => unknown
+
+type LexicalNode = { type?: string; fields?: Record<string, unknown>; children?: LexicalNode[] }
 
 // Everything planners share: text cleanup, HTML → rich text, and lookups that turn legacy
 // identifiers into refs (reporting whatever doesn't resolve).
@@ -116,20 +120,44 @@ export function createPlanContext(
     return scratch.innerHTML
   }
 
+  // Lexical encodes a link URL it doesn't consider valid again on every save, so legacy hrefs are
+  // rewritten into ones it accepts: old *.php pages into website paths or internal project links,
+  // bare e-mail addresses into mailto: links. Whatever stays invalid is reported.
+  const rewriteLinks = (node: LexicalNode, where: string): void => {
+    const fields = node.fields
+    if ((node.type === 'link' || node.type === 'autolink') && fields && fields.linkType !== 'internal') {
+      const url = typeof fields.url === 'string' ? fields.url : ''
+      const target = legacyHref(url)
+      if (target && 'project' in target) {
+        const project = projectRef(target.project, `${where} link`)
+        if (project) {
+          delete fields.url
+          Object.assign(fields, { linkType: 'internal', doc: { relationTo: 'projects', value: project } })
+          report.add('Legacy link in rich text (rewritten)', `${where}: ${url} → project ${target.project}`)
+        }
+      } else if (target) {
+        fields.url = target.url
+        report.add('Legacy link in rich text (rewritten)', `${where}: ${url} → ${target.url}`)
+      }
+      if (fields.linkType !== 'internal' && !validateUrl(String(fields.url ?? ''))) {
+        report.add('Link URL Lexical would encode on every save (check by hand)', `${where}: ${fields.url}`)
+      }
+    }
+    node.children?.forEach((child) => rewriteLinks(child, where))
+  }
+
   const richText: PlanContext['richText'] = (value, where) => {
     if (!value) return null
     const isHtml = /<[a-z/!][^>]*>/i.test(value)
     const html = isHtml
       ? markReadMore(value, where)
       : `<p>${escapeHtml(value).replace(/\r?\n/g, '<br>')}</p>`
-    if (isHtml) {
-      const oldLinks = value.match(/href=["'][^"']*\.php[^"']*["']/gi)
-      if (oldLinks) report.add('Link to an old *.php URL in rich text', `${where}: ${oldLinks.join(', ')}`)
-      if (/<(dl|table|iframe|script)\b|style=/i.test(value)) {
-        report.add('Structured or styled HTML in rich text (check by hand)', where)
-      }
+    if (isHtml && /<(dl|table|iframe|script)\b|style=/i.test(value)) {
+      report.add('Structured or styled HTML in rich text (check by hand)', where)
     }
-    return convertHtml(html)
+    const converted = convertHtml(html) as { root?: LexicalNode }
+    if (converted?.root) rewriteLinks(converted.root, where)
+    return converted
   }
 
   const plainByLocale: PlanContext['plainByLocale'] = (row, base, where) =>

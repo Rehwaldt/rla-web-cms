@@ -52,6 +52,10 @@ minutes, since every content document is written once per locale and phase.
 - **Project codes** (`kuerzel`): the placeholder `zz` → no code. References resolve
   case-insensitively (MySQL collation), e.g. `ggr` → `GGR`.
 - **Links** (`links_{lang}`): `label;url|label;proj:CODE` → `links` items, `proj:` → project link.
+- **Links in rich text**: Lexical encodes a link URL it considers invalid again on every save, so
+  legacy hrefs are rewritten: `projekt.php?…proj=CODE` → internal link to the project (the HTML
+  twin renders it as `/p/CODE`), `aktuell.php` etc. → `/aktuell` (the website adds the language),
+  a bare e-mail address → `mailto:`. Each rewrite is reported, and so is any URL still invalid.
 - **Flows** (`bilder_flow`, `themen.flow`, `buero.flow_{lang}`): `size modifier…:ref|…` where ref
   is an image id, `t…` text element, `f…` topic, `a…` news. `separator` is a text-block modifier.
 - **Project type**: `als_wettbewerb` → competition; else `als_projekt` → object if
@@ -71,5 +75,5 @@ minutes, since every content document is written once per locale and phase.
   unreferenced `textelemente`.
 - **Page keys**: `buero-profil` → `office-profile` etc. (English keys, mapped in the importer).
 - Anything that can't be mapped cleanly (dangling references, missing files, HTML in plain-text
-  fields, links to old `*.php` URLs, unknown countries) goes into the import report instead of
+  fields, link URLs Lexical would encode, unknown countries) goes into the import report instead of
   being guessed.

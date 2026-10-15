@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { byLocale, docPlan } from '@/migration/plan/build'
-import { cleanProjectCode } from '@/migration/plan/context'
+import { cleanProjectCode, createPlanContext } from '@/migration/plan/context'
 import { ref } from '@/migration/plan/types'
-import { harness } from './fixtures'
+import { Report } from '@/migration/report'
+import { filesRoot, harness, snapshot } from './fixtures'
 
 describe('plain', () => {
   it('passes plain text through and joins lines unless multiline', () => {
@@ -60,11 +61,50 @@ describe('richText', () => {
     })
   })
 
-  it('flags old *.php links and structured HTML', () => {
+  it('flags structured HTML', () => {
     const { ctx, issues } = harness()
-    ctx.richText('<p><a href="projekt.php?id=1">x</a></p><table></table>', 'x')
-    expect(issues('Link to an old *.php URL in rich text')).toEqual(['x: href="projekt.php?id=1"'])
+    ctx.richText('<p>x</p><table></table>', 'x')
     expect(issues('Structured or styled HTML in rich text (check by hand)')).toEqual(['x'])
+  })
+
+  describe('links', () => {
+    // A converter that turns `<a>{url}</a>` into one link to that URL.
+    const linkTo = (url: string) => {
+      const report = new Report()
+      const ctx = createPlanContext(snapshot({ projekte: [{ ID: 7, kuerzel: 'CWD' }] }), report, filesRoot(), (html) => ({
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'link', fields: { linkType: 'custom', newTab: false, url: html.replace(/<\/?a>/g, '') } }],
+            },
+          ],
+        },
+      }))
+      const result = ctx.richText(`<a>${url}</a>`, 'news 1') as { root: { children: { children: { fields: unknown }[] }[] } }
+      return { fields: result.root.children[0].children[0].fields, summary: report.summary() }
+    }
+
+    it('turns old project URLs into internal links to the project', () => {
+      expect(linkTo('projekt.php?lang=en&proj=cwd').fields).toEqual({
+        linkType: 'internal',
+        newTab: false,
+        doc: { relationTo: 'projects', value: ref('projects', 7) },
+      })
+    })
+
+    it('rewrites old pages and bare e-mail addresses, and reports it', () => {
+      expect(linkTo('aktuell.php?lang=en').fields).toMatchObject({ linkType: 'custom', url: '/aktuell' })
+      const { fields, summary } = linkTo('mail@rehwaldt.de')
+      expect(fields).toMatchObject({ url: 'mailto:mail@rehwaldt.de' })
+      expect(summary).toContain('Legacy link in rich text (rewritten): 1')
+    })
+
+    it('reports URLs Lexical would encode, and leaves valid ones alone', () => {
+      expect(linkTo('https://example.com/a?b=c').summary).not.toContain('check by hand')
+      expect(linkTo('../plan.pdf').summary).toContain('Link URL Lexical would encode on every save (check by hand): 1')
+    })
   })
 })
 
