@@ -50,7 +50,7 @@ export const Awards: CollectionConfig = {
         },
       ],
     },
-    richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     linksField,
     visibleInField,
     legacyIdField,

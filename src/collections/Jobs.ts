@@ -42,7 +42,7 @@ export const Jobs: CollectionConfig = {
         },
       ],
     },
-    richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     visibleInField,
     legacyIdField,
   ],

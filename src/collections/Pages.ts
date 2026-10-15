@@ -38,7 +38,7 @@ export const Pages: CollectionConfig = {
     { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
     { name: 'subtitle', label: { en: 'Subtitle', de: 'Untertitel' }, type: 'textarea', localized: true },
     { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
-    richTextField('content', { en: 'Content', de: 'Inhalt' }),
+    ...richTextField('content', { en: 'Content', de: 'Inhalt' }),
     flowField({ localized: true }),
     legacyIdField,
   ],

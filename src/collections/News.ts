@@ -44,7 +44,7 @@ export const News: CollectionConfig = {
         },
       ],
     },
-    richTextField('content', { en: 'Content', de: 'Inhalt' }),
+    ...richTextField('content', { en: 'Content', de: 'Inhalt' }),
     linksField,
     visibleInField,
     legacyIdField,

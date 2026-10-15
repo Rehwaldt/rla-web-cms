@@ -111,7 +111,7 @@ export const Projects: CollectionConfig = {
                 },
               },
             },
-            richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+            ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
             {
               name: 'categories',
               label: { en: 'Categories', de: 'Kategorien' },

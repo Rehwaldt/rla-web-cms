@@ -29,7 +29,7 @@ export const Offices: CollectionConfig = {
       validate: requiredInDefaultLocale,
     },
     { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
-    richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     {
       type: 'tabs',
       tabs: [
@@ -103,7 +103,7 @@ export const Offices: CollectionConfig = {
                 { name: 'email', label: { en: 'Email', de: 'E-Mail' }, type: 'email' },
               ],
             },
-            richTextField('contactNote', { en: 'Contact note', de: 'Kontakthinweis' }, {
+            ...richTextField('contactNote', { en: 'Contact note', de: 'Kontakthinweis' }, {
               admin: {
                 description: {
                   en: 'Extra contact details for one language, e.g. a local contact person.',

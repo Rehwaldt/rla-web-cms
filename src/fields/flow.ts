@@ -109,7 +109,7 @@ const BLOCKS: Record<FlowBlockType, Block> = {
     labels: { singular: { en: 'Text', de: 'Text' }, plural: { en: 'Texts', de: 'Texte' } },
     fields: [
       { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
-      richTextField('body', { en: 'Text', de: 'Text' }),
+      ...richTextField('body', { en: 'Text', de: 'Text' }),
     ],
   }),
   newsReference: block('newsReference', {

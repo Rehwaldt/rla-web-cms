@@ -192,6 +192,7 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  descriptionHtml?: string | null;
   categories?: (number | ProjectCategory)[] | null;
   /**
    * Similarity is symmetric: projects listing this one appear under "Listed as similar by".
@@ -421,6 +422,7 @@ export interface FlowTextBlock {
     };
     [k: string]: unknown;
   } | null;
+  bodyHtml?: string | null;
   size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
   modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin' | 'separator')[] | null;
   id?: string | null;
@@ -463,6 +465,7 @@ export interface News {
     };
     [k: string]: unknown;
   } | null;
+  contentHtml?: string | null;
   /**
    * Each language keeps its own list of links.
    */
@@ -528,6 +531,7 @@ export interface Topic {
     };
     [k: string]: unknown;
   } | null;
+  descriptionHtml?: string | null;
   projects?: (number | Project)[] | null;
   /**
    * Grid of images, texts and references.
@@ -569,6 +573,7 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
+  contentHtml?: string | null;
   /**
    * Grid of images, texts and references. Each language has its own flow.
    */
@@ -607,6 +612,7 @@ export interface Award {
     };
     [k: string]: unknown;
   } | null;
+  descriptionHtml?: string | null;
   /**
    * Each language keeps its own list of links.
    */
@@ -746,6 +752,7 @@ export interface Office {
     };
     [k: string]: unknown;
   } | null;
+  descriptionHtml?: string | null;
   address?: {
     /**
      * Name on the letterbox.
@@ -784,6 +791,7 @@ export interface Office {
     };
     [k: string]: unknown;
   } | null;
+  contactNoteHtml?: string | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
@@ -815,6 +823,7 @@ export interface Job {
     };
     [k: string]: unknown;
   } | null;
+  descriptionHtml?: string | null;
   /**
    * Languages whose website lists this entry. It stays reachable by direct link in all of them.
    */
@@ -854,6 +863,7 @@ export interface Mine {
     };
     [k: string]: unknown;
   } | null;
+  contentHtml?: string | null;
   siteType?: ('open_cast' | 'external_dump' | 'underground' | 'quarry' | 'mountaintop_removal')[] | null;
   status?: ('in_use' | 'in_revitalization' | 'revitalized') | null;
   closureYear?: number | null;
@@ -1053,6 +1063,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   motto?: T;
   summary?: T;
   description?: T;
+  descriptionHtml?: T;
   categories?: T;
   similarProjects?: T;
   listedAsSimilarBy?: T;
@@ -1115,6 +1126,7 @@ export interface FlowImageBlockSelect<T extends boolean = true> {
 export interface FlowTextBlockSelect<T extends boolean = true> {
   title?: T;
   body?: T;
+  bodyHtml?: T;
   size?: T;
   modifiers?: T;
   id?: T;
@@ -1173,6 +1185,7 @@ export interface PagesSelect<T extends boolean = true> {
   subtitle?: T;
   image?: T;
   content?: T;
+  contentHtml?: T;
   flow?:
     | T
     | {
@@ -1195,6 +1208,7 @@ export interface NewsSelect<T extends boolean = true> {
   date?: T;
   image?: T;
   content?: T;
+  contentHtml?: T;
   links?:
     | T
     | {
@@ -1218,6 +1232,7 @@ export interface TopicsSelect<T extends boolean = true> {
   name?: T;
   image?: T;
   description?: T;
+  descriptionHtml?: T;
   projects?: T;
   flow?:
     | T
@@ -1243,6 +1258,7 @@ export interface AwardsSelect<T extends boolean = true> {
   month?: T;
   image?: T;
   description?: T;
+  descriptionHtml?: T;
   links?:
     | T
     | {
@@ -1328,6 +1344,7 @@ export interface OfficesSelect<T extends boolean = true> {
   name?: T;
   image?: T;
   description?: T;
+  descriptionHtml?: T;
   address?:
     | T
     | {
@@ -1346,6 +1363,7 @@ export interface OfficesSelect<T extends boolean = true> {
         email?: T;
       };
   contactNote?: T;
+  contactNoteHtml?: T;
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1359,6 +1377,7 @@ export interface JobsSelect<T extends boolean = true> {
   date?: T;
   office?: T;
   description?: T;
+  descriptionHtml?: T;
   visibleIn?: T;
   legacyId?: T;
   updatedAt?: T;
@@ -1373,6 +1392,7 @@ export interface MinesSelect<T extends boolean = true> {
   title?: T;
   location?: T;
   content?: T;
+  contentHtml?: T;
   siteType?: T;
   status?: T;
   closureYear?: T;

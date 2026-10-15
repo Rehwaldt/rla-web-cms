@@ -43,7 +43,7 @@ export const Mines: CollectionConfig = {
                 },
               },
             },
-            richTextField('content', { en: 'Content', de: 'Inhalt' }),
+            ...richTextField('content', { en: 'Content', de: 'Inhalt' }),
           ],
         },
         // details

@@ -22,7 +22,7 @@ export const Topics: CollectionConfig = {
   fields: [
     { name: 'name', label: { en: 'Name', de: 'Name' }, type: 'text', localized: true },
     { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
-    richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     {
       name: 'projects',
       label: { en: 'Projects', de: 'Projekte' },
