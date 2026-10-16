@@ -163,6 +163,7 @@ export interface Project {
    * Short code shared across RLA systems and used in website URLs.
    */
   code?: string | null;
+  codeAndName?: string | null;
   type?: ('competition' | 'object' | 'concept') | null;
   /**
    * Still in planning or under construction.
@@ -1070,6 +1071,7 @@ export interface PayloadMigration {
 export interface ProjectsSelect<T extends boolean = true> {
   name?: T;
   code?: T;
+  codeAndName?: T;
   type?: T;
   ongoing?: T;
   completionYear?: T;

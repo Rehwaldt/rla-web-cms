@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { codeAndNameField } from '@/fields/codeAndName'
 import { countryField } from '@/fields/country'
 import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
@@ -16,7 +17,7 @@ export const Projects: CollectionConfig = {
     plural: { en: 'Projects', de: 'Projekte' },
   },
   admin: {
-    useAsTitle: 'name',
+    useAsTitle: 'codeAndName',
     group: GROUPS.projects,
     defaultColumns: ['name', 'code', 'type', 'completionYear', '_status'],
     listSearchableFields: ['name', 'code'],
@@ -50,6 +51,7 @@ export const Projects: CollectionConfig = {
         },
       ],
     },
+    codeAndNameField,
     {
       type: 'tabs',
       tabs: [
