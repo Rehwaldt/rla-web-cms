@@ -1,0 +1,57 @@
+# Production stack on the Hetzner server: Caddy (HTTPS) -> Payload -> Postgres/PostGIS.
+# Run from this folder with a filled-in `.env` next to it (see .env.example and README.md).
+name: rla-cms
+
+services:
+  payload:
+    build: ..
+    image: rla-web-cms:latest
+    restart: unless-stopped
+    environment:
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in deploy/.env}
+      DATABASE_URL: postgresql://payload:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/payload
+    volumes:
+      - ${MEDIA_DIR:?set MEDIA_DIR in deploy/.env}:/app/public/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    # Same major versions as the Neon development database (PostgreSQL 18, PostGIS 3.6).
+    image: postgis/postgis:18-3.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+      POSTGRES_DB: payload
+    volumes:
+      - pgdata:/var/lib/postgresql
+    # Reachable only from the server itself, e.g. through an SSH tunnel for the importer.
+    ports:
+      - 127.0.0.1:5432:5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U payload -d payload']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      CMS_DOMAIN: ${CMS_DOMAIN:?set CMS_DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - payload
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

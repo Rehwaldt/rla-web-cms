@@ -47,6 +47,12 @@ reintroduce those sources here unless asked.
   `src/migration/README.md`). Re-runnable; writes a report to `migration/reports/`.
   `pnpm migrate:website:verify [projectCode]` spot-checks the result.
 
+## Deployment
+
+Production runs on a Hetzner Cloud server as Docker Compose (Caddy, Payload, PostGIS) from
+`deploy/`; see [deploy/README.md](deploy/README.md). Never point `pnpm dev` or the importer at
+the production database without `NODE_ENV=production`, or Payload pushes the dev schema into it.
+
 ## Schema building blocks (`src/fields`, `src/access`)
 
 Reuse these instead of re-declaring the shapes:

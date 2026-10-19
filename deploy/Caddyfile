@@ -1,0 +1,6 @@
+# Caddy fetches and renews the Let's Encrypt certificate for CMS_DOMAIN by itself, as soon as
+# the domain's DNS points at this server and ports 80/443 are open.
+{$CMS_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy payload:3000
+}
