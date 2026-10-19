@@ -83,8 +83,10 @@ table → collection mapping and all legacy quirks are documented in `src/migrat
 - **Import everything**, including unpublished and retired records (as drafts), so the legacy
   database never has to be consulted again. Exceptions: legacy image slots and page sections the
   current site doesn't render, and one abandoned page draft.
-- **Images:** only images referenced by imported records, full-size originals only (Payload
-  generates the responsive sizes). Retired employees get no portrait. Uploads live in
+- **Images:** only images referenced by imported records, originals only (Payload generates the
+  responsive sizes). Every upload, imported or not, is shrunk to at most 2800 px on its longest
+  edge (#28, `src/collections/mediaMaxEdge.ts`); smaller ones are stored byte for byte, and the
+  website serves the original as its largest size. Retired employees get no portrait. Uploads live in
   `public/media` for now; production storage is decided before cutover.
 - **Consumer:** after cutover the PHP site reads Payload's REST API. Payload keeps clean names;
   any mapping to old names happens on the PHP side.

@@ -380,14 +380,6 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
-    w3000?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
   };
 }
 /**
@@ -1507,16 +1499,6 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         w1382?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        w3000?:
           | T
           | {
               url?: T;

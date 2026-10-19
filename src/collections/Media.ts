@@ -2,11 +2,13 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { GROUPS } from '@/i18n/groups'
+import { capImageSize } from './mediaMaxEdge'
 
 // Widths match the website's responsive image breakpoints. Sizes larger than the original are
 // not generated (Payload's default; `withoutEnlargement: true` would instead store a full-size
-// copy of the original under that size).
-const RESPONSIVE_WIDTHS = [480, 768, 992, 1382, 3000]
+// copy of the original under that size). Above the largest width the website serves the original,
+// which `capImageSize` keeps within MAX_EDGE.
+const RESPONSIVE_WIDTHS = [480, 768, 992, 1382]
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -19,6 +21,7 @@ export const Media: CollectionConfig = {
     defaultColumns: ['filename', 'alt', 'project'],
   },
   access: { read: anyone },
+  hooks: { beforeOperation: [capImageSize] },
   fields: [
     { name: 'alt', label: { en: 'Alt text', de: 'Alternativtext' }, type: 'text', localized: true },
     {

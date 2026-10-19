@@ -40,7 +40,7 @@ minutes, since every content document is written once per locale and phase.
 | `buero` | 13 | `pages` (`buero-profil-2026` is skipped — abandoned draft) |
 | `mitarbeiter` | 60 | `employees` |
 | `standorte` | 4 | `offices` |
-| `bilder` | 8292 | `media` — only referenced images, full-size files from `0_img/` |
+| `bilder` | 8292 | `media` — only referenced images, the files from `0_img/` (Media shrinks any over 2800 px on the longest edge) |
 | `textelemente` | 172 | inlined as text blocks into the flows that reference them (`t123`) |
 | `index_*` | — | not imported (site-search crawler index) |
 
