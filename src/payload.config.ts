@@ -10,6 +10,7 @@ import sharp from 'sharp'
 
 import { translations } from './i18n/translations'
 import { DEFAULT_LOCALE, LOCALES } from './locales'
+import { migrations } from './migrations'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -81,10 +82,14 @@ export default buildConfig({
     defaultLocale: DEFAULT_LOCALE,
     fallback: true,
   },
+  // `pnpm dev` pushes schema changes straight into the dev database. Production never pushes:
+  // it runs the migrations in `src/migrations` on startup, so every schema change needs a
+  // `pnpm payload migrate:create <name>` before it ships.
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [

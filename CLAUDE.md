@@ -38,6 +38,9 @@ reintroduce those sources here unless asked.
 - `pnpm dev` / `pnpm build` / `pnpm start`
 - `pnpm generate:types`: regenerates `src/payload-types.ts`. Run after any collection or field
   change; never hand-edit that file. `pnpm generate:importmap` after adding admin components.
+- `pnpm payload migrate:create <name>`: after any schema change that should ship. `pnpm dev`
+  pushes schema changes into the dev database, but production only runs the migrations in
+  `src/migrations` (on startup). Commit the generated files; never edit an applied migration.
 - `pnpm test:unit` (Vitest, no database; importer planners in `tests/unit/`) / `pnpm test:int`
   (Vitest, needs Postgres) / `pnpm test:e2e` (Playwright) / `pnpm test` (all). `pnpm lint`.
 - `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
