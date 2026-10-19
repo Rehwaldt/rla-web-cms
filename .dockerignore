@@ -1,0 +1,28 @@
+# Keeps secrets, uploads and local build output out of the Docker build context.
+.git
+.next
+node_modules
+*.tsbuildinfo
+
+# Secrets: the server passes its own via deploy/.env
+.env
+.env.*
+!.env.example
+
+# Uploads (4+ GB) live in a mounted host folder, not in the image
+public/media
+
+# Importer reports, test output, server-side deploy files
+migration
+test-results
+playwright-report
+blob-report
+coverage
+deploy
+Dockerfile
+docker-compose*.yml
+
+# Editor and agent folders
+.vscode
+.idea
+.claude
