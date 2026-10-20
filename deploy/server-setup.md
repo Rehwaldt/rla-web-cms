@@ -8,8 +8,8 @@ scratch. Once it's done, [README.md](README.md) takes over (first deploy, data c
 | Setting | Value |
 |---|---|
 | Location | Nuremberg (`nbg1`) |
-| Image | Ubuntu LTS |
-| Type | Shared vCPU, x86: 2 vCPU, 4 GB RAM, ~80 GB disk |
+| Image | Ubuntu 26.04 LTS |
+| Type | CPX22 (shared vCPU, AMD x86: 2 vCPU, 4 GB RAM, 80 GB disk) |
 | Networking | Public IPv4 **and** IPv6 (GitHub and the office network need IPv4) |
 | SSH key | The admin's public key (kept in Proton Pass) |
 | Backups | On (daily snapshots of the whole disk) |
