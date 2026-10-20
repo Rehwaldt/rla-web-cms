@@ -65,6 +65,10 @@ migrations, so a full dump would clash with them. Instead, the migrations create
 the server and only the **data** comes from Neon.
 
 1. Start the stack and open the admin once, so the migrations create the empty schema (above).
+   Don't create a user: the restore needs empty tables and brings Neon's users along (passwords
+   carry over). If a user was created already, empty the database first with
+   `docker compose down && docker volume rm rla-cms_pgdata && docker compose up -d`, then open
+   the admin once more.
 2. On the PC, with Docker running, dump Neon's data. In PowerShell in the repo folder, with
    `DATABASE_URL` from the repo's `.env` as the Neon URL. pg_dump warns about circular foreign
    keys; the restore below handles them.
