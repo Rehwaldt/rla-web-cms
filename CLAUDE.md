@@ -31,7 +31,8 @@ reintroduce those sources here unless asked.
 - **No legacy baggage in the schema.** Collections model the website's concepts, not the legacy
   table layout. Legacy column names, delimiters and quirks are handled in the importer only.
 - Localize human-readable text fields (`localized: true`). Don't localize codes, emails, phone
-  numbers, URLs, numbers or dates.
+  numbers, URLs, numbers or dates. A required localized field uses `requiredInDefaultLocale`, not
+  `required: true`, which demands a value in every locale.
 
 ## Commands
 
@@ -54,12 +55,17 @@ Production runs on a Hetzner Cloud server as Docker Compose (Caddy, Payload, Pos
 production** (`.github/workflows/deploy-cms.yml`, except `*.md`-only pushes); the workflow
 refuses schema changes without a migration. Never point `pnpm dev` or the importer at
 the production database without `NODE_ENV=production`, or Payload pushes the dev schema into it.
+The server's compose file needs `CMS_TAG` in its `.env` (`deploy/deploy.sh` writes it). pnpm is
+pinned via `packageManager`, and pnpm 12 also records that pin in `pnpm-lock.yaml`
+(`packageManagerDependencies`); without it `--frozen-lockfile` fails in the image build.
 
 ## Schema building blocks (`src/fields`, `src/access`)
 
 Reuse these instead of re-declaring the shapes:
 
-- `richTextField(name, label)`: localized Lexical rich text with the fixed toolbar.
+- `richTextField(name, label)`: localized Lexical rich text with the fixed toolbar. Internal links
+  may point to `projects` only; the field's `{name}Html` twin renders them as language-less
+  `/p/{code}`.
 - `flowField({ localized, captions })`: the "flow" grid of image/text/news/topic blocks with size
   and modifiers. An image's caption and link come from the media item's `project`. Edited in a
   visual editor (`src/components/cms/FlowField`) that renders the grid with `flow.css`, a port of
