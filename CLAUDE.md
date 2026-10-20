@@ -95,8 +95,9 @@ table → collection mapping and all legacy quirks are documented in `src/migrat
 - **Images:** only images referenced by imported records, originals only (Payload generates the
   responsive sizes). Every upload, imported or not, is shrunk to at most 2800 px on its longest
   edge (#28, `src/collections/mediaMaxEdge.ts`); smaller ones are stored byte for byte, and the
-  website serves the original as its largest size. Retired employees get no portrait. Uploads live in
-  `public/media` for now; production storage is decided before cutover.
+  website serves the original as its largest size. Retired employees get no portrait. Uploads stay on local
+  disk (decided 2026-10-20): `public/media` in development, `/srv/rla-cms/media` on the server
+  (mounted into the container), covered by Hetzner's daily backups. No object storage.
 - **Consumer:** after cutover the PHP site reads Payload's REST API. Payload keeps clean names;
   any mapping to old names happens on the PHP side.
 - **Projects** use Payload's automatic id. The shared project `code` is a separate unique field
