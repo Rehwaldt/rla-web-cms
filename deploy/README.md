@@ -10,8 +10,10 @@ internet ──443──> caddy ──> payload:3000 ──> postgres (PostGIS)
 ```
 
 - **caddy** terminates HTTPS for `CMS_DOMAIN` and gets the certificate by itself.
-- **payload** is the image built from the repo's [Dockerfile](../Dockerfile). On startup it runs
-  the pending migrations from `src/migrations` (see "Schema changes" below).
+- **payload** is the image built from the repo's [Dockerfile](../Dockerfile). It's built on the
+  PC and copied over by [ship.ps1](ship.ps1), because the server (2 vCPU, 4 GB) has too little
+  memory for `next build`. On startup it runs the pending migrations from `src/migrations` (see
+  "Schema changes" below).
 - **postgres** keeps its data in the `pgdata` volume. It's only reachable from the server itself.
 
 Server layout:
@@ -25,27 +27,39 @@ Server layout:
 
 ## Prerequisites on the server
 
-Docker Engine with the compose plugin, a firewall that allows only 22, 80 and 443, and swap
-(the image build needs more memory than the server has). The domain's A and AAAA records must
-point at the server before Caddy can get a certificate.
+Docker Engine with the compose plugin, the Hetzner Cloud Firewall (inbound TCP 22, 80, 443 and
+UDP 443 only) and a 2 GB swap file as a safety net. The domain's A and AAAA records must point at
+the server before Caddy can get a certificate.
 
-Docker publishes ports past `ufw`. Only Caddy's 80/443 are published publicly; keep it that way
-and bind anything else to `127.0.0.1`, as `postgres` does.
+Docker publishes ports past `ufw`, so the Cloud Firewall, which filters before the server, is the
+one that counts. Only Caddy's 80/443 are published publicly; keep it that way and bind anything
+else to `127.0.0.1`, as `postgres` does.
+
+On the PC: Docker Desktop running, and `ssh tim@<server-IP>` working in PowerShell.
 
 ## First deploy
+
+On the server, once:
 
 ```sh
 sudo mkdir -p /srv/rla-cms/media /srv/rla-cms/backups
 sudo chown -R "$USER" /srv/rla-cms
 git clone https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms/app
-cd /srv/rla-cms/app && git checkout feat/website-migration   # until it's merged
-cd deploy
+cd /srv/rla-cms/app/deploy
 cp .env.example .env
 nano .env                                  # fill in the secrets
 sudo chown -R 1001:1001 /srv/rla-cms/media
-docker compose up -d --build
-docker compose logs -f payload             # Ctrl+C to stop following
 ```
+
+Then on the PC, in PowerShell in the repo folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File deploy\ship.ps1 -Server tim@<server-IP>
+```
+
+It builds the image, uploads it (about 350 MB), checks out the same commit on the server and
+starts the stack. Follow the log on the server with `docker compose logs -f payload` in
+`/srv/rla-cms/app/deploy` (Ctrl+C stops following).
 
 Payload connects to the database on the first request. Open `https://<CMS_DOMAIN>/admin` once:
 the log shows the migrations running, and an empty database asks for the first admin user.
@@ -92,12 +106,20 @@ the server and only the **data** comes from Neon.
 
 ## Updating
 
+Commit and push, then run `ship.ps1` again (above). It refuses uncommitted or unpushed work, so
+what runs on the server always matches a commit. The new container applies any new migrations
+when it first connects.
+
+Every shipped image stays on the server, tagged with its commit (`docker image ls rla-web-cms`).
+To roll back, retag an older one and restart:
+
 ```sh
-cd /srv/rla-cms/app && git pull
-cd deploy && docker compose up -d --build
+docker tag rla-web-cms:<commit> rla-web-cms:latest
+cd /srv/rla-cms/app/deploy && docker compose up -d
 ```
 
-The new container applies any new migrations when it first connects.
+Rolling back across a migration needs a database restore too (see "Backups"). Delete old images
+now and then with `docker image rm rla-web-cms:<commit>`.
 
 ### Schema changes
 
