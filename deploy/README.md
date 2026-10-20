@@ -58,13 +58,16 @@ migrations, so a full dump would clash with them. Instead, the migrations create
 the server and only the **data** comes from Neon.
 
 1. Start the stack and open the admin once, so the migrations create the empty schema (above).
-2. On the PC, with Docker running, dump Neon's data (`$NEON_URL` is `DATABASE_URL` from the
-   repo's `.env`):
-   ```sh
-   docker run --rm -v "$PWD:/out" postgis/postgis:18-3.6-alpine \
-     pg_dump "$NEON_URL" --format=custom --data-only \
+2. On the PC, with Docker running, dump Neon's data. In PowerShell in the repo folder, with
+   `DATABASE_URL` from the repo's `.env` as the Neon URL. pg_dump warns about circular foreign
+   keys; the restore below handles them.
+   ```powershell
+   $neon = '<DATABASE_URL from .env>'
+   docker run --rm -e PGSSLROOTCERT=system -v "${PWD}:/out" postgis/postgis:18-3.6-alpine `
+     pg_dump $neon --format=custom --data-only `
      --exclude-table-data=payload_migrations -f /out/neon-data.dump
    scp neon-data.dump <user>@<server>:/srv/rla-cms/
+   Remove-Item neon-data.dump
    ```
 3. On the server, load it into the empty schema:
    ```sh
@@ -74,11 +77,17 @@ the server and only the **data** comes from Neon.
    docker compose start payload
    rm /srv/rla-cms/neon-data.dump
    ```
-4. Copy the uploads from the PC (from the repo folder, in Git Bash). It's several GB, so it takes
-   a while:
+4. Copy the uploads from the PC as one archive. It's several GB, so the upload takes a while.
+   In PowerShell in the repo folder:
+   ```powershell
+   tar -C public -cf media.tar media
+   scp media.tar <user>@<server>:/srv/rla-cms/
+   Remove-Item media.tar
+   ```
+   Then on the server:
    ```sh
-   tar -C public -cf - media | ssh <user>@<server> "tar -C /srv/rla-cms -xf -"
-   ssh <user>@<server> "sudo chown -R 1001:1001 /srv/rla-cms/media"
+   tar -C /srv/rla-cms -xf /srv/rla-cms/media.tar && rm /srv/rla-cms/media.tar
+   sudo chown -R 1001:1001 /srv/rla-cms/media
    ```
 
 ## Updating
