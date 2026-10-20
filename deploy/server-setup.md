@@ -135,7 +135,8 @@ Check: `free -h` shows `Swap: 2.0Gi`.
 ```sh
 sudo mkdir -p /srv/rla-cms/media /srv/rla-cms/backups
 sudo chown -R "$USER" /srv/rla-cms
-git clone https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms/app
+# -b: deploy/ only exists on this branch until it's merged into master
+git clone -b feat/website-migration https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms/app
 cd /srv/rla-cms/app/deploy
 cp .env.example .env
 sed -i "s/^PAYLOAD_SECRET=$/PAYLOAD_SECRET=$(openssl rand -hex 32)/; s/^POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
