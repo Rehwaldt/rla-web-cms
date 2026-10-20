@@ -27,6 +27,8 @@ Server layout:
 
 ## Prerequisites on the server
 
+[server-setup.md](server-setup.md) has every step of setting up the server, to rebuild it if needed.
+
 Docker Engine with the compose plugin, the Hetzner Cloud Firewall (inbound TCP 22, 80, 443 and
 UDP 443 only) and a 2 GB swap file as a safety net. The domain's A and AAAA records must point at
 the server before Caddy can get a certificate.
@@ -39,17 +41,8 @@ On the PC: Docker Desktop running, and `ssh tim@<server-IP>` working in PowerShe
 
 ## First deploy
 
-On the server, once:
-
-```sh
-sudo mkdir -p /srv/rla-cms/media /srv/rla-cms/backups
-sudo chown -R "$USER" /srv/rla-cms
-git clone https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms/app
-cd /srv/rla-cms/app/deploy
-cp .env.example .env
-nano .env                                  # fill in the secrets
-sudo chown -R 1001:1001 /srv/rla-cms/media
-```
+On the server, once: folders, clone and secrets as in
+[server-setup.md, step 7](server-setup.md#7-app-folders-and-secrets-as-tim).
 
 Then on the PC, in PowerShell in the repo folder:
 
