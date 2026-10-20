@@ -4,8 +4,8 @@ name: rla-cms
 
 services:
   payload:
-    build: ..
-    image: rla-web-cms:latest
+    # Built by GitHub Actions (or ship.ps1) per commit; deploy.sh writes the running one to .env.
+    image: ghcr.io/rehwaldt/rla-web-cms:${CMS_TAG:?deploy.sh sets CMS_TAG in deploy/.env}
     restart: unless-stopped
     environment:
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in deploy/.env}

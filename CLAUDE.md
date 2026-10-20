@@ -50,7 +50,9 @@ reintroduce those sources here unless asked.
 ## Deployment
 
 Production runs on a Hetzner Cloud server as Docker Compose (Caddy, Payload, PostGIS) from
-`deploy/`; see [deploy/README.md](deploy/README.md). Never point `pnpm dev` or the importer at
+`deploy/`; see [deploy/README.md](deploy/README.md). **Every push to this branch deploys to
+production** (`.github/workflows/deploy-cms.yml`, except `*.md`-only pushes); the workflow
+refuses schema changes without a migration. Never point `pnpm dev` or the importer at
 the production database without `NODE_ENV=production`, or Payload pushes the dev schema into it.
 
 ## Schema building blocks (`src/fields`, `src/access`)

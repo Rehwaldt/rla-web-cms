@@ -1,0 +1,92 @@
+# Builds the CMS image on every push and deploys it to the production server.
+# Setup (deploy key, secret, variables): deploy/server-setup.md, step 8.
+name: Deploy CMS
+
+on:
+  push:
+    branches: [feat/website-migration]
+    paths-ignore: ['**/*.md']
+  workflow_dispatch:
+
+# One deploy at a time, in push order.
+concurrency:
+  group: deploy-cms
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/rehwaldt/rla-web-cms
+
+jobs:
+  migrations:
+    name: Schema changes have migrations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        env:
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+        run: corepack enable pnpm && pnpm install --frozen-lockfile
+      # Production only runs migrations; a schema change without one would go live unapplied.
+      # migrate:create compares the config with the last migration and needs no database.
+      - name: Check for a missing migration
+        env:
+          DATABASE_URL: postgresql://none:none@127.0.0.1:1/none
+          PAYLOAD_SECRET: ci
+        run: |
+          pnpm payload migrate:create schema-check --skip-empty
+          if [ -n "$(git status --porcelain src/migrations)" ]; then
+            echo "::error::The schema changed without a migration. Run 'pnpm payload migrate:create <name>' and commit the result."
+            exit 1
+          fi
+
+  build:
+    name: Build image
+    needs: migrations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to the server
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    steps:
+      # The key may only run deploy/deploy.sh (forced command); the job's own short-lived token
+      # goes along on stdin so the server can pull the image without stored credentials.
+      - name: Deploy over SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          echo "$TOKEN" | ssh -i ~/.ssh/deploy "$DEPLOY_HOST" "cms $COMMIT pull $ACTOR"

@@ -10,10 +10,10 @@ internet ──443──> caddy ──> payload:3000 ──> postgres (PostGIS)
 ```
 
 - **caddy** terminates HTTPS for `CMS_DOMAIN` and gets the certificate by itself.
-- **payload** is the image built from the repo's [Dockerfile](../Dockerfile). It's built on the
-  PC and copied over by [ship.ps1](ship.ps1), because the server (2 vCPU, 4 GB) has too little
-  memory for `next build`. On startup it runs the pending migrations from `src/migrations` (see
-  "Schema changes" below).
+- **payload** is the image built from the repo's [Dockerfile](../Dockerfile). GitHub Actions
+  builds it on every push and the server pulls it from `ghcr.io` (see "Updating"); the server
+  itself (2 vCPU, 4 GB) has too little memory for `next build`. On startup it runs the pending
+  migrations from `src/migrations` (see "Schema changes" below).
 - **postgres** keeps its data in the `pgdata` volume. It's only reachable from the server itself.
 
 Server layout:
@@ -37,22 +37,16 @@ Docker publishes ports past `ufw`, so the Cloud Firewall, which filters before t
 one that counts. Only Caddy's 80/443 are published publicly; keep it that way and bind anything
 else to `127.0.0.1`, as `postgres` does.
 
-On the PC: Docker Desktop running, and `ssh tim@<server-IP>` working in PowerShell.
-
 ## First deploy
 
 On the server, once: folders, clone and secrets as in
-[server-setup.md, step 7](server-setup.md#7-app-folders-and-secrets-as-tim).
+[server-setup.md, step 7](server-setup.md#7-app-folders-and-secrets-as-tim), and the deploy key
+for GitHub Actions as in [step 8](server-setup.md#8-automatic-deploys-from-github-actions).
 
-Then on the PC, in PowerShell in the repo folder:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File deploy\ship.ps1 -Server tim@<server-IP>
-```
-
-It builds the image, uploads it (about 350 MB), checks out the same commit on the server and
-starts the stack. Follow the log on the server with `docker compose logs -f payload` in
-`/srv/rla-cms/app/deploy` (Ctrl+C stops following).
+Then start the workflow: GitHub → Actions → **Deploy CMS** → **Run workflow** (or push a
+commit). It builds the image, checks out the same commit on the server and starts the stack.
+Follow the log on the server with `docker compose logs -f payload` in `/srv/rla-cms/app/deploy`
+(Ctrl+C stops following).
 
 Payload connects to the database on the first request. Open `https://<CMS_DOMAIN>/admin` once:
 the log shows the migrations running, and an empty database asks for the first admin user.
@@ -104,20 +98,36 @@ the server and only the **data** comes from Neon.
 
 ## Updating
 
-Commit and push, then run `ship.ps1` again (above). It refuses uncommitted or unpushed work, so
-what runs on the server always matches a commit. The new container applies any new migrations
-when it first connects.
+Push. Every push to `feat/website-migration` runs the **Deploy CMS** workflow
+([deploy-cms.yml](../.github/workflows/deploy-cms.yml)), visible under the repo's Actions tab:
 
-Every shipped image stays on the server, tagged with its commit (`docker image ls rla-web-cms`).
-To roll back, retag an older one and restart:
+1. **Migrations check:** fails if the schema changed without a migration (see "Schema changes").
+2. **Build:** builds the image and pushes it to `ghcr.io/rehwaldt/rla-web-cms:<commit>`.
+3. **Deploy:** connects to the server with a key that can only run [deploy.sh](deploy.sh), which
+   checks out the same commit, pulls the image, records it as `CMS_TAG` in `.env` and restarts
+   the stack. The new container applies any new migrations when it first connects.
 
-```sh
-docker tag rla-web-cms:<commit> rla-web-cms:latest
-cd /srv/rla-cms/app/deploy && docker compose up -d
+Pushes that only change `*.md` files don't deploy. To deploy again without a push: Actions →
+Deploy CMS → Run workflow.
+
+If GitHub Actions is unavailable, [ship.ps1](ship.ps1) does the same from the PC (Docker Desktop
+running, `ssh tim@<server-IP>` working in PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File deploy\ship.ps1 -Server tim@<server-IP>
 ```
 
-Rolling back across a migration needs a database restore too (see "Backups"). Delete old images
-now and then with `docker image rm rla-web-cms:<commit>`.
+### Rolling back
+
+The server keeps the 5 newest images (`docker image ls ghcr.io/rehwaldt/rla-web-cms`). To go
+back to one of them, with the full commit hash:
+
+```sh
+/srv/rla-cms/app/deploy/deploy.sh cms <commit>
+```
+
+It also checks out that commit's deploy files. Rolling back across a migration needs a database
+restore too (see "Backups"). The next push deploys the newest commit again.
 
 ### Schema changes
 

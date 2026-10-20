@@ -148,4 +148,32 @@ docker compose config --quiet && echo "env ok"
 Save `PAYLOAD_SECRET` and `POSTGRES_PASSWORD` from `.env` in Proton Pass. Rebuilding the server
 from a database dump needs the same `PAYLOAD_SECRET` to keep users' sessions and API keys valid.
 
+## 8. Automatic deploys from GitHub Actions (as tim)
+
+GitHub Actions logs in with its own key. Because members of the `docker` group are effectively
+root, that key is locked to one command: it can only run `deploy/deploy.sh`, which accepts
+nothing but "deploy service X at commit Y".
+
+```sh
+ssh-keygen -t ed25519 -N '' -C github-actions-deploy -f ~/github-deploy
+echo "command=\"/srv/rla-cms/app/deploy/deploy.sh\",restrict $(cat ~/github-deploy.pub)" >> ~/.ssh/authorized_keys
+cat ~/github-deploy                                   # private key, for the secret below
+echo "159.69.84.183 $(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"   # for DEPLOY_KNOWN_HOSTS
+```
+
+In GitHub: repository **Settings → Secrets and variables → Actions**:
+
+| Where | Name | Value |
+|---|---|---|
+| Secrets | `DEPLOY_SSH_KEY` | The private key printed above, including the `BEGIN`/`END` lines |
+| Variables | `DEPLOY_HOST` | `tim@159.69.84.183` |
+| Variables | `DEPLOY_KNOWN_HOSTS` | The line from the last command (the server's identity, so the workflow can't be fooled by another machine) |
+
+Then delete the key files on the server: `rm ~/github-deploy ~/github-deploy.pub`. The private
+key now only exists in GitHub. To revoke it, delete its line (ending in `github-actions-deploy`)
+from `~/.ssh/authorized_keys`.
+
+The server needs no registry credentials: each deploy passes the workflow run's own short-lived
+token along, logs in, pulls and logs out again.
+
 Next: DNS, then the first deploy in [README.md](README.md).
