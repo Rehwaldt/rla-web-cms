@@ -97,7 +97,8 @@ the server and only the **data** comes from Neon.
    ```
    Then on the server:
    ```sh
-   tar -C /srv/rla-cms -xf /srv/rla-cms/media.tar && rm /srv/rla-cms/media.tar
+   # sudo: the media folder belongs to the app user (uid 1001), not to tim
+   sudo tar -C /srv/rla-cms --no-same-owner -xf /srv/rla-cms/media.tar && rm /srv/rla-cms/media.tar
    sudo chown -R 1001:1001 /srv/rla-cms/media
    ```
 
