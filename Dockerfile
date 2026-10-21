@@ -17,7 +17,8 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN corepack enable pnpm && pnpm run build
+# public/ holds only the git-ignored uploads, so a fresh checkout has none; the runner copies it.
+RUN mkdir -p public && corepack enable pnpm && pnpm run build
 
 FROM base AS runner
 WORKDIR /app
