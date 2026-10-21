@@ -2,6 +2,8 @@
 # Nightly database dump. Run by cron on the server, see README.md.
 # Keeps the dumps of the last KEEP_DAYS days in BACKUP_DIR.
 set -eu
+# The dumps hold the whole database, password hashes included: readable by the owner only.
+umask 077
 
 BACKUP_DIR=${BACKUP_DIR:-/srv/rla-cms/backups}
 KEEP_DAYS=${KEEP_DAYS:-14}
