@@ -1,6 +1,19 @@
-# Caddy fetches and renews the Let's Encrypt certificate for CMS_DOMAIN by itself, as soon as
-# the domain's DNS points at this server and ports 80/443 are open.
+# Caddy fetches and renews the Let's Encrypt certificates for both domains by itself, as soon as
+# their DNS points at this server and ports 80/443 are open.
 {$CMS_DOMAIN} {
 	encode zstd gzip
 	reverse_proxy payload:3000
+}
+
+# The public website (Rehwaldt/rla-website), a separate stack that joins this one's network.
+# Uploads are public, so its /api/media/file/ comes straight from the media folder.
+{$WEBSITE_DOMAIN} {
+	encode zstd gzip
+	handle_path /api/media/file/* {
+		root * /srv/media
+		file_server
+	}
+	handle {
+		reverse_proxy website:80
+	}
 }

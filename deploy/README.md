@@ -4,12 +4,19 @@ The CMS runs on a Hetzner Cloud server (Ubuntu LTS, Docker) as three containers,
 [docker-compose.yml](docker-compose.yml):
 
 ```
-internet ──443──> caddy ──> payload:3000 ──> postgres (PostGIS)
-                    │            │
-            Let's Encrypt    MEDIA_DIR on the host (uploads)
+internet ──443──> caddy ─┬─ CMS_DOMAIN ──────────────> payload:3000 ──> postgres (PostGIS)
+                    │    │                               │     ▲
+            Let's Encrypt│                               ▼     │ REST API
+                         └─ WEBSITE_DOMAIN           MEDIA_DIR │ (uploads, on the host)
+                              /api/media/file/* ────────▲      │
+                              everything else ──> website:80 ──┘ (rla-website stack)
 ```
 
-- **caddy** terminates HTTPS for `CMS_DOMAIN` and gets the certificate by itself.
+- **caddy** terminates HTTPS for `CMS_DOMAIN` and `WEBSITE_DOMAIN` and gets the certificates by
+  itself. The website (Rehwaldt/rla-website, its own `deploy/` stack) joins this stack's network
+  `rla-cms_default`; Caddy proxies to it as `website:80` and serves its `/api/media/file/`
+  straight from `MEDIA_DIR` (read-only), and the website reads Payload as `http://payload:3000`.
+  Until the website stack runs, `WEBSITE_DOMAIN` answers 502; the CMS is unaffected.
 - **payload** is the image built from the repo's [Dockerfile](../Dockerfile). GitHub Actions
   builds it on every push and the server pulls it from `ghcr.io` (see "Updating"); the server
   itself (2 vCPU, 4 GB) has too little memory for `next build`. On startup it runs the pending
@@ -30,8 +37,8 @@ Server layout:
 [server-setup.md](server-setup.md) has every step of setting up the server, to rebuild it if needed.
 
 Docker Engine with the compose plugin, the Hetzner Cloud Firewall (inbound TCP 22, 80, 443 and
-UDP 443 only) and a 2 GB swap file as a safety net. The domain's A and AAAA records must point at
-the server before Caddy can get a certificate.
+UDP 443 only) and a 2 GB swap file as a safety net. Both domains' A and AAAA records must point
+at the server before Caddy can get their certificates.
 
 Docker publishes ports past `ufw`, so the Cloud Firewall, which filters before the server, is the
 one that counts. Only Caddy's 80/443 are published publicly; keep it that way and bind anything

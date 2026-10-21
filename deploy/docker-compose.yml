@@ -44,8 +44,11 @@ services:
       - '443:443/udp'
     environment:
       CMS_DOMAIN: ${CMS_DOMAIN:?set CMS_DOMAIN in deploy/.env}
+      WEBSITE_DOMAIN: ${WEBSITE_DOMAIN:?set WEBSITE_DOMAIN in deploy/.env}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # The website's /api/media/file/ (see Caddyfile)
+      - ${MEDIA_DIR:?set MEDIA_DIR in deploy/.env}:/srv/media:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
