@@ -135,7 +135,7 @@ Check: `free -h` shows `Swap: 2.0Gi`.
 ```sh
 sudo mkdir -p /srv/rla-cms/media /srv/rla-cms/backups
 sudo chown -R "$USER" /srv/rla-cms
-# -b: deploy/ only exists on this branch until it's merged into master
+# -b: deploy/ only exists on this branch until it's merged into main
 git clone -b feat/website-migration https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms/app
 cd /srv/rla-cms/app/deploy
 cp .env.example .env

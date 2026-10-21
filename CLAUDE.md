@@ -5,7 +5,7 @@ Guidance for Claude Code when working in this repository.
 ## What this branch is
 
 `feat/website-migration` is the only active line of work. Its goal is to **replace the legacy CMS
-of the public rehwaldt.de website with Payload**. `master` holds parked WordPress-intranet and
+of the public rehwaldt.de website with Payload**. `main` holds parked WordPress-intranet and
 WerkX (time tracking) work and is only a reference to pull code back from later. Don't
 reintroduce those sources here unless asked.
 

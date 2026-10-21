@@ -5,7 +5,7 @@ Payload CMS 3 / Next.js app that replaces the legacy CMS of the public rehwaldt.
 `website_rla/1_php`.
 
 This branch (`feat/website-migration`) is deliberately scoped to the website only. The WordPress
-intranet and WerkX (time-tracking) integrations live on `master` and will be brought back later.
+intranet and WerkX (time-tracking) integrations live on `main` and will be brought back later.
 See [CLAUDE.md](./CLAUDE.md) for the scope, the plan and the legacy data model.
 
 ## Stack
