@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Deploys one service at one commit on the server.
+# Deploys one service at one commit on the server: the CMS (this repo) or the website
+# (Rehwaldt/rla-website, its own stack in /srv/rla-website, see its deploy/README.md).
 #
 # GitHub Actions calls it over SSH with a key that can run nothing else (a forced command in
 # ~/.ssh/authorized_keys, see server-setup.md). It sends "<service> <commit> pull <user>" and the
@@ -20,21 +21,23 @@ main() {
   fi
   local service=${args[0]:-} commit=${args[1]:-} mode=${args[2]:-} user=${args[3]:-}
 
-  [[ $commit =~ ^[0-9a-f]{40}$ ]] || fail "usage: deploy.sh cms <40-character commit> [pull <user>]"
+  [[ $commit =~ ^[0-9a-f]{40}$ ]] || fail "usage: deploy.sh cms|website <40-character commit> [pull <user>]"
   if [ "$mode" = pull ]; then
     [[ $user =~ ^[A-Za-z0-9-]+(\[bot\])?$ ]] || fail "pull needs a GitHub user name"
   fi
 
-  local image tag_var
+  # app_dir: the service repo's clone on the server, with its deploy files in deploy/
+  local image tag_var app_dir
   case $service in
-    cms) image=ghcr.io/rehwaldt/rla-web-cms; tag_var=CMS_TAG ;;
+    cms)
+      image=ghcr.io/rehwaldt/rla-web-cms; tag_var=CMS_TAG
+      app_dir=$(dirname "$(dirname "$(readlink -f "$0")")") ;;
+    website)
+      image=ghcr.io/rehwaldt/rla-website; tag_var=WEBSITE_TAG
+      app_dir=/srv/rla-website/app ;;
     *) fail "unknown service: $service" ;;
   esac
-
-  local deploy_dir app_dir
-  deploy_dir=$(dirname "$(readlink -f "$0")")
-  app_dir=$(dirname "$deploy_dir")
-  cd "$deploy_dir"
+  cd "$app_dir/deploy"
 
   # Deploy files (compose file, Caddyfile, scripts) from the same commit as the image
   git -C "$app_dir" fetch --quiet origin
