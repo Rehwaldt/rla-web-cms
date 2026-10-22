@@ -11,7 +11,7 @@ services:
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in deploy/.env}
       DATABASE_URL: postgresql://payload:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/payload
       WEBSITE_URL: https://${WEBSITE_DOMAIN:?set WEBSITE_DOMAIN in deploy/.env}
-      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:?set COOKIE_DOMAIN in deploy/.env}
     volumes:
       - ${MEDIA_DIR:?set MEDIA_DIR in deploy/.env}:/app/public/media
     depends_on:
