@@ -9,6 +9,7 @@ import { richTextField } from '@/fields/richText'
 import { childrenOnly } from '@/fields/validation'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -17,6 +18,7 @@ export const Projects: CollectionConfig = {
     plural: { en: 'Projects', de: 'Projekte' },
   },
   admin: {
+    preview: websitePreview('projects'),
     useAsTitle: 'codeAndName',
     group: GROUPS.projects,
     defaultColumns: ['name', 'code', 'type', 'completionYear', '_status'],

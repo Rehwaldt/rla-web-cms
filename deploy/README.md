@@ -17,6 +17,8 @@ internet ──443──> caddy ─┬─ CMS_DOMAIN ─────────
   `rla-cms_default`; Caddy proxies to it as `website:80` and serves its `/api/media/file/`
   straight from `MEDIA_DIR` (read-only), and the website reads Payload as `http://payload:3000`.
   Until the website stack runs, `WEBSITE_DOMAIN` answers 502; the CMS is unaffected.
+  The edit view's Preview button opens `https://WEBSITE_DOMAIN/{lang}/go/…`, and with
+  `COOKIE_DOMAIN` set the website sees the CMS login and shows editors an "Edit in CMS" bar (#31).
 - **payload** is the image built from the repo's [Dockerfile](../Dockerfile). GitHub Actions
   builds it on every push and the server pulls it from `ghcr.io` (see "Updating"); the server
   itself (2 vCPU, 4 GB) has too little memory for `next build`. On startup it runs the pending

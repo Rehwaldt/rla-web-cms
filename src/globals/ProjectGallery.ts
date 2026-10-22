@@ -1,12 +1,13 @@
 import type { GlobalConfig } from 'payload'
 import { anyone } from '@/access/publishedOrAuthenticated'
 import { GROUPS } from '@/i18n/groups'
+import { websiteGlobalPreview } from '@/websitePreview'
 
 // The curated, ordered selection of featured projects the projects page shows by default.
 export const ProjectGallery: GlobalConfig = {
   slug: 'project-gallery',
   label: { en: 'Project gallery', de: 'Projektgalerie' },
-  admin: { group: GROUPS.projects },
+  admin: { group: GROUPS.projects, preview: websiteGlobalPreview('project-gallery') },
   access: { read: anyone },
   fields: [
     {

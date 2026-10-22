@@ -3,6 +3,7 @@ import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 // Public team profile. Names are localized because some people have a Chinese spelling of
 // their name; other languages fall back to the German entry.
@@ -14,6 +15,7 @@ export const Employees: CollectionConfig = {
   },
   defaultSort: 'lastName',
   admin: {
+    preview: websitePreview('employees'),
     useAsTitle: 'fullName',
     group: GROUPS.office,
     defaultColumns: ['fullName', 'office', 'email', '_status'],

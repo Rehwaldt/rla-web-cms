@@ -5,6 +5,7 @@ import { linksField } from '@/fields/links'
 import { richTextField } from '@/fields/richText'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -14,6 +15,7 @@ export const News: CollectionConfig = {
   },
   defaultSort: '-date',
   admin: {
+    preview: websitePreview('news'),
     useAsTitle: 'title',
     group: GROUPS.content,
     defaultColumns: ['title', 'date', '_status'],

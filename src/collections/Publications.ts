@@ -3,6 +3,7 @@ import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 // A publication is either a stand-alone book (title = book title) or a piece that appeared in a
 // journal or in a book (title = article/chapter, plus the journal or book fields).
@@ -14,6 +15,7 @@ export const Publications: CollectionConfig = {
   },
   defaultSort: '-year',
   admin: {
+    preview: websitePreview('publications'),
     useAsTitle: 'title',
     group: GROUPS.publications,
     defaultColumns: ['title', 'year', 'category', 'authors', '_status'],

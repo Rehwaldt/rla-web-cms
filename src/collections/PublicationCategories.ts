@@ -3,6 +3,7 @@ import { anyone } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 export const PublicationCategories: CollectionConfig = {
   slug: 'publication-categories',
@@ -12,6 +13,7 @@ export const PublicationCategories: CollectionConfig = {
   },
   orderable: true,
   admin: {
+    preview: websitePreview('publication-categories'),
     useAsTitle: 'name',
     group: GROUPS.publications,
   },

@@ -4,6 +4,7 @@ import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 // Thematic focus areas (e.g. "Water in the city") that group projects.
 export const Topics: CollectionConfig = {
@@ -13,6 +14,7 @@ export const Topics: CollectionConfig = {
     plural: { en: 'Topics', de: 'Themen' },
   },
   admin: {
+    preview: websitePreview('topics'),
     useAsTitle: 'name',
     group: GROUPS.content,
     defaultColumns: ['name', '_status'],

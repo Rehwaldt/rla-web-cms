@@ -5,6 +5,7 @@ import { linksField } from '@/fields/links'
 import { richTextField } from '@/fields/richText'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 export const Awards: CollectionConfig = {
   slug: 'awards',
@@ -14,6 +15,7 @@ export const Awards: CollectionConfig = {
   },
   defaultSort: '-year',
   admin: {
+    preview: websitePreview('awards'),
     useAsTitle: 'name',
     group: GROUPS.content,
     defaultColumns: ['name', 'year', 'issuer', '_status'],

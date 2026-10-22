@@ -4,6 +4,7 @@ import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
 import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 export const Jobs: CollectionConfig = {
   slug: 'jobs',
@@ -13,6 +14,7 @@ export const Jobs: CollectionConfig = {
   },
   defaultSort: '-date',
   admin: {
+    preview: websitePreview('jobs'),
     useAsTitle: 'title',
     group: GROUPS.office,
     defaultColumns: ['title', 'office', 'date', '_status'],

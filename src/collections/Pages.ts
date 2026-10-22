@@ -4,6 +4,7 @@ import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 // Stand-alone website pages (office profile, contact, imprint, …), fetched by `key`.
 export const Pages: CollectionConfig = {
@@ -13,6 +14,7 @@ export const Pages: CollectionConfig = {
     plural: { en: 'Pages', de: 'Seiten' },
   },
   admin: {
+    preview: websitePreview('pages'),
     useAsTitle: 'title',
     group: GROUPS.content,
     defaultColumns: ['title', 'key', '_status'],

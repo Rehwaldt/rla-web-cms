@@ -4,6 +4,7 @@ import { anyone } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
+import { websitePreview } from '@/websitePreview'
 
 // Two-level tree (top-level groups with child categories). The `parent` and `breadcrumbs` fields
 // come from the nested-docs plugin, declared here so they get translated labels; drag-and-drop
@@ -17,6 +18,7 @@ export const ProjectCategories: CollectionConfig = {
   },
   orderable: true,
   admin: {
+    preview: websitePreview('project-categories'),
     useAsTitle: 'name',
     group: GROUPS.projects,
     defaultColumns: ['name', 'parent', 'menuColumn'],
