@@ -55,7 +55,10 @@ Production runs on a Hetzner Cloud server as Docker Compose (Caddy, Payload, Pos
 production** (`.github/workflows/deploy-cms.yml`, except `*.md`-only pushes); the workflow
 refuses schema changes without a migration. Never point `pnpm dev` or the importer at
 the production database without `NODE_ENV=production`, or Payload pushes the dev schema into it.
-The server's compose file needs `CMS_TAG` in its `.env` (`deploy/deploy.sh` writes it). The server's clone
+The server's compose file needs `CMS_TAG` in its `.env` (`deploy/deploy.sh` writes it). That `.env` is
+never synced with `deploy/.env.example`: a new variable needs a manual server step, so make it required
+(`${VAR:?…}`) or it fails silently (as `COOKIE_DOMAIN` did). The website stack is separate, in
+`/srv/rla-website/app/deploy` (its config: `app.env`). The server's clone
 sits on a detached HEAD (`deploy.sh` checks out each commit), so `git pull` there fails; use fetch +
 `checkout --detach`. The workflow reads repository-level secrets/variables, not environment ones. pnpm is
 pinned via `packageManager`, and pnpm 12 also records that pin in `pnpm-lock.yaml`
