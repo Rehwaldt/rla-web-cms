@@ -89,7 +89,7 @@ describe('planExcursions: Berlin (stations)', () => {
     expect(berlin).toMatchObject({ key: 'slug:berlin-2026', match: { field: 'slug', value: 'berlin-2026' }, status: 'published' })
     expect(berlin.data.title).toBe('RLA Berlin')
     const days = berlin.data.days as Day[]
-    expect(days.map((day) => day.date)).toEqual(['2026-09-11', '2026-09-12'])
+    expect(days.map((day) => day.date)).toEqual(['2026-09-11T12:00:00.000Z', '2026-09-12T12:00:00.000Z'])
     expect(days[0].stops.map((stop) => stop.title)).toEqual(['Treffpunkt: Hotellobby', 'Olivaer Platz'])
     expect(days[1].stops[0]).toMatchObject({ title: 'Ausklang – Tempelhofer Feld', links: [], images: [], description: null })
   })
@@ -175,8 +175,8 @@ describe('planExcursions: Vienna (posts)', () => {
     expect(vienna).toMatchObject({ status: 'draft', data: { title: 'RLA Wien' } })
     const days = vienna.data.days as Day[]
     expect(days.map((day) => [day.date, day.stops.map((stop) => stop.title)])).toEqual([
-      ['2025-09-11', ['Arte-Hotel Wien']],
-      ['2025-09-12', ['Seestadt Aspern', 'Restaurant Jussi']],
+      ['2025-09-11T12:00:00.000Z', ['Arte-Hotel Wien']],
+      ['2025-09-12T12:00:00.000Z', ['Seestadt Aspern', 'Restaurant Jussi']],
       [undefined, ['Kapellenhof']],
     ])
     expect(issues('Excursion stop without a date (put on an unscheduled day)')).toEqual(['post 113: Kapellenhof'])

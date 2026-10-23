@@ -93,7 +93,8 @@ export function planExcursions(ctx: PlanContext, wordpress: WordPressSnapshot): 
   const dayRows = (slug: string, days: Map<string, Stop[]>) =>
     [...days].filter(([, stops]) => stops.length > 0).map(([date, stops]) => ({
       id: ctx.rowId('excursions', slug, 'day', date),
-      ...(date !== UNSCHEDULED && { date }),
+      // Noon UTC, as the admin's day picker stores a date: the same day in every time zone nearby.
+      ...(date !== UNSCHEDULED && { date: `${date}T12:00:00.000Z` }),
       stops: stops.map(({ wpId, links, ...stop }) => ({
         id: ctx.rowId('excursions', slug, 'stop', wpId),
         ...stop,
