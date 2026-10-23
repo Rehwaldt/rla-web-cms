@@ -36,6 +36,12 @@ labels use these words so that one concept never gets two German names.
   founder's CV.
 - **Employee** (de: *Mitarbeitende*): public team profile.
 - **Office** (de: *Büro*): an office location (Dresden, Berlin, Prague, Beijing, …).
+- **Excursion** (de: *Exkursion*): a trip of the office to visit built landscape architecture,
+  e.g. "RLA Berlin" in September 2026, shown as a map with a timeline. Made of **days** (de:
+  *Tage*), each with a date and its **stops** (de: *Stationen*) in running order. A day without a
+  date is not scheduled yet (de: *noch nicht eingeplant*). A stop's **stop type** (de: *Art*) is a
+  plain stop (*Station*, numbered on the website), an optional stop (*Optionale Station*), a break
+  (*Pause*), a meeting point (*Treffpunkt*) or a meal (*Essen*).
 
 ## Presentation
 

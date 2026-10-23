@@ -29,6 +29,7 @@ import { Pages } from './collections/Pages'
 import { Employees } from './collections/Employees'
 import { Offices } from './collections/Offices'
 
+import { Excursions } from './collections/Excursions'
 import { Mines } from './collections/Mines'
 import { MineFeatures } from './collections/MineFeatures'
 
@@ -52,6 +53,7 @@ export default buildConfig({
     ProjectCategories,
     Pages,
     News,
+    Excursions,
     Topics,
     Awards,
     Publications,

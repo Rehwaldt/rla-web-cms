@@ -71,6 +71,7 @@ export interface Config {
     'project-categories': ProjectCategory;
     pages: Page;
     news: News;
+    excursions: Excursion;
     topics: Topic;
     awards: Award;
     publications: Publication;
@@ -97,6 +98,7 @@ export interface Config {
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
+    excursions: ExcursionsSelect<false> | ExcursionsSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     awards: AwardsSelect<false> | AwardsSelect<true>;
     publications: PublicationsSelect<false> | PublicationsSelect<true>;
@@ -616,6 +618,89 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "excursions".
+ */
+export interface Excursion {
+  id: number;
+  title?: string | null;
+  /**
+   * Part of the website address. Lower case, digits and hyphens.
+   */
+  slug: string;
+  /**
+   * In the order the website shows them. A day without a date is not scheduled yet; the website leaves it out.
+   */
+  days?:
+    | {
+        date?: string | null;
+        /**
+         * In running order. To move a stop to another day: copy its row, add a row on that day and paste onto it, then delete the original.
+         */
+        stops?:
+          | {
+              title?: string | null;
+              /**
+               * Only stops are numbered; breaks, meeting points and meals get an icon.
+               */
+              type: 'default' | 'optional' | 'break' | 'meetUp' | 'food';
+              time?: string | null;
+              /**
+               * Where the stop sits on the map. Without one it only appears in the timeline.
+               *
+               * @minItems 2
+               * @maxItems 2
+               */
+              location?: [number, number] | null;
+              description?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              descriptionHtml?: string | null;
+              guidedBy?: string | null;
+              designedBy?: string | null;
+              completionYear?: number | null;
+              /**
+               * Each language keeps its own list of links.
+               */
+              links?:
+                | {
+                    kind: 'project' | 'external';
+                    /**
+                     * Optional for project links — the project name is used instead.
+                     */
+                    label?: string | null;
+                    project?: (number | null) | Project;
+                    url?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * The first image is the main one. Fill in the credit of each image.
+               */
+              images?: (number | Media)[] | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "awards".
  */
 export interface Award {
@@ -1081,6 +1166,10 @@ export interface PayloadLockedDocument {
         value: number | News;
       } | null)
     | ({
+        relationTo: 'excursions';
+        value: number | Excursion;
+      } | null)
+    | ({
         relationTo: 'topics';
         value: number | Topic;
       } | null)
@@ -1344,6 +1433,47 @@ export interface NewsSelect<T extends boolean = true> {
       };
   visibleIn?: T;
   legacyId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "excursions_select".
+ */
+export interface ExcursionsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  days?:
+    | T
+    | {
+        date?: T;
+        stops?:
+          | T
+          | {
+              title?: T;
+              type?: T;
+              time?: T;
+              location?: T;
+              description?: T;
+              descriptionHtml?: T;
+              guidedBy?: T;
+              designedBy?: T;
+              completionYear?: T;
+              links?:
+                | T
+                | {
+                    kind?: T;
+                    label?: T;
+                    project?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              images?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

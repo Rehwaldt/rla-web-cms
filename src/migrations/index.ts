@@ -3,6 +3,7 @@ import * as migration_20261023_101048_jobs_offices from './20261023_101048_jobs_
 import * as migration_20261023_110058_mines_shared_title from './20261023_110058_mines_shared_title';
 import * as migration_20261023_110102_mines_drop_status from './20261023_110102_mines_drop_status';
 import * as migration_20261023_110107_mines_import from './20261023_110107_mines_import';
+import * as migration_20261023_125833_excursions from './20261023_125833_excursions';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261023_110107_mines_import.up,
     down: migration_20261023_110107_mines_import.down,
-    name: '20261023_110107_mines_import'
+    name: '20261023_110107_mines_import',
+  },
+  {
+    up: migration_20261023_125833_excursions.up,
+    down: migration_20261023_125833_excursions.down,
+    name: '20261023_125833_excursions'
   },
 ];

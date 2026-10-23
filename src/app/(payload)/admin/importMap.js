@@ -25,6 +25,8 @@ import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93
 import { CategoryPicker as CategoryPicker_bcf38a0befb8590123163e2dad7990f6 } from '@/components/cms/CategoryPicker'
 import { FlowField as FlowField_6f6c7c13f4b35b34dcb49ef9b42a7aa4 } from '@/components/cms/FlowField'
 import { default as default_37d1fa2b7db612be3b3bdaa17fa5f495 } from '@/components/cms/MapFieldLoader'
+import { StopRowLabel as StopRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
+import { DayRowLabel as DayRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -56,5 +58,7 @@ export const importMap = {
   "@/components/cms/CategoryPicker#CategoryPicker": CategoryPicker_bcf38a0befb8590123163e2dad7990f6,
   "@/components/cms/FlowField#FlowField": FlowField_6f6c7c13f4b35b34dcb49ef9b42a7aa4,
   "@/components/cms/MapFieldLoader#default": default_37d1fa2b7db612be3b3bdaa17fa5f495,
+  "@/components/cms/ExcursionRowLabels#StopRowLabel": StopRowLabel_a37e46a305a5cdd636965ec6f3b19917,
+  "@/components/cms/ExcursionRowLabels#DayRowLabel": DayRowLabel_a37e46a305a5cdd636965ec6f3b19917,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

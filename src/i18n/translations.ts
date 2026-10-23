@@ -78,6 +78,13 @@ const en = {
     longitude: 'Longitude',
     latitude: 'Latitude',
   },
+  excursions: {
+    unscheduledDay: 'Not scheduled yet',
+    untitledStop: 'Untitled stop',
+    invalidSlug: 'Use lower-case letters, digits and single hyphens only, e.g. berlin-2026.',
+    invalidTime: 'Enter the time as HH:mm, e.g. 09:30.',
+    duplicateDate: 'Two days have the same date ({{date}}).',
+  },
 }
 
 const de: typeof en = {
@@ -154,6 +161,13 @@ const de: typeof en = {
     pick: 'In die Karte klicken, um den Standort zu setzen.',
     longitude: 'Längengrad',
     latitude: 'Breitengrad',
+  },
+  excursions: {
+    unscheduledDay: 'Noch nicht eingeplant',
+    untitledStop: 'Station ohne Titel',
+    invalidSlug: 'Nur Kleinbuchstaben, Ziffern und einzelne Bindestriche verwenden, z. B. berlin-2026.',
+    invalidTime: 'Uhrzeit als HH:mm eingeben, z. B. 09:30.',
+    duplicateDate: 'Zwei Tage haben dasselbe Datum ({{date}}).',
   },
 }
 
