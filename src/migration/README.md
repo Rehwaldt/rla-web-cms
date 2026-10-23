@@ -4,26 +4,44 @@ The one place in this codebase that knows the legacy website database (German ta
 names). Everything it writes follows the Payload schema and the vocabulary in `CONTEXT.md`.
 
 ```sh
-pnpm migrate:website --dry-run   # read + plan, write only the report
-pnpm migrate:website             # import (re-runnable: updates in place, never re-uploads files)
-pnpm migrate:website:verify BUG  # counts, anonymous visibility, one sample project
+pnpm migrate:website --dry-run      # read + plan, write only the report
+pnpm migrate:website                # import (re-runnable: updates in place, never re-uploads files)
+pnpm migrate:website --only mines   # only some sections: website, mines
+pnpm migrate:website:verify BUG     # counts, anonymous visibility, one sample project
+pnpm migrate:snapshot mines         # freeze a source (see Snapshots)
 ```
 
-Needs `LEGACY_WEB_DB_*`, `LEGACY_MINE_DB_NAME` (the Minescapes database `mine_data`, same server
-and user) and `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`).
+Needs `LEGACY_WEB_DB_*`, `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`) and
+`LEGACY_SNAPSHOTS_ROOT` (default `Z:/website/website_rla/strato_backups`).
 The report lands in `migration/reports/` (gitignored). A first run takes about 80 minutes,
 about 50 of them generating image sizes; re-runs skip existing media but still take about 35
 minutes, since every content document is written once per locale and phase.
 
+## Snapshots
+
+Sources that are switched off before the cutover are frozen once and imported from the freeze,
+so they can go: `pnpm migrate:snapshot <source>` writes a dated folder
+(`{LEGACY_SNAPSHOTS_ROOT}/{source}/YYYY-MM-DD/`), and the importer reads the newest one.
+
+- `mines` → `mine_data/`: the three Minescapes tables of the mine database `mine_data` (on the
+  website database's server, `LEGACY_MINE_DB_NAME`), raw rows as JSON.
+- `excursions` → `wien_wp/`: the WordPress site wien.rehwaldt.de over its REST API (stations,
+  posts, categories, the images they use as `media.json` + `files/`, originals where WordPress
+  scaled them). Needs `LEGACY_WP_PASSWORD`, the site password of its "Password Protected" plugin.
+
+The website database keeps changing until the cutover and is read live.
+
 ## How it's built
 
-- `legacy.ts` reads every table once and cleans values (trim, `''`/`'NULL'` → null).
+- `legacy.ts` reads every table once (the mine tables from their snapshot) and cleans values
+  (trim, `''`/`'NULL'` → null).
 - `plan/` maps the snapshot to a **plan**: a list of documents per collection, with per-locale
   values, that reference each other by legacy key (`ref('projects', 123)`) instead of Payload
   ids. Planning is pure apart from checking which files exist — that's the part worth testing.
 - `write.ts` applies a plan: phase 1 writes each document without its references, phase 2 fills
   in references once every id is known, phase 3 writes globals and switches documents that were
   hidden in the legacy database to draft. Documents are matched by `legacyId` (PDFs by file name).
+  References may point at documents of sections this run doesn't import.
 
 ## Table → collection mapping
 

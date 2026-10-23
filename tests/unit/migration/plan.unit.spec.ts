@@ -22,7 +22,7 @@ describe('planWebsite', () => {
 
   it('plans media first, and only for images something references', () => {
     const { docs } = plan().result
-    expect(docs.slice(0, 2).map((doc) => `${doc.collection}:${doc.key}`)).toEqual(['media:3', 'media:pdf:p.pdf'])
+    expect(docs.slice(0, 2).map((doc) => `${doc.collection}:${doc.key}`)).toEqual(['media:3', 'media:filename:p.pdf'])
     expect(docs.filter((doc) => doc.collection === 'media')).toHaveLength(2)
   })
 
@@ -47,5 +47,16 @@ describe('planWebsite', () => {
     ])
     expect(report.summary()).toContain('text elements not referenced by any flow (not imported): 1')
     expect(report.summary()).toContain('planned projects: 1')
+  })
+
+  it('plans only the given sections', () => {
+    const report = new Report()
+    const legacy = snapshot({
+      projekte: [projectRow({ galerieposition_de: 1 })],
+      mines: [{ id: 1, object_id: 'PL01', name: 'Bełchatów' }],
+    })
+    const result = planWebsite(legacy, report, filesRoot(), convertHtml, new Set(['mines']))
+    expect(result.docs.map((doc) => doc.collection)).toEqual(['mines'])
+    expect(result.globals).toEqual([])
   })
 })

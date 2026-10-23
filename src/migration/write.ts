@@ -10,6 +10,14 @@ const containsRef = (value: unknown): boolean =>
   (Array.isArray(value) && value.some(containsRef)) ||
   (typeof value === 'object' && value !== null && Object.values(value).some(containsRef))
 
+/** Collections the value references. */
+const referencedCollections = (value: unknown, into: Set<CollectionSlug>): Set<CollectionSlug> => {
+  if (isRef(value)) into.add(value.$ref.collection)
+  else if (Array.isArray(value)) value.forEach((item) => referencedCollections(item, into))
+  else if (typeof value === 'object' && value !== null) Object.values(value).forEach((item) => referencedCollections(item, into))
+  return into
+}
+
 /** Splits a document's values into those without references and those that need ids first. */
 function splitByRefs(data: Data): [Data, Data] {
   const plain: Data = {}
@@ -71,12 +79,15 @@ export async function applyPlan(
       }),
     )
 
-  // Existing documents, so a re-run updates them.
-  for (const collection of new Set(plan.docs.map((doc) => doc.collection))) {
+  // Existing documents, so a re-run updates them, and of referenced collections, so a run of only
+  // some sections can still point at documents an earlier run imported.
+  const collections = referencedCollections(plan, new Set(plan.docs.map((doc) => doc.collection)))
+  for (const collection of collections) {
     const existing = await payload.find({ collection, pagination: false, depth: 0, overrideAccess: true })
-    for (const doc of existing.docs as { id: Id; legacyId?: number | null; filename?: string | null }[]) {
+    for (const doc of existing.docs as { id: Id; legacyId?: number | null; filename?: string | null; slug?: string | null }[]) {
       if (doc.legacyId !== null && doc.legacyId !== undefined) idsFor(collection).set(String(doc.legacyId), doc.id)
-      else if (doc.filename) idsFor(collection).set(`pdf:${doc.filename}`, doc.id)
+      else if (doc.filename) idsFor(collection).set(`filename:${doc.filename}`, doc.id)
+      else if (doc.slug) idsFor(collection).set(`slug:${doc.slug}`, doc.id)
     }
   }
 

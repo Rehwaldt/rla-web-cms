@@ -6,6 +6,10 @@ export type SecondaryLocale = Exclude<Locale, 'de'>
 export const LOCALES: Locale[] = ['de', 'en', 'zh', 'cs']
 export const SECONDARY_LOCALES: SecondaryLocale[] = ['en', 'zh', 'cs']
 
+// Parts of the import that can run on their own (`--only`): the website database and the mines.
+export const SECTIONS = ['website', 'mines'] as const
+export type Section = (typeof SECTIONS)[number]
+
 // Legacy column suffix per locale (the legacy database spells Czech `cz`).
 export const LEGACY_SUFFIX: Record<Locale, string> = { de: 'de', en: 'en', zh: 'zh', cs: 'cz' }
 
@@ -26,8 +30,11 @@ export interface DocPlan {
   collection: CollectionSlug
   /** Stable identity of the legacy record within its collection; also how refs point at it. */
   key: string
-  /** How to find an already-imported document: by legacyId, or (for PDFs) by filename. */
-  match: { field: 'legacyId' | 'filename'; value: string | number }
+  /**
+   * How to find an already-imported document: by legacyId, or, for documents without one, by
+   * filename (PDFs, WordPress images) or slug (excursions). Those keys are `{field}:{value}`.
+   */
+  match: { field: 'legacyId' | 'filename' | 'slug'; value: string | number }
   /** Only for collections with drafts. */
   status?: 'published' | 'draft'
   /** Non-localized values plus the German (default locale) values. */

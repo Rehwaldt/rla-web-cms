@@ -106,7 +106,7 @@ describe('planPublications', () => {
         bookTitle: 'Book',
         bookSubtitle: 'Book sub',
         category: ref('publication-categories', 2),
-        file: ref('media', 'pdf:a.pdf'),
+        file: ref('media', 'filename:a.pdf'),
         projects: [ref('projects', 7)],
       },
     })
@@ -126,7 +126,7 @@ describe('planPublications', () => {
     expect(result.pdfs).toHaveLength(1)
     expect(result.pdfs[0]).toMatchObject({
       collection: 'media',
-      key: 'pdf:a.pdf',
+      key: 'filename:a.pdf',
       match: { field: 'filename', value: 'a.pdf' },
       data: { alt: 'Article' },
     })

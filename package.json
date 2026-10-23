@@ -18,7 +18,8 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts tests/int",
     "migrate:website": "cross-env NODE_OPTIONS=--no-deprecation tsx src/migration/run.ts",
-    "migrate:website:verify": "cross-env NODE_OPTIONS=--no-deprecation tsx src/migration/verify.ts"
+    "migrate:website:verify": "cross-env NODE_OPTIONS=--no-deprecation tsx src/migration/verify.ts",
+    "migrate:snapshot": "cross-env NODE_OPTIONS=--no-deprecation tsx src/migration/snapshot.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.85.0",

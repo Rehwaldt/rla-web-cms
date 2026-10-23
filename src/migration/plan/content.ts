@@ -162,7 +162,7 @@ export function planPublications(ctx: PlanContext): { docs: DocPlan[]; pdfs: Doc
             fileName,
             docPlan({
               collection: 'media',
-              key: `pdf:${fileName}`,
+              key: `filename:${fileName}`,
               match: { field: 'filename', value: fileName },
               filePath,
               shared: {},
@@ -170,7 +170,7 @@ export function planPublications(ctx: PlanContext): { docs: DocPlan[]; pdfs: Doc
             }),
           )
         }
-        file = ref('media', `pdf:${fileName}`)
+        file = ref('media', `filename:${fileName}`)
       } else {
         ctx.report.add('Publication PDF missing on disk (dropped)', `${where}: 4_res/publikationen/${fileName}`)
       }

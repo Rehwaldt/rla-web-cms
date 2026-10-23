@@ -18,7 +18,7 @@ import { planMineFeatures, planMines } from './mines'
 import { planEmployees, planOffices } from './office'
 import { flowTextElementIds } from './parsers'
 import { planProjectGallery, planProjects } from './projects'
-import type { DocPlan, Plan } from './types'
+import { type DocPlan, type GlobalPlan, type Plan, type Section, SECTIONS } from './types'
 
 /** Media documents for every image some plan referenced (must run after all other planners). */
 function planImages(ctx: PlanContext): DocPlan[] {
@@ -45,44 +45,53 @@ function planImages(ctx: PlanContext): DocPlan[] {
 }
 
 /**
- * Maps the whole legacy snapshot to a write plan. Pure apart from checking which files exist:
- * no Payload access, no ids — documents reference each other by legacy key.
+ * Maps the legacy snapshot to a write plan, for the given sections (default: all). Pure apart
+ * from checking which files exist: no Payload access, no ids — documents reference each other by
+ * legacy key.
  */
 export function planWebsite(
   snapshot: LegacySnapshot,
   report: Report,
   filesRoot: string,
   convertHtml: RichTextConverter,
+  sections: ReadonlySet<Section> = new Set(SECTIONS),
 ): Plan {
   const ctx = createPlanContext(snapshot, report, filesRoot, convertHtml)
-  const publications = planPublications(ctx)
-  const contentDocs = [
-    ...planProjectCategories(ctx),
-    ...planPublicationCategories(ctx),
-    ...planOffices(ctx),
-    ...planProjects(ctx),
-    ...planTopics(ctx),
-    ...planNews(ctx),
-    ...planAwards(ctx),
-    ...publications.docs,
-    ...planJobs(ctx),
-    ...planPages(ctx),
-    ...planEmployees(ctx),
-    ...planMineFeatures(ctx),
-    ...planMines(ctx),
-  ]
-  const gallery = planProjectGallery(ctx)
+  const media: DocPlan[] = []
+  const contentDocs: DocPlan[] = []
+  const globals: GlobalPlan[] = []
 
-  const referenced = new Set([
-    ...snapshot.projekte.flatMap((row) => flowTextElementIds(str(row, 'bilder_flow'))),
-    ...snapshot.themen.flatMap((row) => flowTextElementIds(str(row, 'flow'))),
-    ...snapshot.buero.flatMap((row) => ['de', 'en', 'zh', 'cz'].flatMap((suffix) => flowTextElementIds(str(row, `flow_${suffix}`)))),
-  ])
-  const unreferenced = snapshot.textelemente.filter((row) => !referenced.has(num(row, 'index')!)).length
-  report.count('text elements not referenced by any flow (not imported)', unreferenced)
+  if (sections.has('website')) {
+    const publications = planPublications(ctx)
+    contentDocs.push(
+      ...planProjectCategories(ctx),
+      ...planPublicationCategories(ctx),
+      ...planOffices(ctx),
+      ...planProjects(ctx),
+      ...planTopics(ctx),
+      ...planNews(ctx),
+      ...planAwards(ctx),
+      ...publications.docs,
+      ...planJobs(ctx),
+      ...planPages(ctx),
+      ...planEmployees(ctx),
+    )
+    globals.push(planProjectGallery(ctx))
 
-  const media = [...planImages(ctx), ...publications.pdfs]
+    const referenced = new Set([
+      ...snapshot.projekte.flatMap((row) => flowTextElementIds(str(row, 'bilder_flow'))),
+      ...snapshot.themen.flatMap((row) => flowTextElementIds(str(row, 'flow'))),
+      ...snapshot.buero.flatMap((row) => ['de', 'en', 'zh', 'cz'].flatMap((suffix) => flowTextElementIds(str(row, `flow_${suffix}`)))),
+    ])
+    const unreferenced = snapshot.textelemente.filter((row) => !referenced.has(num(row, 'index')!)).length
+    report.count('text elements not referenced by any flow (not imported)', unreferenced)
+
+    media.push(...planImages(ctx), ...publications.pdfs)
+  }
+
+  if (sections.has('mines')) contentDocs.push(...planMineFeatures(ctx), ...planMines(ctx))
+
   const docs = [...media, ...contentDocs]
   for (const doc of docs) report.count(`planned ${doc.collection}`)
-  return { docs, globals: [gallery] }
+  return { docs, globals }
 }
