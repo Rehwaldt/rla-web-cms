@@ -140,8 +140,8 @@ describe('planJobs', () => {
   it('publishes jobs shown in any language and links the office', () => {
     const { ctx } = harness({ jobs: [{ id: 1, anzeige_de: 1, standort: 5 }, { id: 2 }] })
     const [shown, hidden] = planJobs(ctx)
-    expect(shown).toMatchObject({ status: 'published', data: { office: ref('offices', 5), visibleIn: ['de'] } })
-    expect(hidden).toMatchObject({ status: 'draft', data: { office: null, visibleIn: [] } })
+    expect(shown).toMatchObject({ status: 'published', data: { offices: [ref('offices', 5)], visibleIn: ['de'] } })
+    expect(hidden).toMatchObject({ status: 'draft', data: { offices: [], visibleIn: [] } })
   })
 })
 

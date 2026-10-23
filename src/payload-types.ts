@@ -813,7 +813,7 @@ export interface Job {
   id: number;
   title?: string | null;
   date?: string | null;
-  office?: (number | null) | Office;
+  offices?: (number | Office)[] | null;
   description?: {
     root: {
       type: string;
@@ -1389,7 +1389,7 @@ export interface OfficesSelect<T extends boolean = true> {
 export interface JobsSelect<T extends boolean = true> {
   title?: T;
   date?: T;
-  office?: T;
+  offices?: T;
   description?: T;
   descriptionHtml?: T;
   visibleIn?: T;

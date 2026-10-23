@@ -215,6 +215,7 @@ export function planJobs(ctx: PlanContext): DocPlan[] {
     const legacyId = num(row, 'id')!
     const where = `job ${legacyId}`
     const visibleIn = localesWithFlag(row, 'anzeige')
+    const office = num(row, 'standort')
     return docPlan({
       collection: 'jobs',
       legacyId,
@@ -225,7 +226,7 @@ export function planJobs(ctx: PlanContext): DocPlan[] {
       }),
       shared: {
         date: str(row, 'datum'),
-        office: num(row, 'standort') !== null ? ref('offices', num(row, 'standort')!) : null,
+        offices: office !== null ? [ref('offices', office)] : [],
         visibleIn,
       },
     })
