@@ -14,6 +14,8 @@ import {
   planPublications,
   planTopics,
 } from './content'
+import type { WordPressSnapshot } from '../wordpress'
+import { planExcursions } from './excursions'
 import { planMineFeatures, planMines } from './mines'
 import { planEmployees, planOffices } from './office'
 import { flowTextElementIds } from './parsers'
@@ -55,11 +57,19 @@ export function planWebsite(
   filesRoot: string,
   convertHtml: RichTextConverter,
   sections: ReadonlySet<Section> = new Set(SECTIONS),
+  wordpress?: WordPressSnapshot,
 ): Plan {
   const ctx = createPlanContext(snapshot, report, filesRoot, convertHtml)
   const media: DocPlan[] = []
   const contentDocs: DocPlan[] = []
   const globals: GlobalPlan[] = []
+
+  // Planned first: excursion stops can use website images, which planImages then includes.
+  let excursions: DocPlan[] = []
+  if (sections.has('excursions')) {
+    if (!wordpress) throw new Error('Excursions need the WordPress snapshot')
+    excursions = planExcursions(ctx, wordpress)
+  }
 
   if (sections.has('website')) {
     const publications = planPublications(ctx)
@@ -90,6 +100,9 @@ export function planWebsite(
   }
 
   if (sections.has('mines')) contentDocs.push(...planMineFeatures(ctx), ...planMines(ctx))
+
+  media.push(...excursions.filter((doc) => doc.collection === 'media'))
+  contentDocs.push(...excursions.filter((doc) => doc.collection !== 'media'))
 
   const docs = [...media, ...contentDocs]
   for (const doc of docs) report.count(`planned ${doc.collection}`)

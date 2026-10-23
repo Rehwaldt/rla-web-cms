@@ -94,12 +94,13 @@ export async function readMineTables(): Promise<Record<(typeof MINE_TABLES)[numb
 }
 
 /**
- * Reads what the given import sections need: the website database live, the mine tables from
- * their newest snapshot. Tables of a section that isn't imported stay empty.
+ * Reads what the given import sections need: the website database (also for excursions, which
+ * link to projects) live, the mine tables from their newest snapshot. Tables of a section that
+ * isn't imported stay empty.
  */
 export async function readLegacySnapshot(sections: ReadonlySet<Section>): Promise<LegacySnapshot> {
   const snapshot = Object.fromEntries(LEGACY_TABLES.map((table) => [table, []])) as unknown as LegacySnapshot
-  if (sections.has('website')) {
+  if (sections.has('website') || sections.has('excursions')) {
     const connection = await connectLegacyDb()
     try {
       for (const table of WEB_TABLES) {

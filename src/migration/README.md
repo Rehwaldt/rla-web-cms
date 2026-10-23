@@ -6,7 +6,7 @@ names). Everything it writes follows the Payload schema and the vocabulary in `C
 ```sh
 pnpm migrate:website --dry-run      # read + plan, write only the report
 pnpm migrate:website                # import (re-runnable: updates in place, never re-uploads files)
-pnpm migrate:website --only mines   # only some sections: website, mines
+pnpm migrate:website --only mines   # only some sections: website, mines, excursions
 pnpm migrate:website:verify BUG     # counts, anonymous visibility, one sample project
 pnpm migrate:snapshot mines         # freeze a source (see Snapshots)
 ```
@@ -64,6 +64,9 @@ The website database keeps changing until the cutover and is read live.
 | `index_*` | — | not imported (site-search crawler index) |
 | `mine_data.mines` | 53 | `mines` |
 | `mine_data.features` / `mine_data.mine_features` | 28 / 83 | `mine-features` / `mines.features` |
+| WordPress `station` posts | 35 | `excursions` `berlin-2026` (published), its days and stops |
+| WordPress posts + categories | 25 / 5 | `excursions` `wien-2025` (draft), its days and stops |
+| WordPress media | 48 | `media` — only images of stops, 6 of them already imported from `bilder` |
 
 ## Legacy quirks the importer resolves
 
@@ -104,6 +107,20 @@ The website database keeps changing until the cutover and is read live.
   values; unknown ones are reported. Features keep the legacy map's order (by color).
   `image_url` is empty everywhere and not imported.
 - **Page keys**: `buero-profil` → `office-profile` etc. (English keys, mapped in the importer).
+- **Excursions** (WordPress snapshot `wien_wp`): the site holds two excursions in two shapes,
+  unified into one. Berlin 2026 is the `station` post type: the REST API serves it last stop
+  first (reversed), ACF `date` (Ymd) groups the stops into days in calendar order, `type`
+  `meet_up` → `meetUp`, `time` → `HH:mm`, `coords` → `location`, `guide` → `guidedBy`, `planer` →
+  `designedBy`, `completion` → `completionYear`, featured image + `images` gallery → `images`.
+  Vienna 2025 is ordinary posts: the day categories Donnerstag/Freitag/Samstag → 11.–13.09.2025,
+  posts without one go on a day without a date (reported), in the order they were written;
+  "Speisen und Schlafen" → `food` (the hotel → `meetUp`); paragraphs that are only a link or a bare
+  URL → `links`, the rest → `description`. Links to `rehwaldt.de/projekt.php?proj=CODE` → project
+  links; one link with title and URL swapped is fixed. WordPress has no alt texts: an image gets
+  its first stop's title. "Foto: …" / "Fotograf: …" in a caption → `credit`; the rest of a caption
+  is dropped (reported; media get captions later). A stop image whose file name is that of a
+  single `bilder` image uses that media item instead of a copy. Matched by `slug` (excursions) and
+  file name (images).
 - Anything that can't be mapped cleanly (dangling references, missing files, HTML in plain-text
   fields, link URLs Lexical would encode, unknown countries) goes into the import report instead of
   being guessed.

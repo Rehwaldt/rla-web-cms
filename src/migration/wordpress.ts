@@ -51,7 +51,8 @@ const originalUrl = (media: WpMedia): string => {
   return original ? `${media.source_url.slice(0, media.source_url.lastIndexOf('/') + 1)}${original}` : media.source_url
 }
 
-const fileName = (media: WpMedia): string => decodeURIComponent(originalUrl(media).split('/').pop()!)
+/** The name of an image's file in the snapshot, and in Payload. */
+export const fileName = (media: WpMedia): string => decodeURIComponent(originalUrl(media).split('/').pop()!)
 
 const filePathIn = (folder: string) => (media: WpMedia) => path.join(folder, 'files', fileName(media))
 

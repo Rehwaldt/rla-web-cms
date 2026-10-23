@@ -8,12 +8,13 @@ import { readLegacySnapshot } from './legacy'
 import { planWebsite } from './plan'
 import { type Section, SECTIONS } from './plan/types'
 import { Report } from './report'
+import { readWordPressSnapshot } from './wordpress'
 import { applyPlan } from './write'
 
 // Imports the legacy website database into Payload.
 //   pnpm migrate:website            import (re-runnable: updates what already exists)
 //   pnpm migrate:website --dry-run  only plan and write the report
-//   --only mines,…                  only these sections (website, mines)
+//   --only mines,…                  only these sections (website, mines, excursions)
 //   --update-media                  also update already-imported media (alt text, credit, project)
 function parseSections(): Set<Section> {
   const index = process.argv.indexOf('--only')
@@ -40,7 +41,8 @@ async function main() {
   const convertHtml = (html: string) => convertHTMLToLexical({ editorConfig, html, JSDOM })
 
   console.log('Planning…')
-  const plan = planWebsite(snapshot, report, filesRoot, convertHtml, sections)
+  const wordpress = sections.has('excursions') ? readWordPressSnapshot() : undefined
+  const plan = planWebsite(snapshot, report, filesRoot, convertHtml, sections, wordpress)
 
   if (!dryRun) {
     const payload = await getPayload({ config })

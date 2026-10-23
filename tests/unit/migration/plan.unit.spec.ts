@@ -17,7 +17,7 @@ describe('planWebsite', () => {
       publikationen: [{ index: 1, name: 'Article', datei: 'p.pdf' }],
     })
     const root = filesRoot(['0_img/abc/a.jpg', '0_img/misc/b.jpg', '4_res/publikationen/p.pdf'])
-    return { report, result: planWebsite(legacy, report, root, convertHtml) }
+    return { report, result: planWebsite(legacy, report, root, convertHtml, new Set(['website'])) }
   }
 
   it('plans media first, and only for images something references', () => {
