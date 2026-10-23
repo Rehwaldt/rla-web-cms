@@ -14,6 +14,7 @@ import {
   planPublications,
   planTopics,
 } from './content'
+import { planMineFeatures, planMines } from './mines'
 import { planEmployees, planOffices } from './office'
 import { flowTextElementIds } from './parsers'
 import { planProjectGallery, planProjects } from './projects'
@@ -67,6 +68,8 @@ export function planWebsite(
     ...planJobs(ctx),
     ...planPages(ctx),
     ...planEmployees(ctx),
+    ...planMineFeatures(ctx),
+    ...planMines(ctx),
   ]
   const gallery = planProjectGallery(ctx)
 

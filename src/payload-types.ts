@@ -215,7 +215,29 @@ export interface Project {
    * Optional state or province, shown instead of the country.
    */
   region?: string | null;
-  country?: ('AT' | 'CN' | 'CZ' | 'FI' | 'FR' | 'DE' | 'NO' | 'PL' | 'KR' | 'CH') | null;
+  country?:
+    | (
+        | 'AU'
+        | 'AT'
+        | 'BA'
+        | 'BG'
+        | 'CN'
+        | 'CZ'
+        | 'FI'
+        | 'FR'
+        | 'DE'
+        | 'XK'
+        | 'ME'
+        | 'MK'
+        | 'NO'
+        | 'PL'
+        | 'RU'
+        | 'RS'
+        | 'KR'
+        | 'CH'
+        | 'TR'
+      )
+    | null;
   client?: string | null;
   architect?: string | null;
   planningPartners?: string | null;
@@ -767,7 +789,29 @@ export interface Office {
     street?: string | null;
     postalCode?: string | null;
     city?: string | null;
-    country?: ('AT' | 'CN' | 'CZ' | 'FI' | 'FR' | 'DE' | 'NO' | 'PL' | 'KR' | 'CH') | null;
+    country?:
+      | (
+          | 'AU'
+          | 'AT'
+          | 'BA'
+          | 'BG'
+          | 'CN'
+          | 'CZ'
+          | 'FI'
+          | 'FR'
+          | 'DE'
+          | 'XK'
+          | 'ME'
+          | 'MK'
+          | 'NO'
+          | 'PL'
+          | 'RU'
+          | 'RS'
+          | 'KR'
+          | 'CH'
+          | 'TR'
+        )
+      | null;
     /**
      * @minItems 2
      * @maxItems 2
@@ -849,11 +893,47 @@ export interface Job {
 export interface Mine {
   id: number;
   title: string;
+  code?: string | null;
+  /**
+   * The main site this one belongs to, e.g. the open-pit mine of an external dump.
+   */
+  parentMine?: (number | null) | Mine;
   /**
    * @minItems 2
    * @maxItems 2
    */
   location?: [number, number] | null;
+  country?:
+    | (
+        | 'AU'
+        | 'AT'
+        | 'BA'
+        | 'BG'
+        | 'CN'
+        | 'CZ'
+        | 'FI'
+        | 'FR'
+        | 'DE'
+        | 'XK'
+        | 'ME'
+        | 'MK'
+        | 'NO'
+        | 'PL'
+        | 'RU'
+        | 'RS'
+        | 'KR'
+        | 'CH'
+        | 'TR'
+      )
+    | null;
+  region?: string | null;
+  district?: string | null;
+  nearestCity?: {
+    name?: string | null;
+    population?: number | null;
+    distanceKm?: number | null;
+  };
+  website?: string | null;
   content?: {
     root: {
       type: string;
@@ -871,11 +951,26 @@ export interface Mine {
   } | null;
   contentHtml?: string | null;
   siteType?: ('open_cast' | 'external_dump' | 'underground' | 'quarry' | 'mountaintop_removal')[] | null;
-  status?: ('in_use' | 'in_revitalization' | 'revitalized') | null;
+  operatingStatus?: ('in_use' | 'in_revitalization' | 'revitalized') | null;
   closureYear?: number | null;
   extractedMaterials?:
-    | ('coal' | 'iron' | 'bauxite' | 'copper' | 'gold' | 'lithium' | 'nickel' | 'phosphorite' | 'silver' | 'zinc')[]
+    | (
+        | 'lignite'
+        | 'coal'
+        | 'iron'
+        | 'bauxite'
+        | 'boron'
+        | 'chromium'
+        | 'copper'
+        | 'gold'
+        | 'lithium'
+        | 'nickel'
+        | 'phosphorite'
+        | 'silver'
+        | 'zinc'
+      )[]
     | null;
+  morphology?: ('lake' | 'dump' | 'backfilled') | null;
   surface?: {
     total?: number | null;
     lake?: number | null;
@@ -883,12 +978,23 @@ export interface Mine {
     agriculture?: number | null;
     settlement?: number | null;
   };
+  followUpUse?: ('recreation' | 'production' | 'ecology') | null;
+  mainUse?: string | null;
+  /**
+   * 0 = hardly visited, 5 = very busy.
+   */
+  activityScale?: number | null;
   /**
    * What is this site used for now?
    */
   features?: (number | MineFeature)[] | null;
+  /**
+   * ID in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -896,12 +1002,16 @@ export interface Mine {
  */
 export interface MineFeature {
   id: number;
-  name: string;
+  name?: string | null;
   /**
    * File name of the icon, e.g. fishing.svg.
    */
   iconName?: string | null;
   color?: ('blue' | 'green' | 'grey') | null;
+  /**
+   * ID in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1404,13 +1514,27 @@ export interface JobsSelect<T extends boolean = true> {
  */
 export interface MinesSelect<T extends boolean = true> {
   title?: T;
+  code?: T;
+  parentMine?: T;
   location?: T;
+  country?: T;
+  region?: T;
+  district?: T;
+  nearestCity?:
+    | T
+    | {
+        name?: T;
+        population?: T;
+        distanceKm?: T;
+      };
+  website?: T;
   content?: T;
   contentHtml?: T;
   siteType?: T;
-  status?: T;
+  operatingStatus?: T;
   closureYear?: T;
   extractedMaterials?: T;
+  morphology?: T;
   surface?:
     | T
     | {
@@ -1420,9 +1544,14 @@ export interface MinesSelect<T extends boolean = true> {
         agriculture?: T;
         settlement?: T;
       };
+  followUpUse?: T;
+  mainUse?: T;
+  activityScale?: T;
   features?: T;
+  legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1432,6 +1561,7 @@ export interface MineFeaturesSelect<T extends boolean = true> {
   name?: T;
   iconName?: T;
   color?: T;
+  legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

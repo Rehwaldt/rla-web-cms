@@ -8,7 +8,7 @@ async function main() {
   const payload = await getPayload({ config: await configPromise })
   const code = process.argv[2] ?? 'BUG'
 
-  const collections = ['projects', 'topics', 'news', 'awards', 'publications', 'jobs', 'pages', 'employees', 'offices', 'media'] as const
+  const collections = ['projects', 'topics', 'news', 'awards', 'publications', 'jobs', 'pages', 'employees', 'offices', 'media', 'mines', 'mine-features'] as const
   for (const collection of collections) {
     const all = await payload.count({ collection, overrideAccess: true })
     const anonymous = await payload.count({ collection, overrideAccess: false })

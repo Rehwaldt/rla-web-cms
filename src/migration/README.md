@@ -9,7 +9,8 @@ pnpm migrate:website             # import (re-runnable: updates in place, never 
 pnpm migrate:website:verify BUG  # counts, anonymous visibility, one sample project
 ```
 
-Needs `LEGACY_WEB_DB_*` and `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`).
+Needs `LEGACY_WEB_DB_*`, `LEGACY_MINE_DB_NAME` (the Minescapes database `mine_data`, same server
+and user) and `LEGACY_WEB_FILES_ROOT` (the folder holding `0_img` and `4_res`).
 The report lands in `migration/reports/` (gitignored). A first run takes about 80 minutes,
 about 50 of them generating image sizes; re-runs skip existing media but still take about 35
 minutes, since every content document is written once per locale and phase.
@@ -43,6 +44,8 @@ minutes, since every content document is written once per locale and phase.
 | `bilder` | 8292 | `media` — only referenced images, the files from `0_img/` (Media shrinks any over 2800 px on the longest edge) |
 | `textelemente` | 172 | inlined as text blocks into the flows that reference them (`t123`) |
 | `index_*` | — | not imported (site-search crawler index) |
+| `mine_data.mines` | 53 | `mines` |
+| `mine_data.features` / `mine_data.mine_features` | 28 / 83 | `mine-features` / `mines.features` |
 
 ## Legacy quirks the importer resolves
 
@@ -76,6 +79,12 @@ minutes, since every content document is written once per locale and phase.
   `kontext*`/`planung*`/`baustelle*` + their image lists, `karte_*`, `tags`, `themen`,
   `intranet`, `bilder.{breite,hoehe,link,contclass,tags}`, `jobs.{links,ansprechperson}`,
   unreferenced `textelemente`.
+- **Mines** (`mine_data`): English only. Feature names and `essential_use` get German from a
+  table in `plan/mines.ts` (missing terms are reported); `Hipodrom` → `Hippodrome`. `object_id` →
+  `code`; `mine_id` differing from it names the main mine → `parentMine`. Country `KO` → `XK`.
+  `operation_type`, `current_state`, `product_type`, `morphology`, `function_after` → select
+  values; unknown ones are reported. Features keep the legacy map's order (by color).
+  `image_url` is empty everywhere and not imported.
 - **Page keys**: `buero-profil` → `office-profile` etc. (English keys, mapped in the importer).
 - Anything that can't be mapped cleanly (dangling references, missing files, HTML in plain-text
   fields, link URLs Lexical would encode, unknown countries) goes into the import report instead of

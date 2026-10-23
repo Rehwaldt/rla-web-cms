@@ -1,4 +1,7 @@
 import type { CollectionConfig } from 'payload'
+import { anyone } from '@/access/publishedOrAuthenticated'
+import { legacyIdField } from '@/fields/legacyId'
+import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
 
 export const MineFeatures: CollectionConfig = {
@@ -10,17 +13,16 @@ export const MineFeatures: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: GROUPS.minescapes,
-    // Hidden until the Minescapes section goes live.
-    hidden: true,
     defaultColumns: ['name', 'iconName', 'color'],
   },
+  access: { read: anyone },
   fields: [
     {
       name: 'name',
       label: { en: 'Name', de: 'Name' },
       type: 'text',
       localized: true,
-      required: true,
+      validate: requiredInDefaultLocale,
     },
     {
       name: 'iconName',
@@ -43,5 +45,6 @@ export const MineFeatures: CollectionConfig = {
         { label: { en: 'Grey (infrastructure)', de: 'Grau (Infrastruktur)' }, value: 'grey' },
       ],
     },
+    legacyIdField,
   ],
 }

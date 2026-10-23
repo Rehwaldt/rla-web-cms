@@ -1,9 +1,10 @@
 import mysql from 'mysql2/promise'
 
-// Reads the legacy website database into memory. Values are cleaned once here so the planners
-// never see the legacy storage quirks: strings are trimmed, and '' / the literal 'NULL' become null.
+// Reads the legacy website database, and the Minescapes tables from the mine database on the same
+// server, into memory. Values are cleaned once here so the planners never see the legacy storage
+// quirks: strings are trimmed, and '' / the literal 'NULL' become null.
 
-export const LEGACY_TABLES = [
+const WEB_TABLES = [
   'projekte',
   'aehnliche_projekte',
   'projektkategorien',
@@ -19,6 +20,10 @@ export const LEGACY_TABLES = [
   'bilder',
   'textelemente',
 ] as const
+
+const MINE_TABLES = ['mines', 'features', 'mine_features'] as const
+
+export const LEGACY_TABLES = [...WEB_TABLES, ...MINE_TABLES] as const
 
 export type LegacyTable = (typeof LEGACY_TABLES)[number]
 export type Row = Record<string, unknown>
@@ -37,19 +42,22 @@ function cleanValue(value: unknown): unknown {
 }
 
 export async function readLegacySnapshot(): Promise<LegacySnapshot> {
+  const webDb = requireEnv('LEGACY_WEB_DB_NAME')
+  const mineDb = requireEnv('LEGACY_MINE_DB_NAME')
   const connection = await mysql.createConnection({
     host: requireEnv('LEGACY_WEB_DB_HOST'),
     user: requireEnv('LEGACY_WEB_DB_USER'),
     password: requireEnv('LEGACY_WEB_DB_PASSWORD'),
-    database: requireEnv('LEGACY_WEB_DB_NAME'),
+    database: webDb,
     dateStrings: true,
     charset: 'utf8mb4',
   })
   try {
     const snapshot = {} as LegacySnapshot
-    for (const table of LEGACY_TABLES) {
-      const [rows] = await connection.query(`SELECT * FROM \`${table}\``)
-      snapshot[table] = (rows as Row[]).map((row) =>
+    const sources = [...WEB_TABLES.map((table) => [webDb, table]), ...MINE_TABLES.map((table) => [mineDb, table])]
+    for (const [database, table] of sources) {
+      const [rows] = await connection.query(`SELECT * FROM \`${database}\`.\`${table}\``)
+      snapshot[table as LegacyTable] = (rows as Row[]).map((row) =>
         Object.fromEntries(Object.entries(row).map(([key, value]) => [key, cleanValue(value)])),
       )
     }
