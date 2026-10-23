@@ -183,4 +183,97 @@ docker compose exec -T postgres pg_restore -U payload -d payload --clean --if-ex
 docker compose start payload
 ```
 
-Copying the dumps off the server (e.g. to a Hetzner Storage Box) is still open.
+### On-prem copy
+
+n8n on an office Linux machine (server02) starts [pull-backups.sh](pull-backups.sh) every
+morning, which pulls the dumps and the uploads into `/srv/rla-cms-offsite/{dumps,media}`.
+server02 connects out to the server; nothing connects into the office. It logs in with
+two keys that can each only read one folder (`rrsync -ro` as forced command), and the server
+holds no key to the office, so nobody who takes over the server can delete the copies.
+
+- Dumps are copied once and never overwritten. It keeps all of the last 30 days and the first
+  dump of each month for 12 months.
+- Uploads are never deleted there; one that changes on the server keeps its old version in
+  `media-replaced/<date>/`.
+- The run fails (exit code 1, a `pull-backups.sh: …` message) when the newest dump is older than
+  36 hours, i.e. when the dump on the server or the pull itself stopped working. n8n then sends a
+  notification. If n8n itself stops, nothing does: its Executions list shows the last run.
+
+Setup, on **server02** first (as the user that will run it, with sudo):
+
+```sh
+# Prerequisites: rsync, ~10 GB free, and the server reachable on port 22. The last command must
+# answer "Permission denied (publickey)"; a timeout means the office firewall blocks it.
+rsync --version | head -1
+df -h /srv
+ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null tim@159.69.84.183 true
+
+sudo mkdir -p /srv/rla-cms-offsite && sudo chown "$USER" /srv/rla-cms-offsite
+git clone -b feat/website-migration https://github.com/Rehwaldt/rla-web-cms.git /srv/rla-cms-offsite/app
+for k in dumps media; do ssh-keygen -t ed25519 -N '' -C "rla-offsite-$k" -f ~/.ssh/rla-offsite-$k; done
+cat >> ~/.ssh/config <<'EOF'
+Host rla-offsite-dumps rla-offsite-media
+  HostName 159.69.84.183
+  User tim
+  IdentitiesOnly yes
+Host rla-offsite-dumps
+  IdentityFile ~/.ssh/rla-offsite-dumps
+Host rla-offsite-media
+  IdentityFile ~/.ssh/rla-offsite-media
+EOF
+cat ~/.ssh/rla-offsite-dumps.pub ~/.ssh/rla-offsite-media.pub
+```
+
+Then on the **Hetzner server** (as tim), with the two lines printed last:
+
+```sh
+command -v rrsync                      # /usr/bin/rrsync, part of the rsync package
+echo 'command="/usr/bin/rrsync -ro /srv/rla-cms/backups",restrict <rla-offsite-dumps.pub line>' >> ~/.ssh/authorized_keys
+echo 'command="/usr/bin/rrsync -ro /srv/rla-cms/media",restrict <rla-offsite-media.pub line>' >> ~/.ssh/authorized_keys
+echo "159.69.84.183 $(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"   # for server02's known_hosts
+```
+
+Back on **server02**: trust the server's key and run once (the first run copies all uploads,
+several GB):
+
+```sh
+echo '<line printed last on the server>' >> ~/.ssh/known_hosts
+/srv/rla-cms-offsite/app/deploy/pull-backups.sh   # ends with "pulled; newest dump …"
+ssh rla-offsite-dumps ls                           # refused: the key only does rsync
+```
+
+**Schedule in n8n.** n8n starts the script over SSH, as the same user on server02, with a key
+that can only run the script; n8n's credential gives no shell. On server02:
+
+```sh
+systemctl is-active ssh                # active: n8n needs server02's SSH server
+ssh-keygen -t ed25519 -N '' -C n8n-pull-backups -f ~/n8n-pull-backups
+echo "command=\"/srv/rla-cms-offsite/app/deploy/pull-backups.sh\",restrict $(cat ~/n8n-pull-backups.pub)" >> ~/.ssh/authorized_keys
+cat ~/n8n-pull-backups                 # private key, for the n8n credential below
+```
+
+In n8n:
+
+1. Credential **SSH Private Key**: host server02's LAN name or IP (not `localhost`, which in a
+   Docker container is the container itself), port 22, the user from above, the private key.
+   Then `rm ~/n8n-pull-backups ~/n8n-pull-backups.pub` on server02.
+2. Workflow **Pull backups from Hetzner**:
+   - **Schedule Trigger**: daily at 07:00, after the server's 03:15 UTC dump and its 04:00
+     update reboots.
+   - **SSH** → Execute Command, command `pull-backups.sh` (the key runs the script whatever the
+     command says), the credential above. Settings → On Error: *Continue (using error output)*,
+     so an unreachable server02 alerts too.
+   - **If** `{{ $json.code }}` is not equal to `0` → a notification node with
+     `{{ $json.stderr }}`. Connect the SSH node's error output to the same notification.
+3. Run it once with **Execute workflow**: the SSH output's `code` is `0` and `stdout` ends with
+   `pulled; newest dump …`. Activate the workflow.
+
+To revoke server02's access, delete the two lines ending in `rla-offsite-dumps` and
+`rla-offsite-media` from the server's `~/.ssh/authorized_keys`; n8n's, the line ending in
+`n8n-pull-backups` from server02's. Update the script there with
+`git -C /srv/rla-cms-offsite/app pull` (switch the clone to `main` once this branch is merged).
+
+To restore from the on-prem copy, `scp` the dump to the server and restore it as above; the
+uploads go back with `rsync -rt /srv/rla-cms-offsite/media/ tim@159.69.84.183:/srv/rla-cms/media/`
+(a normal key, not the restricted ones). Restoring needs the same `PAYLOAD_SECRET`, which is in
+the password manager, not in the copy.
