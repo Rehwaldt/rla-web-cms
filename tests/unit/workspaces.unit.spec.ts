@@ -42,10 +42,10 @@ describe('workspaces', () => {
   })
 
   it('show the workspace sections in its order, then unfiled ones; shared ones apart', () => {
-    const all = groups('Projects', 'Admin', 'Content', 'Brand new', 'Media', 'Minescapes')
+    const all = groups('Projects', 'Admin', 'Content', 'Brand new', 'Media', 'Excursions', 'Minescapes')
     expect(workspaceSections(all, 'minescapes', label)).toEqual({
-      own: groups('Minescapes', 'Media', 'Brand new'),
-      shared: groups('Admin'),
+      own: groups('Minescapes', 'Excursions', 'Brand new'),
+      shared: groups('Media', 'Admin'),
     })
   })
 

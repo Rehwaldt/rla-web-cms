@@ -16,17 +16,17 @@ export const WORKSPACES: Workspace[] = [
   {
     slug: 'website',
     label: { en: 'Website', de: 'Website' },
-    sections: ['projects', 'content', 'news', 'publications', 'office', 'media'],
+    sections: ['projects', 'content', 'news', 'publications', 'office'],
   },
   {
     slug: 'minescapes',
     label: { en: 'Minescapes', de: 'Minescapes' },
-    sections: ['minescapes', 'excursions', 'media'],
+    sections: ['minescapes', 'excursions'],
   },
 ]
 
 // Shown at the bottom of every workspace.
-export const SHARED_SECTIONS: Section[] = ['admin']
+export const SHARED_SECTIONS: Section[] = ['media', 'admin']
 
 // The last switcher option: every section, in the config's order.
 export const ALL_SECTIONS = 'all'
