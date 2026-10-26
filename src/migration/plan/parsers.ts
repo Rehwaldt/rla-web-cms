@@ -61,6 +61,9 @@ export function parseLinks(ctx: PlanContext, value: string | null, where: string
 // Links inside legacy rich text: old *.php pages and bare e-mail addresses
 // ---------------------------------------------------------------------------------------------
 
+// Legacy pages the new website calls differently.
+const RENAMED_PAGES: Record<string, string> = { aktuell: 'news' }
+
 /**
  * Where a legacy rich-text href should point instead: a project (by code), or a URL the new
  * website understands. Website paths carry no language; the website adds it. Null keeps the href.
@@ -69,7 +72,10 @@ export function legacyHref(href: string): { project: string } | { url: string } 
   const project = /^projekt\.php\?(?:[^#]*&)?proj=([^&#]+)/i.exec(href)
   if (project) return { project: decodeURIComponent(project[1]) }
   const page = /^([a-z][\w-]*)\.php(?:\?lang=[a-z]+)?$/i.exec(href)
-  if (page) return { url: page[1].toLowerCase() === 'index' ? '/' : `/${page[1]}` }
+  if (page) {
+    const name = page[1].toLowerCase()
+    return { url: name === 'index' ? '/' : `/${RENAMED_PAGES[name] ?? page[1]}` }
+  }
   if (/^[^\s@/:]+@[^\s@/:]+\.[a-z]{2,}$/i.test(href)) return { url: `mailto:${href}` }
   return null
 }

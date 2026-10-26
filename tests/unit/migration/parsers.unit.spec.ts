@@ -35,7 +35,7 @@ describe('legacyHref', () => {
   })
 
   it('maps old pages to language-less website paths', () => {
-    expect(legacyHref('aktuell.php')).toEqual({ url: '/aktuell' })
+    expect(legacyHref('aktuell.php')).toEqual({ url: '/news' })
     expect(legacyHref('projekte.php?lang=en')).toEqual({ url: '/projekte' })
   })
 

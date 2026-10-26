@@ -95,7 +95,7 @@ describe('richText', () => {
     })
 
     it('rewrites old pages and bare e-mail addresses, and reports it', () => {
-      expect(linkTo('aktuell.php?lang=en').fields).toMatchObject({ linkType: 'custom', url: '/aktuell' })
+      expect(linkTo('aktuell.php?lang=en').fields).toMatchObject({ linkType: 'custom', url: '/news' })
       const { fields, summary } = linkTo('mail@rehwaldt.de')
       expect(fields).toMatchObject({ url: 'mailto:mail@rehwaldt.de' })
       expect(summary).toContain('Legacy link in rich text (rewritten): 1')
