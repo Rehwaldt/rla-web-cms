@@ -88,6 +88,10 @@ the server and only the **data** comes from Neon.
    docker compose stop payload
    docker compose exec -T postgres pg_restore -U payload -d payload \
      --data-only --disable-triggers --single-transaction < /srv/rla-cms/neon-data.dump
+   # The dump leaves out payload_migrations' rows but not its id counter, which Neon has lower:
+   # put it back, or the next migration fails (see "Payload doesn't start after a deploy")
+   docker compose exec -T postgres psql -U payload -d payload -c \
+     "SELECT setval('payload_migrations_id_seq', (SELECT max(id) FROM payload_migrations));"
    docker compose start payload
    rm /srv/rla-cms/neon-data.dump
    ```
@@ -143,6 +147,22 @@ restore too (see "Backups"). The next push deploys the newest commit again.
 `pnpm dev` pushes schema changes straight into the dev database. Production never does: it only
 runs the migration files. So every schema change that ships needs
 `pnpm payload migrate:create <name>`, committed together with the change.
+
+### Payload doesn't start after a deploy
+
+The workflow only checks that the container started, so a green deploy can still leave the CMS
+answering 502: Payload runs the migrations on startup and restarts in a loop when one fails.
+After a deploy with a migration, check `https://<CMS_DOMAIN>/api/projects?limit=1`, and on a 502
+read `docker compose logs --tail 80 payload`.
+
+If a migration fails with `"collection": "payload-migrations"` and "Wert muss einzigartig sein"
+(value must be unique) on `id`, the table's id counter lags behind its rows (it happened after
+copying the data over, step 3 above). Put it back; Payload picks it up on its next restart:
+
+```sh
+docker compose exec -T postgres psql -U payload -d payload -c \
+  "SELECT setval('payload_migrations_id_seq', (SELECT max(id) FROM payload_migrations));"
+```
 
 ## Running the importer against the server
 
