@@ -17,16 +17,37 @@
   height: 64px;
 }
 
-// Workspace switcher at the top of the admin navigation (src/components/cms/Workspaces).
+// Workspace switcher (src/components/cms/Workspaces). On desktop it sits in the navigation's top
+// bar, right of the collapse button (which spans the first --gutter-h); the navigation is
+// position: sticky, so it stays put while the links scroll. On phones it heads the link list.
 .workspace-switcher {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  width: 100%;
   margin-bottom: var(--base);
 
+  // Read by screen readers only.
   &__label {
-    font-size: 0.75rem;
-    color: var(--theme-elevation-500);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 769px) {
+    position: absolute;
+    top: 0;
+    left: var(--gutter-h);
+    right: var(--nav-padding-inline-end);
+    width: auto;
+    height: var(--app-header-height);
+    margin: 0;
+    display: flex;
+    align-items: center;
+
+    .react-select {
+      width: 100%;
+    }
   }
 }
 

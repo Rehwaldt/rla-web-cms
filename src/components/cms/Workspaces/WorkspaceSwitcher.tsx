@@ -35,9 +35,12 @@ export function WorkspaceSwitcher({ workspace }: { workspace: string }) {
 
   return (
     <div className="workspace-switcher">
-      <span className="workspace-switcher__label">{t('workspaces:label')}</span>
+      <label className="workspace-switcher__label" htmlFor="workspace-switcher">
+        {t('workspaces:label')}
+      </label>
       <ReactSelect
         disabled={pending}
+        inputId="workspace-switcher"
         isClearable={false}
         isSearchable={false}
         onChange={choose}
