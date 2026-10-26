@@ -60,6 +60,17 @@
   }
 }
 
+// Sections every workspace shows (Admin): pushed to the bottom of the navigation, just above the
+// logout button, which then gives up its own `margin-top: auto`.
+.workspace-nav__shared {
+  width: 100%;
+  margin-top: auto;
+
+  + .nav__controls {
+    margin-top: 0;
+  }
+}
+
 // Icons in the admin navigation (Lucide, ISC license, files in nav-icons/). Payload has no icon
 // option for collections, but every nav link has a stable id: nav-<slug> for collections and
 // nav-global-<slug> for globals. The icon is a mask, so it takes the link's text colour.

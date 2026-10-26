@@ -41,19 +41,20 @@ describe('workspaces', () => {
     }
   })
 
-  it('show the workspace sections in its order, then unfiled ones, then shared ones', () => {
-    const all = groups('Projects', 'Content', 'Brand new', 'Media', 'Minescapes', 'Admin')
-    expect(workspaceSections(all, 'minescapes', label).map((g) => g.label)).toEqual([
-      'Minescapes',
-      'Media',
-      'Brand new',
-      'Admin',
-    ])
+  it('show the workspace sections in its order, then unfiled ones; shared ones apart', () => {
+    const all = groups('Projects', 'Admin', 'Content', 'Brand new', 'Media', 'Minescapes')
+    expect(workspaceSections(all, 'minescapes', label)).toEqual({
+      own: groups('Minescapes', 'Media', 'Brand new'),
+      shared: groups('Admin'),
+    })
   })
 
-  it('show everything, in the given order, for "All"', () => {
-    const all = groups('Projects', 'Minescapes', 'Admin')
-    expect(workspaceSections(all, ALL_SECTIONS, label)).toEqual(all)
+  it('show everything, in the given order, for "All", with shared ones apart', () => {
+    const all = groups('Projects', 'Admin', 'Minescapes')
+    expect(workspaceSections(all, ALL_SECTIONS, label)).toEqual({
+      own: groups('Projects', 'Minescapes'),
+      shared: groups('Admin'),
+    })
   })
 
   it('fall back to the default workspace for an unknown or missing preference', () => {

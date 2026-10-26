@@ -30,7 +30,8 @@ export const getWorkspace = async (req: PayloadRequest) =>
 
 export const getNavPreferences = (req: PayloadRequest) => getPreference(req, PREFERENCE_KEYS.NAV)
 
-// The navigation sections of the user's workspace, as Payload's navigation groups.
+// The navigation sections of the user's workspace, as Payload's navigation groups: its own, and
+// the shared ones every workspace shows at the bottom.
 export async function getWorkspaceSections(
   req: PayloadRequest,
   permissions: SanitizedPermissions,

@@ -43,26 +43,28 @@ export const resolveWorkspace = (stored: unknown): string =>
     : DEFAULT_WORKSPACE
 
 // Narrows Payload's navigation groups, which carry the translated section name as label, to a
-// workspace. A section no workspace lists shows up in all of them, so nothing goes missing before
-// it is filed (tests/unit/workspaces.unit.spec.ts fails meanwhile).
+// workspace: its own sections, and the shared ones, which every workspace (All included) shows
+// at the bottom. A section no workspace lists shows up in all of them, so nothing goes missing
+// before it is filed (tests/unit/workspaces.unit.spec.ts fails meanwhile).
 export function workspaceSections<G extends { label: string }>(
   groups: G[],
   workspace: string,
   sectionLabel: (section: Section) => string,
-): G[] {
-  const current = WORKSPACES.find(({ slug }) => slug === workspace)
-  if (!current) return groups
-
+): { own: G[]; shared: G[] } {
   const labels = (sections: Section[]) => sections.map(sectionLabel)
-  const filed = new Set([
-    ...WORKSPACES.flatMap(({ sections }) => labels(sections)),
-    ...labels(SHARED_SECTIONS),
-  ])
   const withLabel = (label: string) => groups.filter((group) => group.label === label)
+  const sharedLabels = new Set(labels(SHARED_SECTIONS))
+  const shared = labels(SHARED_SECTIONS).flatMap(withLabel)
 
-  return [
-    ...labels(current.sections).flatMap(withLabel),
-    ...groups.filter(({ label }) => !filed.has(label)),
-    ...labels(SHARED_SECTIONS).flatMap(withLabel),
-  ]
+  const current = WORKSPACES.find(({ slug }) => slug === workspace)
+  if (!current) return { own: groups.filter(({ label }) => !sharedLabels.has(label)), shared }
+
+  const filed = new Set([...WORKSPACES.flatMap(({ sections }) => labels(sections)), ...sharedLabels])
+  return {
+    own: [
+      ...labels(current.sections).flatMap(withLabel),
+      ...groups.filter(({ label }) => !filed.has(label)),
+    ],
+    shared,
+  }
 }

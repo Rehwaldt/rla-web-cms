@@ -14,7 +14,8 @@ export async function WorkspaceCollectionCards({ req }: WidgetServerProps) {
   const { i18n } = req
   const adminRoute = req.payload.config.routes.admin
   const permissions = await getAccessResults({ req })
-  const sections = await getWorkspaceSections(req, permissions, getVisibleEntities({ req }))
+  const { own, shared } = await getWorkspaceSections(req, permissions, getVisibleEntities({ req }))
+  const sections = [...own, ...shared]
 
   return (
     <div className="collections">

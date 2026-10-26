@@ -14,7 +14,7 @@ export async function WorkspaceNav({
   visibleEntities,
 }: ServerProps & { req?: PayloadRequest }) {
   if (!req || !permissions || !visibleEntities) return null
-  const [workspace, groups, navPreferences] = await Promise.all([
+  const [workspace, { own, shared }, navPreferences] = await Promise.all([
     getWorkspace(req),
     getWorkspaceSections(req, permissions, visibleEntities),
     getNavPreferences(req),
@@ -24,7 +24,11 @@ export async function WorkspaceNav({
     <NavWrapper baseClass="nav">
       <nav className="nav__wrap">
         <WorkspaceSwitcher workspace={workspace} />
-        <DefaultNavClient groups={groups} navPreferences={navPreferences as never} />
+        <DefaultNavClient groups={own} navPreferences={navPreferences as never} />
+        {/* Pinned to the bottom, so they stay in place whichever workspace is open. */}
+        <div className="workspace-nav__shared">
+          <DefaultNavClient groups={shared} navPreferences={navPreferences as never} />
+        </div>
         <div className="nav__controls">
           <Logout />
         </div>
