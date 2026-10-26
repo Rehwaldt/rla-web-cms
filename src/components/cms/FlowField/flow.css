@@ -130,6 +130,12 @@
 .flow-grid--no-captions .figure-caption {
   display: none;
 }
+/* Not in rla.css yet: the description of an image block (rla-web-cms#34). */
+.flow-grid .figure-description {
+  margin: 0.2em 0 0.8em;
+  font-size: 0.875rem;
+  white-space: pre-line;
+}
 .flow-grid .figure-wrapper.has-overlay .figure-caption {
   display: block;
   position: absolute;

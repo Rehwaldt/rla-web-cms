@@ -412,9 +412,17 @@ export interface Media {
  */
 export interface FlowImageBlock {
   /**
-   * Caption and link come from the image's project (set on the media item).
+   * Caption and link come from the image's project (set on the media item), unless a caption is set below.
    */
   image: number | Media;
+  /**
+   * Replaces the project name as the caption. Project pages show no captions.
+   */
+  caption?: string | null;
+  /**
+   * Shown below the image, on every page.
+   */
+  description?: string | null;
   size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
   modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
   id?: string | null;
@@ -1320,6 +1328,8 @@ export interface ProjectsSelect<T extends boolean = true> {
  */
 export interface FlowImageBlockSelect<T extends boolean = true> {
   image?: T;
+  caption?: T;
+  description?: T;
   size?: T;
   modifiers?: T;
   id?: T;

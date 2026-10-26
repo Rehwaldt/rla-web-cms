@@ -53,6 +53,9 @@ labels use these words so that one concept never gets two German names.
   *Text*), **topic reference** (de: *Themen-Verweis*; an image tile with the topic's image and
   name) or **news reference** (de: *News-Verweis*; kept in the flow, but the website doesn't show
   it).
+- **Caption** (de: *Bildunterschrift*): the line under an image in a flow: the image's project
+  name, unless the image block sets its own. Project pages show none. An image block's
+  **description** (de: *Beschreibung*) is a longer text below the image, shown on every page.
 - **Hero image** (de: *Titelbild*): large image at the top of a project page. **Preview image**
   (de: *Vorschaubild*): the tile image in listings.
 - **Credit** (de: *Copyright*): photographer or copyright holder of a media item.

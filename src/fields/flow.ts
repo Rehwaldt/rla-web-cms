@@ -98,10 +98,34 @@ const BLOCKS: Record<FlowBlockType, Block> = {
         'image',
         { en: 'Image', de: 'Bild' },
         {
-          en: "Caption and link come from the image's project (set on the media item).",
-          de: 'Bildunterschrift und Link kommen vom Projekt des Bildes (am Medium festgelegt).',
+          en: "Caption and link come from the image's project (set on the media item), unless a caption is set below.",
+          de: 'Bildunterschrift und Link kommen vom Projekt des Bildes (am Medium festgelegt), außer eine Bildunterschrift ist unten gesetzt.',
         },
       ),
+      {
+        name: 'caption',
+        label: { en: 'Caption', de: 'Bildunterschrift' },
+        type: 'text',
+        localized: true,
+        admin: {
+          description: {
+            en: 'Replaces the project name as the caption. Project pages show no captions.',
+            de: 'Ersetzt den Projektnamen als Bildunterschrift. Projektseiten zeigen keine Bildunterschriften.',
+          },
+        },
+      },
+      {
+        name: 'description',
+        label: { en: 'Description', de: 'Beschreibung' },
+        type: 'textarea',
+        localized: true,
+        admin: {
+          description: {
+            en: 'Shown below the image, on every page.',
+            de: 'Erscheint unter dem Bild, auf jeder Seite.',
+          },
+        },
+      },
     ],
   }),
   text: block('text', {

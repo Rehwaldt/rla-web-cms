@@ -36,6 +36,9 @@ describe('flow field', () => {
           })
         }
       }
+      const image = blocks.find((block) => block.slug === 'image')!
+      expect(named(image, 'caption')).toMatchObject({ type: 'text', localized: true })
+      expect(named(image, 'description')).toMatchObject({ type: 'textarea', localized: true })
     }
   })
 })

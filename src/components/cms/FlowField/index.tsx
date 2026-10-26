@@ -56,6 +56,9 @@ type Row = {
   reference?: number | string
   title?: string
   body?: any
+  /** Image blocks: replaces the referenced document's caption. */
+  caption?: string
+  description?: string
   hasError: boolean
   isLoading: boolean
 }
@@ -118,6 +121,10 @@ const MODIFIER_HINTS: Record<FlowModifier, TranslationKeys> = {
   topmargin: 'flow:hintTopmargin',
   separator: 'flow:hintSeparator',
 }
+
+/** A block's own caption, else the one of the document it points at. */
+const captionOf = (row: Row, doc: Record<string, any>, preview: (typeof PREVIEWS)[FlowCollection] | null) =>
+  row.caption || preview?.caption(doc)
 
 const blockLabel = (t: T, blockType: string) => (isFlowBlockType(blockType) ? t(BLOCK_LABELS[blockType]) : blockType)
 const sizeLabel = (t: T, size: FlowSize) => (size === 'full' ? t('flow:sizeFull') : SIZE_LABELS[size])
@@ -231,6 +238,8 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
         reference: reference ? idOf(at(reference.field)) : undefined,
         title: at('title'),
         body: at('body'),
+        caption: at('caption'),
+        description: at('description'),
       }
     })
     return JSON.stringify(out)
@@ -718,7 +727,7 @@ const OffstageItem: React.FC<{
       {image?.src ? <img src={image.src} alt="" /> : <span className="flow-editor__offstage-noimg" />}
       <span className="flow-editor__offstage-title">
         {blockLabel(t, row.blockType)}:{' '}
-        {doc === undefined ? t('flow:loading') : ((doc && preview?.caption(doc)) ?? t('flow:notFound'))}
+        {doc === undefined ? t('flow:loading') : ((doc && captionOf(row, doc, preview)) ?? t('flow:notFound'))}
       </span>
       {!readOnly && (
         <>
@@ -757,7 +766,7 @@ const FigureContent: React.FC<{ row: Row; docFor: ReturnType<typeof useReference
   // `undefined` while the document loads, `null` when there's none.
   const doc = ref ? docFor(ref) : null
   const media = doc === undefined ? undefined : doc && preview ? (preview.image(doc) ?? null) : null
-  const caption = doc && preview ? preview.caption(doc) : undefined
+  const caption = doc && captionOf(row, doc, preview)
   const missing = preview ? t(doc ? preview.noImage : preview.notFound) : t('flow:noImage')
 
   const image = imageSource(media)
@@ -774,6 +783,7 @@ const FigureContent: React.FC<{ row: Row; docFor: ReturnType<typeof useReference
         )}
       </figure>
       {caption && <div className="figure-caption">{caption}</div>}
+      {row.description && <p className="figure-description">{row.description}</p>}
     </>
   )
 }
