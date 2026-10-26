@@ -34,8 +34,17 @@
     white-space: nowrap;
   }
 
+  // Smaller than a form field's select, to fit the top bar.
+  .rs__control {
+    min-height: 0;
+    padding: 2px 8px;
+    font-size: 0.875rem;
+  }
+
   @media (min-width: 769px) {
     position: absolute;
+    // Above .nav__header, an empty full-width strip over the same top bar that swallows clicks.
+    z-index: 2;
     top: 0;
     left: var(--gutter-h);
     right: var(--nav-padding-inline-end);
