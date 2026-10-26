@@ -130,6 +130,7 @@ export interface Config {
   };
   locale: 'de' | 'en' | 'zh' | 'cs';
   widgets: {
+    'workspace-collections': WorkspaceCollectionsWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1895,6 +1896,16 @@ export interface ProjectGallerySelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workspace-collections_widget".
+ */
+export interface WorkspaceCollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

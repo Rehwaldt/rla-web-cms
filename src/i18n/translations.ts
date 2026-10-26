@@ -78,6 +78,10 @@ const en = {
     invalidTime: 'Enter the time as HH:mm, e.g. 09:30.',
     duplicateDate: 'Two days have the same date ({{date}}).',
   },
+  workspaces: {
+    label: 'Workspace',
+    all: 'All',
+  },
 }
 
 const de: typeof en = {
@@ -154,6 +158,10 @@ const de: typeof en = {
     invalidSlug: 'Nur Kleinbuchstaben, Ziffern und einzelne Bindestriche verwenden, z. B. berlin-2026.',
     invalidTime: 'Uhrzeit als HH:mm eingeben, z. B. 09:30.',
     duplicateDate: 'Zwei Tage haben dasselbe Datum ({{date}}).',
+  },
+  workspaces: {
+    label: 'Arbeitsbereich',
+    all: 'Alle',
   },
 }
 

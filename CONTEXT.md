@@ -81,6 +81,16 @@ labels use these words so that one concept never gets two German names.
 - **Legacy id** (de: *Legacy ID*, left untranslated as developer information): id of the legacy
   record a document was imported from. Only the importer uses it.
 
+## Admin
+
+- **Workspace** (de: *Arbeitsbereich*): a named selection of navigation sections for one kind of
+  work, e.g. *Website* (daily editing) or *Minescapes* (mines and excursions). Each person picks
+  their own; *All* (de: *Alle*) shows every section. A workspace only narrows what the navigation
+  and the dashboard list; it grants or denies nothing. Workspaces may share sections.
+  _Avoid_: mode, area
+- **Navigation section** (de: *Rubrik*): a heading of the admin navigation grouping collections
+  (Projects, News, Publications, …). _Avoid_: group (a project category group is something else)
+
 ## Minescapes (provisional)
 
 Not modeled properly yet; these terms only fix the German labels until it is.

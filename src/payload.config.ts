@@ -47,8 +47,24 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    // Navigation and dashboard show the sections of the user's workspace (src/workspaces.ts).
+    components: {
+      Nav: '@/components/cms/Workspaces/Nav#WorkspaceNav',
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'workspace-collections',
+          label: { en: 'Collections of the workspace', de: 'Sammlungen des Arbeitsbereichs' },
+          Component: '@/components/cms/Workspaces/CollectionCards#WorkspaceCollectionCards',
+          minWidth: 'full',
+        },
+      ],
+      defaultLayout: [{ widgetSlug: 'workspace-collections', width: 'full' }],
+    },
   },
-  // The order here is the order of the admin navigation, within and across groups.
+  // The order here is the order of the admin navigation, within and across groups ("All"
+  // workspace); a workspace orders its own sections.
   collections: [
     Projects,
     ProjectCategories,
