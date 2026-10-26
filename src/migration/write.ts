@@ -1,9 +1,13 @@
 import type { BasePayload, CollectionSlug } from 'payload'
+import { SKIP_SEARCH_INDEX } from '@/search/indexer'
 import type { Report } from './report'
 import { type Data, type DocPlan, isRef, type Plan, SECONDARY_LOCALES } from './plan/types'
 
 type Id = number | string
 const MISSING = Symbol('missing reference')
+
+// The search index isn't updated per write; run.ts rebuilds it once at the end
+const context = { [SKIP_SEARCH_INDEX]: true }
 
 const containsRef = (value: unknown): boolean =>
   isRef(value) ||
@@ -99,7 +103,7 @@ export async function applyPlan(
     try {
       const id = idsFor(doc.collection).get(doc.key)
       if (id !== undefined) {
-        await payload.update({ collection: doc.collection, id, data: payloadData, locale: locale as never, depth: 0, overrideAccess: true })
+        await payload.update({ collection: doc.collection, id, data: payloadData, locale: locale as never, depth: 0, overrideAccess: true, context })
       } else {
         const created = await payload.create({
           collection: doc.collection,
@@ -107,6 +111,7 @@ export async function applyPlan(
           locale: locale as never,
           depth: 0,
           overrideAccess: true,
+          context,
           ...(doc.filePath && { filePath: doc.filePath }),
         })
         idsFor(doc.collection).set(doc.key, created.id)
@@ -177,7 +182,7 @@ export async function applyPlan(
     const id = idsFor(doc.collection).get(doc.key)
     if (doc.status !== 'draft' || id === undefined) continue
     try {
-      await payload.update({ collection: doc.collection, id, data: { _status: 'draft' } as never, depth: 0, overrideAccess: true })
+      await payload.update({ collection: doc.collection, id, data: { _status: 'draft' } as never, depth: 0, overrideAccess: true, context })
       report.count(`drafts ${doc.collection}`)
     } catch (error) {
       report.add('Write failed', `${doc.collection}/${doc.key} unpublish: ${errorMessage(error)}`)

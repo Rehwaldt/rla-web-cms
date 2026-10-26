@@ -50,7 +50,9 @@ reintroduce those sources here unless asked.
   (Vitest, needs Postgres) / `pnpm test:e2e` (Playwright) / `pnpm test` (all). `pnpm lint`.
 - `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
   `src/migration/README.md`). Re-runnable; writes a report to `migration/reports/`.
-  `pnpm migrate:website:verify [projectCode]` spot-checks the result.
+  `pnpm migrate:website:verify [projectCode]` spot-checks the result. It ends by rebuilding the
+  search index.
+- `pnpm search:reindex`: rebuilds the site search's index (below) from scratch.
 
 ## Deployment
 
@@ -107,6 +109,17 @@ Lucide icon in `src/app/(payload)/custom.scss`. Every section must be filed in a
 shared in `src/workspaces.ts` (a unit test checks). The navigation and the dashboard's collection
 widget are custom (`src/components/cms/Workspaces`), rebuilt from Payload's `DefaultNav` and
 `CollectionCards`; re-check them after a Payload upgrade.
+
+## Site search (`src/search`)
+
+`GET /api/search?q=…&locale=…` is the website's search (#10). It reads the hidden `search-index`
+collection: one entry per published document and language (only languages in its `visibleIn`),
+with title, secondary text and body as plain text. `sources.ts` says which fields each searchable
+collection (projects, topics, publications, awards, news) contributes. Hooks rebuild a document's
+entries from its main table on every change, so draft saves don't reach the index; the importer
+skips them and rebuilds the whole index at its end. Matching is Postgres full-text search (word
+starts, German/English stemming, computed at query time: the index is small) plus an
+accent-insensitive substring match for compounds and Chinese.
 
 ## The legacy website being replaced
 

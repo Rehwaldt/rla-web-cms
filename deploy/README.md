@@ -164,6 +164,10 @@ pnpm migrate:website
 The importer saves new uploads into the PC's `public/media`. Copy them to the server afterwards
 (step 4 above).
 
+The site search's index is rebuilt the same way, with `pnpm search:reindex` in place of
+`pnpm migrate:website` (the importer already does it at its end). Needed once after the search
+index first ships: its migration only creates the empty table.
+
 ## Backups
 
 Hetzner's server backups snapshot the whole disk daily. On top of that, [backup.sh](backup.sh)

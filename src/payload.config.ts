@@ -36,6 +36,10 @@ import { MineFeatures } from './collections/MineFeatures'
 
 import { ProjectGallery } from './globals/ProjectGallery'
 
+import { searchEndpoint } from './search/endpoint'
+import { withSearchIndexHooks } from './search/indexer'
+import { SearchIndex } from './search/SearchIndex'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -64,8 +68,9 @@ export default buildConfig({
     },
   },
   // The order here is the order of the admin navigation, within and across groups ("All"
-  // workspace); a workspace orders its own sections.
-  collections: [
+  // workspace); a workspace orders its own sections. The searchable ones keep the site search's
+  // index current (src/search).
+  collections: withSearchIndexHooks([
     Projects,
     ProjectCategories,
     Pages,
@@ -83,8 +88,10 @@ export default buildConfig({
     MineFeatures,
     Media,
     Users,
-  ],
+    SearchIndex,
+  ]),
   globals: [ProjectGallery],
+  endpoints: [searchEndpoint],
   // The admin speaks English and German: the browser's language picks one, users can switch in
   // their account settings, and anyone else gets German. Content locales are separate (below).
   i18n: {

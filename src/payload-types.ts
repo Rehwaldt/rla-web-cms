@@ -84,6 +84,7 @@ export interface Config {
     'mine-features': MineFeature;
     media: Media;
     users: User;
+    'search-index': SearchIndex;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -112,6 +113,7 @@ export interface Config {
     'mine-features': MineFeaturesSelect<false> | MineFeaturesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'search-index': SearchIndexSelect<false> | SearchIndexSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -1161,6 +1163,27 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search-index".
+ */
+export interface SearchIndex {
+  id: number;
+  docCollection: string;
+  docId: number;
+  language: string;
+  title?: string | null;
+  secondary?: string | null;
+  body?: string | null;
+  titleFolded?: string | null;
+  secondaryFolded?: string | null;
+  bodyFolded?: string | null;
+  image?: number | null;
+  code?: string | null;
+  category?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1250,6 +1273,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'search-index';
+        value: number | SearchIndex;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1833,6 +1860,26 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search-index_select".
+ */
+export interface SearchIndexSelect<T extends boolean = true> {
+  docCollection?: T;
+  docId?: T;
+  language?: T;
+  title?: T;
+  secondary?: T;
+  body?: T;
+  titleFolded?: T;
+  secondaryFolded?: T;
+  bodyFolded?: T;
+  image?: T;
+  code?: T;
+  category?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -11,6 +11,7 @@ import * as migration_20261026_101440_featured_projects from './20261026_101440_
 import * as migration_20261026_105221_news_images_and_categories from './20261026_105221_news_images_and_categories';
 import * as migration_20261026_105245_drop_news_image from './20261026_105245_drop_news_image';
 import * as migration_20261026_165113_media_caption from './20261026_165113_media_caption';
+import * as migration_20261026_183223_search_index from './20261026_183223_search_index';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20261026_165113_media_caption.up,
     down: migration_20261026_165113_media_caption.down,
-    name: '20261026_165113_media_caption'
+    name: '20261026_165113_media_caption',
+  },
+  {
+    up: migration_20261026_183223_search_index.up,
+    down: migration_20261026_183223_search_index.down,
+    name: '20261026_183223_search_index'
   },
 ];

@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { convertHTMLToLexical, defaultEditorConfig, sanitizeServerEditorConfig } from '@payloadcms/richtext-lexical'
 import { JSDOM } from 'jsdom'
 import configPromise from '../payload.config'
+import { reindexAll } from '../search/indexer'
 import { readLegacySnapshot } from './legacy'
 import { planWebsite } from './plan'
 import { type Section, SECTIONS } from './plan/types'
@@ -47,6 +48,8 @@ async function main() {
   if (!dryRun) {
     const payload = await getPayload({ config })
     await applyPlan(payload, plan, report, { updateMedia: process.argv.includes('--update-media') })
+    console.log('Rebuilding the search index…')
+    await reindexAll(payload, (line) => console.log(`  ${line}`))
   }
 
   const file = report.write(path.resolve(process.cwd(), 'migration', 'reports'), reportName)
