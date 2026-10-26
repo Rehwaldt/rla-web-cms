@@ -31,7 +31,7 @@ export const Excursions: CollectionConfig = {
   admin: {
     preview: websitePreview('excursions'),
     useAsTitle: 'title',
-    group: GROUPS.content,
+    group: GROUPS.excursions,
     defaultColumns: ['title', 'slug', '_status'],
   },
   access: { read: publishedOrAuthenticated },

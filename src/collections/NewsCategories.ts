@@ -14,7 +14,7 @@ export const NewsCategories: CollectionConfig = {
   orderable: true,
   admin: {
     useAsTitle: 'name',
-    group: GROUPS.content,
+    group: GROUPS.news,
   },
   access: { read: anyone },
   fields: [

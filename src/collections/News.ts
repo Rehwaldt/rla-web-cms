@@ -21,7 +21,7 @@ export const News: CollectionConfig = {
   admin: {
     preview: websitePreview('news'),
     useAsTitle: 'title',
-    group: GROUPS.content,
+    group: GROUPS.news,
     defaultColumns: ['title', 'date', 'categories', '_status'],
   },
   access: { read: publishedOrAuthenticated },

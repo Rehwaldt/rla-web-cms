@@ -2,6 +2,8 @@
 export const GROUPS = {
   projects: { en: 'Projects', de: 'Projekte' },
   content: { en: 'Content', de: 'Inhalte' },
+  news: { en: 'News', de: 'News' },
+  excursions: { en: 'Excursions', de: 'Exkursionen' },
   publications: { en: 'Publications', de: 'Publikationen' },
   office: { en: 'Office', de: 'Büro' },
   media: { en: 'Media', de: 'Medien' },
