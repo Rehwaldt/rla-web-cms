@@ -71,12 +71,14 @@ Reuse these instead of re-declaring the shapes:
 - `richTextField(name, label)`: localized Lexical rich text with the fixed toolbar. Internal links
   may point to `projects` only; the field's `{name}Html` twin renders them as language-less
   `/p/{code}`.
-- `flowField({ localized, captions })`: the "flow" grid of image/text/news/topic blocks with size
+- `flowField({ localized, captions })`: the "flow" grid of image/text/topic blocks with size
   and modifiers. An image's caption and link come from the media item's `project`. Edited in a
   visual editor (`src/components/cms/FlowField`) that renders the grid with `flow.css`, a port of
   the website's stylesheet; sizes, modifiers and block types live in `src/fields/flowBlocks.ts`,
   which the schema, the editor and the importer all read.
 - `linksField`: per-language list of links, each either a project reference or an external URL.
+- `featuredNewsField`: per-language, hand-sorted news items for the document's news section
+  (Pages so far).
 - `visibleInField`: languages whose website lists the entry. Together with drafts
   (`versions: { drafts: true }`) it replaces every legacy visibility flag.
 - `legacyIdField`: id of the imported legacy record; the importer upserts by it.

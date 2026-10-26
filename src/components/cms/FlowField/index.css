@@ -299,36 +299,3 @@
   height: 100%;
   object-fit: cover;
 }
-
-/* ---------------------------------------------------------------------------------------------- */
-/* Blocks the website doesn't render                                                               */
-/* ---------------------------------------------------------------------------------------------- */
-
-.flow-editor__offstage {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid var(--theme-warning-200, #f3d9a4);
-  border-radius: var(--style-radius-m, 4px);
-  background: var(--theme-warning-50, #fdf8ec);
-}
-.flow-editor__offstage-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 4px 0;
-  font-size: 0.8125rem;
-}
-.flow-editor__offstage-item img,
-.flow-editor__offstage-noimg {
-  width: 48px;
-  height: 32px;
-  object-fit: cover;
-  background: #ddd;
-}
-.flow-editor__offstage-title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}

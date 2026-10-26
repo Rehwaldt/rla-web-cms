@@ -8,7 +8,6 @@ const en = {
   flow: {
     blockImage: 'Image',
     blockText: 'Text',
-    blockNews: 'News',
     blockTopic: 'Topic',
     sizeFull: 'Full',
 
@@ -32,8 +31,6 @@ const en = {
     readOnly: 'Read only',
     usage: 'Click a block to change its layout · drag to reorder · double-click to edit its content',
     empty: 'The flow is empty. Add images or text below.',
-    offstage:
-      'Not shown on the website: its flow skips news references, so they take no place in the grid.',
     addAfterSelected: 'Add after the selected block:',
     addAtEnd: 'Add at the end:',
     addImages: '+ Images',
@@ -46,16 +43,12 @@ const en = {
     editAnyBlock: 'Edit block',
     done: 'Done',
     edit: 'Edit',
-    remove: 'Remove',
     loading: 'Loading…',
-    notFound: 'not found',
     emptyText: 'Empty text block. Double-click to write.',
     noImage: 'No image selected',
     imageNotFound: 'Image not found',
     topicHasNoImage: 'Topic has no image',
     topicNotFound: 'Topic not found',
-    newsHasNoImage: 'News item has no image',
-    newsNotFound: 'News item not found',
 
     width: 'Width',
     narrower: 'Narrower (−)',
@@ -91,7 +84,6 @@ const de: typeof en = {
   flow: {
     blockImage: 'Bild',
     blockText: 'Text',
-    blockNews: 'News',
     blockTopic: 'Thema',
     sizeFull: 'Voll',
 
@@ -116,8 +108,6 @@ const de: typeof en = {
     usage:
       'Block anklicken, um das Layout zu ändern · ziehen zum Verschieben · Doppelklick, um den Inhalt zu bearbeiten',
     empty: 'Der Flow ist leer. Unten Bilder oder Text hinzufügen.',
-    offstage:
-      'Nicht auf der Website sichtbar: Die Website überspringt News-Verweise im Flow, sie belegen keinen Platz im Raster.',
     addAfterSelected: 'Nach dem ausgewählten Block einfügen:',
     addAtEnd: 'Am Ende einfügen:',
     addImages: '+ Bilder',
@@ -130,16 +120,12 @@ const de: typeof en = {
     editAnyBlock: 'Block bearbeiten',
     done: 'Fertig',
     edit: 'Bearbeiten',
-    remove: 'Entfernen',
     loading: 'Lädt…',
-    notFound: 'nicht gefunden',
     emptyText: 'Leerer Textblock. Doppelklick zum Schreiben.',
     noImage: 'Kein Bild ausgewählt',
     imageNotFound: 'Bild nicht gefunden',
     topicHasNoImage: 'Thema hat kein Bild',
     topicNotFound: 'Thema nicht gefunden',
-    newsHasNoImage: 'News hat kein Bild',
-    newsNotFound: 'News nicht gefunden',
 
     width: 'Breite',
     narrower: 'Schmaler (−)',

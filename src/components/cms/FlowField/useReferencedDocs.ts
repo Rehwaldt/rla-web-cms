@@ -4,7 +4,7 @@ import { useConfig } from '@payloadcms/ui'
 import { useEffect, useMemo, useState } from 'react'
 import type { FlowCollection } from '@/fields/flowBlocks'
 
-// Loads the media, news and topics a flow points at, with just the fields the preview needs.
+// Loads the media and topics a flow points at, with just the fields the preview needs.
 
 export type DocRef = { collection: FlowCollection; id: number | string }
 
@@ -14,12 +14,6 @@ const QUERIES: Record<FlowCollection, Record<string, string>> = {
   media: {
     ...Object.fromEntries([...IMAGE_FIELDS, 'project'].map((f) => [`select[${f}]`, 'true'])),
     'populate[projects][name]': 'true',
-  },
-  news: {
-    'select[title]': 'true',
-    'select[image]': 'true',
-    draft: 'true',
-    ...Object.fromEntries(IMAGE_FIELDS.map((f) => [`populate[media][${f}]`, 'true'])),
   },
   topics: {
     'select[name]': 'true',

@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { featuredNewsField } from '@/fields/featuredNews'
 import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
@@ -79,6 +80,7 @@ export const Pages: CollectionConfig = {
       ],
     },
     flowField({ localized: true }),
+    featuredNewsField,
     legacyIdField,
   ],
 }

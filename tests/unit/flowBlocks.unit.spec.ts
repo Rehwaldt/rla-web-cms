@@ -14,7 +14,7 @@ describe('block types', () => {
   it('offers crop only where there is an image, and the separator only on text', () => {
     expect(FLOW_BLOCKS.text.modifiers).toContain('separator')
     expect(FLOW_BLOCKS.text.modifiers).not.toContain('crop')
-    for (const blockType of ['image', 'topicReference', 'newsReference'] as const) {
+    for (const blockType of ['image', 'topicReference'] as const) {
       expect(FLOW_BLOCKS[blockType].modifiers).toContain('crop')
       expect(FLOW_BLOCKS[blockType].modifiers).not.toContain('separator')
     }
@@ -25,10 +25,6 @@ describe('block types', () => {
       const { modifiers } = FLOW_BLOCKS[blockType]
       expect(modifiers).toEqual(FLOW_MODIFIERS.filter((modifier) => modifiers.includes(modifier as never)))
     }
-  })
-
-  it('leaves news references out of the grid', () => {
-    expect(FLOW_BLOCK_TYPES.filter((blockType) => !FLOW_BLOCKS[blockType].rendersOnWebsite)).toEqual(['newsReference'])
   })
 
   it('knows nothing about a value that is not a block type', () => {

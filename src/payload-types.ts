@@ -277,7 +277,7 @@ export interface Project {
   /**
    * Grid of images, texts and references.
    */
-  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  flow?: (FlowImageBlock | FlowTextBlock | FlowTopicReferenceBlock)[] | null;
   /**
    * Each language keeps its own list of links.
    */
@@ -459,70 +459,6 @@ export interface FlowTextBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowNewsReferenceBlock".
- */
-export interface FlowNewsReferenceBlock {
-  news: number | News;
-  size: 'one6' | 'one4' | 'one3' | 'one2' | 'two3' | 'full';
-  modifiers?: ('clear' | 'right' | 'center' | 'crop' | 'topmargin')[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'newsReference';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
- */
-export interface News {
-  id: number;
-  title?: string | null;
-  date: string;
-  image?: (number | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentHtml?: string | null;
-  /**
-   * Each language keeps its own list of links.
-   */
-  links?:
-    | {
-        kind: 'project' | 'external';
-        /**
-         * Optional for project links — the project name is used instead.
-         */
-        label?: string | null;
-        project?: (number | null) | Project;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
-   */
-  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
-  /**
-   * ID in the legacy website database. Set by the importer.
-   */
-  legacyId?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FlowTopicReferenceBlock".
  */
 export interface FlowTopicReferenceBlock {
@@ -564,7 +500,7 @@ export interface Topic {
   /**
    * Grid of images, texts and references.
    */
-  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  flow?: (FlowImageBlock | FlowTextBlock | FlowTopicReferenceBlock)[] | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
@@ -615,7 +551,63 @@ export interface Page {
   /**
    * Grid of images, texts and references. Each language has its own flow.
    */
-  flow?: (FlowImageBlock | FlowTextBlock | FlowNewsReferenceBlock | FlowTopicReferenceBlock)[] | null;
+  flow?: (FlowImageBlock | FlowTextBlock | FlowTopicReferenceBlock)[] | null;
+  /**
+   * Shown in the page's news section, in this order. Each language has its own selection.
+   */
+  featuredNews?: (number | News)[] | null;
+  /**
+   * ID in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  title?: string | null;
+  date: string;
+  image?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentHtml?: string | null;
+  /**
+   * Each language keeps its own list of links.
+   */
+  links?:
+    | {
+        kind: 'project' | 'external';
+        /**
+         * Optional for project links — the project name is used instead.
+         */
+        label?: string | null;
+        project?: (number | null) | Project;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Languages whose website lists this entry. It stays reachable by direct link in all of them.
+   */
+  visibleIn?: ('de' | 'en' | 'zh' | 'cs')[] | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
@@ -1304,7 +1296,6 @@ export interface ProjectsSelect<T extends boolean = true> {
     | {
         image?: T | FlowImageBlockSelect<T>;
         text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
       };
   links?:
@@ -1343,17 +1334,6 @@ export interface FlowTextBlockSelect<T extends boolean = true> {
   title?: T;
   body?: T;
   bodyHtml?: T;
-  size?: T;
-  modifiers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FlowNewsReferenceBlock_select".
- */
-export interface FlowNewsReferenceBlockSelect<T extends boolean = true> {
-  news?: T;
   size?: T;
   modifiers?: T;
   id?: T;
@@ -1414,9 +1394,9 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         image?: T | FlowImageBlockSelect<T>;
         text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
       };
+  featuredNews?: T;
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1503,7 +1483,6 @@ export interface TopicsSelect<T extends boolean = true> {
     | {
         image?: T | FlowImageBlockSelect<T>;
         text?: T | FlowTextBlockSelect<T>;
-        newsReference?: T | FlowNewsReferenceBlockSelect<T>;
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
       };
   legacyId?: T;

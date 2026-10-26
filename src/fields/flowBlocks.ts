@@ -29,11 +29,10 @@ export type FlowModifier = (typeof FLOW_MODIFIERS)[number]
 
 type FlowBlock = {
   /** The field holding the document the block points at, and that document's collection. */
-  reference: { field: string; collection: 'media' | 'news' | 'topics' } | null
+  reference: { field: string; collection: 'media' | 'topics' } | null
   defaultSize: FlowSize
   /** In the order of FLOW_MODIFIERS. */
   modifiers: readonly FlowModifier[]
-  rendersOnWebsite: boolean
 }
 
 // Crop needs an image to cut; a separator opens a new section, which only a text does.
@@ -45,27 +44,16 @@ export const FLOW_BLOCKS = {
     reference: { field: 'image', collection: 'media' },
     defaultSize: 'one3',
     modifiers: IMAGE_MODIFIERS,
-    rendersOnWebsite: true,
   },
   text: {
     reference: null,
     defaultSize: 'one2',
     modifiers: TEXT_MODIFIERS,
-    rendersOnWebsite: true,
-  },
-  // The website's flow renderer (1_php/models/flow.php) skips news references, so they take no
-  // place in the grid.
-  newsReference: {
-    reference: { field: 'news', collection: 'news' },
-    defaultSize: 'one3',
-    modifiers: IMAGE_MODIFIERS,
-    rendersOnWebsite: false,
   },
   topicReference: {
     reference: { field: 'topic', collection: 'topics' },
     defaultSize: 'one3',
     modifiers: IMAGE_MODIFIERS,
-    rendersOnWebsite: true,
   },
 } as const satisfies Record<string, FlowBlock>
 

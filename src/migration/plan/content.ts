@@ -2,7 +2,7 @@ import fs from 'fs'
 import { bool, num, pipeList, str } from '../legacy'
 import { byLocale, docPlan } from './build'
 import type { PlanContext } from './context'
-import { flowBlocks, localesWithFlag, localesWithValue, parseLinks, splitTimeline } from './parsers'
+import { flowBlocks, flowNews, localesWithFlag, localesWithValue, parseLinks, reportFlowNews, splitTimeline } from './parsers'
 import { type DocPlan, type Locale, LEGACY_SUFFIX, LOCALES, ref } from './types'
 
 const linksByLocale = (ctx: PlanContext, row: Record<string, unknown>, where: string) =>
@@ -60,6 +60,7 @@ export function planTopics(ctx: PlanContext): DocPlan[] {
       name: ctx.plainByLocale(row, 'name', where),
       description: ctx.richTextByLocale(row, 'text', where),
     })
+    reportFlowNews(ctx, flow, where)
     const flowForLocale = (locale: Locale) =>
       flowBlocks(ctx, flow, where, locale, { fallback: false, rowIdPrefix: `topics/${legacyId}/flow` })
     perLocale.de.flow = flowForLocale('de')
@@ -274,6 +275,10 @@ export function planPages(ctx: PlanContext): DocPlan[] {
         }),
       ]),
     )
+    // The legacy CMS kept a page's news in its flow; the site showed them apart from the grid.
+    const featuredNews = Object.fromEntries(
+      LOCALES.map((locale) => [locale, flowNews(ctx, str(row, `flow_${LEGACY_SUFFIX[locale]}`), `${where} [${locale}]`)]),
+    )
     // Definition lists (the founder's CV) become the timeline; the rest stays rich text.
     const content: Record<string, unknown> = {}
     const timeline: Record<string, unknown> = {}
@@ -293,6 +298,7 @@ export function planPages(ctx: PlanContext): DocPlan[] {
           content,
           timeline,
           flow,
+          featuredNews,
         }),
         shared: { key, image: ctx.imageRef(num(row, 'bild'), `${where} image`) },
       }),

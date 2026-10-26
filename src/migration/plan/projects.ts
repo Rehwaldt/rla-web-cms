@@ -1,7 +1,7 @@
 import { bool, num, pipeList, str } from '../legacy'
 import { byLocale, docPlan } from './build'
 import { cleanProjectCode, type PlanContext } from './context'
-import { flowBlocks, localesWithFlag, parseLinks, resolveCountry } from './parsers'
+import { flowBlocks, localesWithFlag, parseLinks, reportFlowNews, resolveCountry } from './parsers'
 import { type DocPlan, type GlobalPlan, type Locale, LEGACY_SUFFIX, LOCALES, ref, type Ref } from './types'
 
 function projectType(ctx: PlanContext, row: Record<string, unknown>, where: string) {
@@ -61,6 +61,7 @@ export function planProjects(ctx: PlanContext): DocPlan[] {
     if (ongoing && completed) report.add('Project is ongoing but has a completion year', `${where}: ${completed}`)
 
     const flow = str(row, 'bilder_flow')
+    reportFlowNews(ctx, flow, where)
     const flowForLocale = (locale: Locale) =>
       flowBlocks(ctx, flow, where, locale, { fallback: false, rowIdPrefix: `projects/${legacyId}/flow` })
 

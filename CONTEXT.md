@@ -50,9 +50,10 @@ labels use these words so that one concept never gets two German names.
   *Rechtsbündig*, `center` *Zentriert*, `topmargin` *Abstand oben*; `crop` *Zuschneiden* only on
   block types that show an image; `separator` *Trennlinie* only on text).
 - **Block type** (de: *Blocktyp*): what a flow block shows. **Image** (de: *Bild*), **text** (de:
-  *Text*), **topic reference** (de: *Themen-Verweis*; an image tile with the topic's image and
-  name) or **news reference** (de: *News-Verweis*; kept in the flow, but the website doesn't show
-  it).
+  *Text*) or **topic reference** (de: *Themen-Verweis*; an image tile with the topic's image and
+  name).
+- **Featured news** (de: *Ausgewählte News*): news items picked by hand for a page, per language
+  and in order, shown in its news section (the front page's news row). Not part of the flow.
 - **Caption** (de: *Bildunterschrift*): the line under an image in a flow: the image's project
   name, unless the image block sets its own. Project pages show none. An image block's
   **description** (de: *Beschreibung*) is a longer text below the image, shown on every page.

@@ -136,14 +136,6 @@ const BLOCKS: Record<FlowBlockType, Block> = {
       ...richTextField('body', { en: 'Text', de: 'Text' }),
     ],
   }),
-  newsReference: block('newsReference', {
-    interfaceName: 'FlowNewsReferenceBlock',
-    labels: {
-      singular: { en: 'News reference', de: 'News-Verweis' },
-      plural: { en: 'News references', de: 'News-Verweise' },
-    },
-    fields: [referenceField('newsReference', { en: 'News', de: 'News' })],
-  }),
   topicReference: block('topicReference', {
     interfaceName: 'FlowTopicReferenceBlock',
     labels: {

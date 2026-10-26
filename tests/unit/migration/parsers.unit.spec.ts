@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   flowBlocks,
+  flowNews,
+  flowNewsIds,
   flowTextElementIds,
   legacyHref,
   localesWithFlag,
@@ -132,14 +134,14 @@ describe('flowBlocks', () => {
     return { ...h, blocks: flowBlocks(h.ctx, value, 'p', locale, { fallback, rowIdPrefix: 'p/flow' }) }
   }
 
-  it('maps every item kind with its size and modifiers', () => {
-    const { blocks } = plan('one2 clear:3|full center:a4|f2|textelement separator one4:t1')
+  it('maps every block kind with its size and modifiers, and leaves the news out', () => {
+    const { blocks, issues } = plan('one2 clear:3|full center:a4|f2|textelement separator one4:t1')
     expect(blocks.map(({ id: _id, ...block }) => block)).toEqual([
       { blockType: 'image', size: 'one2', modifiers: ['clear'], image: ref('media', 3) },
-      { blockType: 'newsReference', size: 'full', modifiers: ['center'], news: ref('news', 4) },
       { blockType: 'topicReference', size: 'one3', modifiers: [], topic: ref('topics', 2) },
       { blockType: 'text', size: 'one4', modifiers: ['separator'], title: 'Titel', body: { html: '<p>Text</p>' } },
     ])
+    expect(issues('Flow item without a valid reference (dropped)')).toEqual([])
   })
 
   it('gives every row a stable id that is the same across locales', () => {
@@ -159,7 +161,6 @@ describe('flowBlocks', () => {
     expect(blocks[0].modifiers).toEqual([])
     expect(issues('Image file missing on disk (dropped)')).toHaveLength(1)
     expect(issues('Reference to an unknown image id (dropped)')).toHaveLength(1)
-    expect(issues('Flow references an unknown news item (dropped)')).toHaveLength(1)
     expect(issues('Flow references an unknown topic (dropped)')).toHaveLength(1)
     expect(issues('Flow references an unknown text element (dropped)')).toHaveLength(1)
     expect(issues('Flow item without a valid reference (dropped)')).toHaveLength(1)
@@ -181,13 +182,26 @@ describe('flowBlocks', () => {
   })
 
   it("sizes an item without a size as its block type's default", () => {
-    expect(plan('3|t1|a4').blocks.map((block) => block.size)).toEqual(['one3', 'one2', 'one3'])
+    expect(plan('3|t1|f2').blocks.map((block) => block.size)).toEqual(['one3', 'one2', 'one3'])
   })
 
   it('uses only the requested locale unless fallback is on', () => {
     expect(plan('t1', 'en').blocks[0]).toMatchObject({ title: 'Title', body: null })
     expect(plan('t1', 'zh').blocks[0]).toMatchObject({ title: null, body: null })
     expect(plan('t1', 'zh', true).blocks[0]).toMatchObject({ title: 'Title', body: { html: '<p>Text</p>' } })
+  })
+})
+
+describe('flowNews', () => {
+  it('lists the news of a flow in their order, once each, without layout tokens', () => {
+    expect(flowNewsIds('a3|one2:a12|3|t4|full center:a3| a5 ')).toEqual([3, 12, 5])
+    expect(flowNewsIds(null)).toEqual([])
+  })
+
+  it('points at the news, dropping and reporting unknown ones', () => {
+    const { ctx, issues } = harness({ aktuell: [{ index: 3 }, { index: 12 }] })
+    expect(flowNews(ctx, 'a12|3|a99|a3', 'p')).toEqual([ref('news', 12), ref('news', 3)])
+    expect(issues('Flow references an unknown news item (dropped)')).toEqual(['p: a99'])
   })
 })
 

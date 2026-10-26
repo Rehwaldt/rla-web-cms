@@ -10,7 +10,7 @@ import {
 import type { Row } from '../legacy'
 import { num, str } from '../legacy'
 import type { PlanContext } from './context'
-import { type Data, type Locale, LEGACY_SUFFIX, LOCALES, ref } from './types'
+import { type Data, type Locale, LEGACY_SUFFIX, LOCALES, ref, type Ref } from './types'
 
 // ---------------------------------------------------------------------------------------------
 // Visibility
@@ -133,8 +133,10 @@ export function splitTimeline(
 // Flows: "size modifier…:ref|…", ref = image id, t… text element, f… topic, a… news
 // ---------------------------------------------------------------------------------------------
 
-// The prefix of a legacy reference tells the block type; an image has none.
-const BLOCK_TYPE_BY_PREFIX = { '': 'image', t: 'text', f: 'topicReference', a: 'newsReference' } as const
+// The prefix of a legacy reference tells the block type; an image has none. News (`a…`) aren't
+// blocks: the legacy front page showed them apart from the grid, so they become the page's featured
+// news (see flowNewsIds).
+const BLOCK_TYPE_BY_PREFIX = { '': 'image', t: 'text', f: 'topicReference' } as const
 // Class name the legacy editor kept appending to text items; carries no meaning.
 const IGNORED_TOKENS = new Set(['textelement'])
 
@@ -154,7 +156,8 @@ function parseFlowItems(ctx: PlanContext, value: string | null, where: string): 
     const parts = entry.split(':')
     const target = parts[parts.length - 1].trim()
     if (!target) continue
-    const match = /^([atf]?)(\d+)$/.exec(target)
+    if (/^a\d+$/.test(target)) continue
+    const match = /^([tf]?)(\d+)$/.exec(target)
     if (!match) {
       ctx.report.add('Flow item without a valid reference (dropped)', `${where}: "${entry}"`)
       continue
@@ -196,7 +199,6 @@ export function flowBlocks(
 ): Data[] {
   const textElements = new Map(ctx.snapshot.textelemente.map((row) => [num(row, 'index'), row]))
   const referenced = {
-    newsReference: { name: 'news item', ids: new Set(ctx.snapshot.aktuell.map((row) => num(row, 'index'))) },
     topicReference: { name: 'topic', ids: new Set(ctx.snapshot.themen.map((row) => num(row, 'index'))) },
   }
 
@@ -243,6 +245,32 @@ export function flowBlocks(
     }
   })
   return blocks
+}
+
+/** News ids in a flow column, in their order and without repeats. */
+export const flowNewsIds = (value: string | null): number[] => [
+  ...new Set(
+    (value ?? '')
+      .split('|')
+      .map((entry) => /(?:^|:)a(\d+)$/.exec(entry.trim())?.[1])
+      .filter((id): id is string => Boolean(id))
+      .map(Number),
+  ),
+]
+
+/** A page's featured news: the news its flow column lists. */
+export function flowNews(ctx: PlanContext, value: string | null, where: string): Ref[] {
+  const known = new Set(ctx.snapshot.aktuell.map((row) => num(row, 'index')))
+  return flowNewsIds(value).flatMap((id) => {
+    if (known.has(id)) return [ref('news', id)]
+    ctx.report.add('Flow references an unknown news item (dropped)', `${where}: a${id}`)
+    return []
+  })
+}
+
+/** For flows of documents without featured news: reports the news the flow lists. */
+export const reportFlowNews = (ctx: PlanContext, value: string | null, where: string) => {
+  for (const id of flowNewsIds(value)) ctx.report.add('News in a flow of a document without featured news (dropped)', `${where}: a${id}`)
 }
 
 /** Text element ids referenced by a flow column (for reporting unreferenced ones). */

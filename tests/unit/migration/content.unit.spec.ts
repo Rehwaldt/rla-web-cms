@@ -196,4 +196,16 @@ describe('planPages', () => {
     expect(page.localized.en?.flow).toMatchObject([{ blockType: 'text', title: 'Titel' }])
     expect(page.localized.zh).toBeUndefined()
   })
+
+  it("moves each language's news out of the flow into the featured news", () => {
+    const { ctx } = harness({
+      buero: [{ index: 4, seite: 'index', flow_de: 'a2|one2:3|a1', flow_en: 'a1' }],
+      aktuell: [{ index: 1 }, { index: 2 }],
+      bilder: [{ index: 3, pfad: 'prk/a.jpg' }],
+    }, ['prk/a.jpg'])
+    const [page] = planPages(ctx)
+    expect(page.data).toMatchObject({ key: 'home', featuredNews: [ref('news', 2), ref('news', 1)] })
+    expect(page.data.flow).toMatchObject([{ blockType: 'image', image: ref('media', 3) }])
+    expect(page.localized.en).toEqual({ featuredNews: [ref('news', 1)] })
+  })
 })

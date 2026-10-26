@@ -5,6 +5,8 @@ import * as migration_20261023_110102_mines_drop_status from './20261023_110102_
 import * as migration_20261023_110107_mines_import from './20261023_110107_mines_import';
 import * as migration_20261023_125833_excursions from './20261023_125833_excursions';
 import * as migration_20261026_092652_flow_image_caption from './20261026_092652_flow_image_caption';
+import * as migration_20261026_100309_featured_news from './20261026_100309_featured_news';
+import * as migration_20261026_100629_drop_flow_news_references from './20261026_100629_drop_flow_news_references';
 
 export const migrations = [
   {
@@ -40,6 +42,16 @@ export const migrations = [
   {
     up: migration_20261026_092652_flow_image_caption.up,
     down: migration_20261026_092652_flow_image_caption.down,
-    name: '20261026_092652_flow_image_caption'
+    name: '20261026_092652_flow_image_caption',
+  },
+  {
+    up: migration_20261026_100309_featured_news.up,
+    down: migration_20261026_100309_featured_news.down,
+    name: '20261026_100309_featured_news',
+  },
+  {
+    up: migration_20261026_100629_drop_flow_news_references.up,
+    down: migration_20261026_100629_drop_flow_news_references.down,
+    name: '20261026_100629_drop_flow_news_references'
   },
 ];

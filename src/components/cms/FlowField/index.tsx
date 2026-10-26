@@ -69,7 +69,6 @@ const useT = (): T => useTranslation<Translations, TranslationKeys>().t
 const BLOCK_LABELS: Record<FlowBlockType, TranslationKeys> = {
   image: 'flow:blockImage',
   text: 'flow:blockText',
-  newsReference: 'flow:blockNews',
   topicReference: 'flow:blockTopic',
 }
 
@@ -89,12 +88,6 @@ const PREVIEWS: Record<
     caption: (media) => media.project?.name,
     notFound: 'flow:imageNotFound',
     noImage: 'flow:imageNotFound',
-  },
-  news: {
-    image: (news) => news.image,
-    caption: (news) => news.title,
-    notFound: 'flow:newsNotFound',
-    noImage: 'flow:newsHasNoImage',
   },
   topics: {
     image: (topic) => topic.image,
@@ -140,9 +133,6 @@ const referenceOf = (row: Row): DocRef | null => {
   const reference = flowBlock(row.blockType)?.reference
   return reference && row.reference ? { collection: reference.collection, id: row.reference } : null
 }
-
-// A row whose block type isn't known (yet) stays in the grid rather than disappearing.
-const rendersOnWebsite = (row: Row) => flowBlock(row.blockType)?.rendersOnWebsite ?? true
 
 export const FlowField: React.FC<Props> = (props) => {
   const { captions = true, field, path: pathFromProps, permissions, readOnly: readOnlyFromProps, schemaPath: schemaPathFromProps } = props
@@ -438,7 +428,7 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
             if (event.target === event.currentTarget) setSelectedId(null)
           }}
         >
-          {rows.map((row, index) => rendersOnWebsite(row) && (
+          {rows.map((row, index) => (
             <FlowItem
               key={row.id}
               row={row}
@@ -479,25 +469,6 @@ const VisualFlow: React.FC<VisualFlowProps> = ({ blocks, captions, errorPaths, p
           {rows.length === 0 && <div className="flow-editor__empty">{t('flow:empty')}</div>}
         </div>
       </div>
-
-      {rows.some((row) => !rendersOnWebsite(row)) && (
-        <div className="flow-editor__offstage">
-          <div className="flow-editor__tray-title">{t('flow:offstage')}</div>
-          {rows.map(
-            (row, index) =>
-              !rendersOnWebsite(row) && (
-                <OffstageItem
-                  key={row.id}
-                  row={row}
-                  docFor={docFor}
-                  readOnly={readOnly}
-                  onEdit={() => openEditor(row.id)}
-                  onRemove={() => remove(index)}
-                />
-              ),
-          )}
-        </div>
-      )}
 
       {!readOnly && (
         <div className="flow-editor__add">
@@ -705,40 +676,6 @@ const FlowItem: React.FC<FlowItemProps> = ({ row, docFor, readOnly, selected, dr
       </span>
       {dropSide && <span className={`flow-editor__drop flow-editor__drop--${dropSide}`} />}
       {toolbar}
-    </div>
-  )
-}
-
-const OffstageItem: React.FC<{
-  row: Row
-  docFor: ReturnType<typeof useReferencedDocs>
-  readOnly: boolean
-  onEdit: () => void
-  onRemove: () => void
-}> = ({ row, docFor, readOnly, onEdit, onRemove }) => {
-  const t = useT()
-  const ref = referenceOf(row)
-  const doc = ref ? docFor(ref) : null
-  const preview = ref && PREVIEWS[ref.collection]
-  const image = imageSource(doc && preview ? preview.image(doc) : null)
-  return (
-    <div className={`flow-editor__offstage-item${row.hasError ? ' flow-editor__item--error' : ''}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {image?.src ? <img src={image.src} alt="" /> : <span className="flow-editor__offstage-noimg" />}
-      <span className="flow-editor__offstage-title">
-        {blockLabel(t, row.blockType)}:{' '}
-        {doc === undefined ? t('flow:loading') : ((doc && captionOf(row, doc, preview)) ?? t('flow:notFound'))}
-      </span>
-      {!readOnly && (
-        <>
-          <button type="button" className="flow-editor__btn" onClick={onEdit}>
-            {t('flow:edit')}
-          </button>
-          <button type="button" className="flow-editor__btn flow-editor__btn--danger" title={t('flow:remove')} onClick={onRemove}>
-            ✕
-          </button>
-        </>
-      )}
     </div>
   )
 }
