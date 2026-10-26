@@ -26,7 +26,11 @@ labels use these words so that one concept never gets two German names.
   one side; the other side sees it as "listed as similar by" (de: *Als ähnlich verknüpft von*).
 - **Topic** (de: *Thema*): a thematic focus area (e.g. "Water in the city") grouping projects, with
   its own flow.
-- **News** (de: *News*): dated announcement.
+- **News** (de: *News*): dated announcement with a page of its own on the website (`/news/{id}`; the
+  German navigation calls the section *aktuell*). Shaped like the intranet's news: hero image,
+  preview image, **gallery** (de: *Galerie*; images below the text), categories and links.
+- **News category** (de: *News-Kategorie*): what a news item is about (competition, people, project
+  update, …). Editors add their own; a news item can have several.
 - **Award** (de: *Auszeichnung*): prize received, with year and optional month.
 - **Publication** (de: *Publikation*): a book, or a piece published in a journal or in a book.
 - **Job** (de: *Stellenangebot*): open position at an office.
@@ -62,8 +66,8 @@ labels use these words so that one concept never gets two German names.
 - **Caption** (de: *Bildunterschrift*): the line under an image in a flow: the image's project
   name, unless the image block sets its own. Project pages show none. An image block's
   **description** (de: *Beschreibung*) is a longer text below the image, shown on every page.
-- **Hero image** (de: *Titelbild*): large image at the top of a project page. **Preview image**
-  (de: *Vorschaubild*): the tile image in listings.
+- **Hero image** (de: *Titelbild*): large image at the top of a project or news page. **Preview
+  image** (de: *Vorschaubild*): the tile image in listings.
 - **Credit** (de: *Copyright*): photographer or copyright holder of a media item.
 
 ## Publishing

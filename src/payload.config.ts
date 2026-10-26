@@ -20,6 +20,7 @@ import { ProjectCategories } from './collections/projects/ProjectCategories'
 import { Topics } from './collections/projects/Topics'
 
 import { News } from './collections/News'
+import { NewsCategories } from './collections/NewsCategories'
 import { Awards } from './collections/Awards'
 import { Publications } from './collections/Publications'
 import { PublicationCategories } from './collections/PublicationCategories'
@@ -53,6 +54,7 @@ export default buildConfig({
     ProjectCategories,
     Pages,
     News,
+    NewsCategories,
     Excursions,
     Topics,
     Awards,

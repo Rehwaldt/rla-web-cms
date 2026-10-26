@@ -33,9 +33,10 @@ export interface DocPlan {
   key: string
   /**
    * How to find an already-imported document: by legacyId, or, for documents without one, by
-   * filename (PDFs, WordPress images) or slug (excursions). Those keys are `{field}:{value}`.
+   * filename (PDFs, WordPress images), slug (excursions) or German name (news categories). Those
+   * keys are `{field}:{value}`.
    */
-  match: { field: 'legacyId' | 'filename' | 'slug'; value: string | number }
+  match: { field: 'legacyId' | 'filename' | 'slug' | 'name'; value: string | number }
   /** Only for collections with drafts. */
   status?: 'published' | 'draft'
   /** Non-localized values plus the German (default locale) values. */

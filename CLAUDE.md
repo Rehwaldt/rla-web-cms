@@ -93,7 +93,7 @@ Reuse these instead of re-declaring the shapes:
 
 ## Collections
 
-Projects, Project Categories (tree via `@payloadcms/plugin-nested-docs`), Topics, News, Awards,
+Projects, Project Categories (tree via `@payloadcms/plugin-nested-docs`), Topics, News, News Categories, Awards,
 Publications, Publication Categories, Jobs, Pages, Employees, Offices, Mines, Mine Features,
 Media, Users. Global: Project Gallery (curated, ordered featured projects per language).
 Slugs are plural kebab-case.

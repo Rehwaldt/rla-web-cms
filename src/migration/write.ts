@@ -84,10 +84,11 @@ export async function applyPlan(
   const collections = referencedCollections(plan, new Set(plan.docs.map((doc) => doc.collection)))
   for (const collection of collections) {
     const existing = await payload.find({ collection, pagination: false, depth: 0, overrideAccess: true })
-    for (const doc of existing.docs as { id: Id; legacyId?: number | null; filename?: string | null; slug?: string | null }[]) {
+    for (const doc of existing.docs as { id: Id; legacyId?: number | null; filename?: string | null; slug?: string | null; name?: unknown }[]) {
       if (doc.legacyId !== null && doc.legacyId !== undefined) idsFor(collection).set(String(doc.legacyId), doc.id)
       else if (doc.filename) idsFor(collection).set(`filename:${doc.filename}`, doc.id)
       else if (doc.slug) idsFor(collection).set(`slug:${doc.slug}`, doc.id)
+      else if (typeof doc.name === 'string') idsFor(collection).set(`name:${doc.name}`, doc.id)
     }
   }
 

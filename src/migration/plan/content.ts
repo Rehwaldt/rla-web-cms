@@ -83,6 +83,30 @@ export function planTopics(ctx: PlanContext): DocPlan[] {
   })
 }
 
+// The intranet's news categories (rlaintra24, ACF field `news-kategorie`), in its order. The
+// legacy website had none, so its news stay without one.
+const NEWS_CATEGORIES: { de: string; en: string }[] = [
+  { de: 'Neu', en: 'New' },
+  { de: 'Wettbewerb', en: 'Competition' },
+  { de: 'Personen', en: 'People' },
+  { de: 'Technik', en: 'Technology' },
+  { de: 'Büroleben', en: 'Office life' },
+  { de: 'Upcoming', en: 'Upcoming' },
+  { de: 'Projektupdate', en: 'Project update' },
+  { de: 'RLA World', en: 'RLA World' },
+]
+
+export const planNewsCategories = (): DocPlan[] =>
+  NEWS_CATEGORIES.map((name) =>
+    docPlan({
+      collection: 'news-categories',
+      key: `name:${name.de}`,
+      match: { field: 'name', value: name.de },
+      perLocale: byLocale({ name }),
+      shared: {},
+    }),
+  )
+
 export function planNews(ctx: PlanContext): DocPlan[] {
   return ctx.snapshot.aktuell.map((row) => {
     const legacyId = num(row, 'index')!
@@ -107,7 +131,8 @@ export function planNews(ctx: PlanContext): DocPlan[] {
       }),
       shared: {
         date: str(row, 'datum'),
-        image: ctx.imageRef(num(row, 'bild'), `${where} image`),
+        // The one legacy image; the website falls back to it for the preview image.
+        heroImage: ctx.imageRef(num(row, 'bild'), `${where} image`),
         visibleIn: localesWithValue(row, 'position'),
       },
     })

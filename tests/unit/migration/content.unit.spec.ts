@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   planJobs,
   planNews,
+  planNewsCategories,
   planPages,
   planProjectCategories,
   planPublications,
@@ -65,6 +66,35 @@ describe('planNews', () => {
     const [linked] = planNews(ctx)
     expect(linked.localized.en?.links).toEqual([{ kind: 'project', label: 'Park', project: ref('projects', 7) }])
     expect(issues('News project field not covered by its links (dropped)')).toEqual(['news 2: PRK'])
+  })
+
+  it('makes the one legacy image the hero image, with no preview image, gallery or category', () => {
+    const { ctx } = harness({ aktuell: [{ index: 1, bild: 3 }], bilder: [{ index: 3, pfad: 'prk/a.jpg' }] }, ['prk/a.jpg'])
+    const [news] = planNews(ctx)
+    expect(news.data).toMatchObject({ heroImage: ref('media', 3) })
+    for (const field of ['image', 'previewImage', 'gallery', 'categories']) expect(news.data).not.toHaveProperty(field)
+  })
+})
+
+describe('planNewsCategories', () => {
+  it("creates the intranet's categories in its order, matched by their German name", () => {
+    const plans = planNewsCategories()
+    expect(plans.map((plan) => plan.data.name)).toEqual([
+      'Neu',
+      'Wettbewerb',
+      'Personen',
+      'Technik',
+      'Büroleben',
+      'Upcoming',
+      'Projektupdate',
+      'RLA World',
+    ])
+    expect(plans[4]).toMatchObject({
+      collection: 'news-categories',
+      key: 'name:Büroleben',
+      match: { field: 'name', value: 'Büroleben' },
+      localized: { en: { name: 'Office life' } },
+    })
   })
 })
 

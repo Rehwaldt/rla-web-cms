@@ -52,7 +52,8 @@ The website database keeps changing until the cutover and is read live.
 | `projektkategorien` | 48 | `project-categories` (tree) |
 | `projekte.galerieposition_{lang}` | — | global `project-gallery` (per-language ordered list) |
 | `themen` | 11 | `topics` |
-| `aktuell` | 223 | `news` |
+| `aktuell` | 223 | `news` (the one image → `heroImage`; no categories) |
+| — | 8 | `news-categories`: the intranet's news categories (German + English names, matched by the German name) |
 | `auszeichnungen` | 20 | `awards` |
 | `publikationen` / `publikationskategorien` | 75 / 4 | `publications` / `publication-categories` |
 | `jobs` | 5 | `jobs` |

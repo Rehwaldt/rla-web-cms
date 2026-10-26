@@ -71,6 +71,7 @@ export interface Config {
     'project-categories': ProjectCategory;
     pages: Page;
     news: News;
+    'news-categories': NewsCategory;
     excursions: Excursion;
     topics: Topic;
     awards: Award;
@@ -98,6 +99,7 @@ export interface Config {
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
+    'news-categories': NewsCategoriesSelect<false> | NewsCategoriesSelect<true>;
     excursions: ExcursionsSelect<false> | ExcursionsSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     awards: AwardsSelect<false> | AwardsSelect<true>;
@@ -576,7 +578,7 @@ export interface News {
   id: number;
   title?: string | null;
   date: string;
-  image?: (number | null) | Media;
+  categories?: (number | NewsCategory)[] | null;
   content?: {
     root: {
       type: string;
@@ -593,6 +595,18 @@ export interface News {
     [k: string]: unknown;
   } | null;
   contentHtml?: string | null;
+  /**
+   * Banner at the top of the news page. If empty, the first gallery image.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Tile image in listings. If empty, the hero image.
+   */
+  previewImage?: (number | null) | Media;
+  /**
+   * Images below the text, in this order. They open in a lightbox.
+   */
+  gallery?: (number | Media)[] | null;
   /**
    * Each language keeps its own list of links.
    */
@@ -619,6 +633,17 @@ export interface News {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-categories".
+ */
+export interface NewsCategory {
+  id: number;
+  _order?: string | null;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1170,6 +1195,10 @@ export interface PayloadLockedDocument {
         value: number | News;
       } | null)
     | ({
+        relationTo: 'news-categories';
+        value: number | NewsCategory;
+      } | null)
+    | ({
         relationTo: 'excursions';
         value: number | Excursion;
       } | null)
@@ -1414,9 +1443,12 @@ export interface PagesSelect<T extends boolean = true> {
 export interface NewsSelect<T extends boolean = true> {
   title?: T;
   date?: T;
-  image?: T;
+  categories?: T;
   content?: T;
   contentHtml?: T;
+  heroImage?: T;
+  previewImage?: T;
+  gallery?: T;
   links?:
     | T
     | {
@@ -1431,6 +1463,16 @@ export interface NewsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-categories_select".
+ */
+export interface NewsCategoriesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
