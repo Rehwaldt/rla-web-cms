@@ -102,6 +102,12 @@ Publications, Publication Categories, Jobs, Pages, Employees, Offices, Mines, Mi
 Media, Users. Global: Project Gallery (curated, ordered featured projects per language).
 Slugs are plural kebab-case.
 
+Admin navigation: each collection's `admin.group` is a section from `src/i18n/groups.ts`, with a
+Lucide icon in `src/app/(payload)/custom.scss`. Every section must be filed in a workspace or as
+shared in `src/workspaces.ts` (a unit test checks). The navigation and the dashboard's collection
+widget are custom (`src/components/cms/Workspaces`), rebuilt from Payload's `DefaultNav` and
+`CollectionCards`; re-check them after a Payload upgrade.
+
 ## The legacy website being replaced
 
 Under `Z:\website\website_rla\`: `1_php` is the live PHP site (its data access lives in
