@@ -7,6 +7,7 @@ import * as migration_20261023_125833_excursions from './20261023_125833_excursi
 import * as migration_20261026_092652_flow_image_caption from './20261026_092652_flow_image_caption';
 import * as migration_20261026_100309_featured_news from './20261026_100309_featured_news';
 import * as migration_20261026_100629_drop_flow_news_references from './20261026_100629_drop_flow_news_references';
+import * as migration_20261026_101440_featured_projects from './20261026_101440_featured_projects';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261026_100629_drop_flow_news_references.up,
     down: migration_20261026_100629_drop_flow_news_references.down,
-    name: '20261026_100629_drop_flow_news_references'
+    name: '20261026_100629_drop_flow_news_references',
+  },
+  {
+    up: migration_20261026_101440_featured_projects.up,
+    down: migration_20261026_101440_featured_projects.down,
+    name: '20261026_101440_featured_projects'
   },
 ];

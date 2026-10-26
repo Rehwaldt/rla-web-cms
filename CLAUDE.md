@@ -79,6 +79,8 @@ Reuse these instead of re-declaring the shapes:
 - `linksField`: per-language list of links, each either a project reference or an external URL.
 - `featuredNewsField`: per-language, hand-sorted news items for the document's news section
   (Pages so far).
+- `featuredProjectsField`: the same for projects, meant as the source of the front page's banner
+  carousel (#40). Not read by the website yet, and the importer leaves it empty.
 - `visibleInField`: languages whose website lists the entry. Together with drafts
   (`versions: { drafts: true }`) it replaces every legacy visibility flag.
 - `legacyIdField`: id of the imported legacy record; the importer upserts by it.

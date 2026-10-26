@@ -85,6 +85,8 @@ The website database keeps changing until the cutover and is read live.
   News aren't blocks: the legacy flow renderer skipped them and the front page listed them as its
   news row, so a page's `a…` entries become its `featuredNews` (per language, in flow order).
   Projects and topics have no featured news; `a…` entries there are dropped and reported.
+  `pages.featuredProjects` (the planned carousel's slides) stays empty: the legacy carousel was a
+  proof of concept built from the page image and the flow's images, not an editorial selection.
 - **Project type**: `als_wettbewerb` → competition; else `als_projekt` → object if
   `objektplanung`, else concept. Rows matching neither are reported.
 - **Completion**: `in_planung` → `ongoing`; `fertigstellung`, else `fertigstellung_geplant` →

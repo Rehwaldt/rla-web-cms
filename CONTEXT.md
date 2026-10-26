@@ -54,6 +54,11 @@ labels use these words so that one concept never gets two German names.
   name).
 - **Featured news** (de: *Ausgewählte News*): news items picked by hand for a page, per language
   and in order, shown in its news section (the front page's news row). Not part of the flow.
+- **Featured projects** (de: *Ausgewählte Projekte*): projects picked by hand for a page, per
+  language and in order, meant as the slides of the front page's **banner carousel** (de:
+  *Banner-Karussell*): hero image, name, link. Not wired up yet: the carousel is still being built
+  on the website. Not the **project gallery** (de: *Projektgalerie*), the projects page's default
+  selection.
 - **Caption** (de: *Bildunterschrift*): the line under an image in a flow: the image's project
   name, unless the image block sets its own. Project pages show none. An image block's
   **description** (de: *Beschreibung*) is a longer text below the image, shown on every page.

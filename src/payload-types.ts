@@ -557,6 +557,10 @@ export interface Page {
    */
   featuredNews?: (number | News)[] | null;
   /**
+   * For the page's banner carousel, in this order: each project shows with its hero image, name and link. Each language has its own selection. Not shown on the website yet.
+   */
+  featuredProjects?: (number | Project)[] | null;
+  /**
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
@@ -1397,6 +1401,7 @@ export interface PagesSelect<T extends boolean = true> {
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
       };
   featuredNews?: T;
+  featuredProjects?: T;
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
