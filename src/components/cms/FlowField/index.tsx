@@ -85,7 +85,7 @@ const PREVIEWS: Record<
 > = {
   media: {
     image: (media) => media,
-    caption: (media) => media.project?.name,
+    caption: (media) => media.caption || media.project?.name,
     notFound: 'flow:imageNotFound',
     noImage: 'flow:imageNotFound',
   },

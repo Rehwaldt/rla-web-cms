@@ -343,11 +343,15 @@ export interface Media {
   id: number;
   alt?: string | null;
   /**
+   * Shown under the image. In flows it replaces the project name; an image block's own caption wins over it.
+   */
+  caption?: string | null;
+  /**
    * Photographer or copyright holder.
    */
   credit?: string | null;
   /**
-   * Project the image shows. Flows use it as caption and link target.
+   * Project the image shows. Flows link to it and, without a caption, show its name.
    */
   project?: (number | null) | Project;
   /**
@@ -414,11 +418,11 @@ export interface Media {
  */
 export interface FlowImageBlock {
   /**
-   * Caption and link come from the image's project (set on the media item), unless a caption is set below.
+   * The caption is the media item's caption, else its project's name; the link goes to that project. A caption set below wins.
    */
   image: number | Media;
   /**
-   * Replaces the project name as the caption. Project pages show no captions.
+   * Replaces the media item's caption or project name. Project pages show no captions.
    */
   caption?: string | null;
   /**
@@ -1737,6 +1741,7 @@ export interface MineFeaturesSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
   credit?: T;
   project?: T;
   legacyId?: T;

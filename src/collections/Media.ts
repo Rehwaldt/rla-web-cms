@@ -25,6 +25,18 @@ export const Media: CollectionConfig = {
   fields: [
     { name: 'alt', label: { en: 'Alt text', de: 'Alternativtext' }, type: 'text', localized: true },
     {
+      name: 'caption',
+      label: { en: 'Caption', de: 'Bildunterschrift' },
+      type: 'text',
+      localized: true,
+      admin: {
+        description: {
+          en: "Shown under the image. In flows it replaces the project name; an image block's own caption wins over it.",
+          de: 'Erscheint unter dem Bild. In Flows ersetzt sie den Projektnamen; die Bildunterschrift eines Bildblocks hat Vorrang.',
+        },
+      },
+    },
+    {
       name: 'credit',
       label: { en: 'Credit', de: 'Copyright' },
       type: 'text',
@@ -42,8 +54,8 @@ export const Media: CollectionConfig = {
       relationTo: 'projects',
       admin: {
         description: {
-          en: 'Project the image shows. Flows use it as caption and link target.',
-          de: 'Projekt, das das Bild zeigt. Flows nutzen es als Bildunterschrift und Linkziel.',
+          en: 'Project the image shows. Flows link to it and, without a caption, show its name.',
+          de: 'Projekt, das das Bild zeigt. Flows verlinken darauf und zeigen ohne Bildunterschrift seinen Namen.',
         },
       },
     },

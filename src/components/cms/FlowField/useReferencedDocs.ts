@@ -12,7 +12,7 @@ const IMAGE_FIELDS = ['filename', 'url', 'width', 'height', 'sizes', 'alt']
 
 const QUERIES: Record<FlowCollection, Record<string, string>> = {
   media: {
-    ...Object.fromEntries([...IMAGE_FIELDS, 'project'].map((f) => [`select[${f}]`, 'true'])),
+    ...Object.fromEntries([...IMAGE_FIELDS, 'caption', 'project'].map((f) => [`select[${f}]`, 'true'])),
     'populate[projects][name]': 'true',
   },
   topics: {

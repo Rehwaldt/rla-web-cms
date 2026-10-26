@@ -63,8 +63,9 @@ labels use these words so that one concept never gets two German names.
   *Banner-Karussell*): hero image, name, link. Not wired up yet: the carousel is still being built
   on the website. Not the **project gallery** (de: *Projektgalerie*), the projects page's default
   selection.
-- **Caption** (de: *Bildunterschrift*): the line under an image in a flow: the image's project
-  name, unless the image block sets its own. Project pages show none. An image block's
+- **Caption** (de: *Bildunterschrift*): the line under an image. A media item can have one; in a
+  flow the image block's own caption wins, then the media item's, then the image's project name.
+  Project pages show none. An image block's
   **description** (de: *Beschreibung*) is a longer text below the image, shown on every page.
 - **Hero image** (de: *Titelbild*): large image at the top of a project or news page. **Preview
   image** (de: *Vorschaubild*): the tile image in listings.

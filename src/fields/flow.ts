@@ -98,8 +98,8 @@ const BLOCKS: Record<FlowBlockType, Block> = {
         'image',
         { en: 'Image', de: 'Bild' },
         {
-          en: "Caption and link come from the image's project (set on the media item), unless a caption is set below.",
-          de: 'Bildunterschrift und Link kommen vom Projekt des Bildes (am Medium festgelegt), außer eine Bildunterschrift ist unten gesetzt.',
+          en: "The caption is the media item's caption, else its project's name; the link goes to that project. A caption set below wins.",
+          de: 'Bildunterschrift ist die des Mediums, sonst der Name seines Projekts; der Link führt zu diesem Projekt. Eine unten gesetzte Bildunterschrift hat Vorrang.',
         },
       ),
       {
@@ -109,8 +109,8 @@ const BLOCKS: Record<FlowBlockType, Block> = {
         localized: true,
         admin: {
           description: {
-            en: 'Replaces the project name as the caption. Project pages show no captions.',
-            de: 'Ersetzt den Projektnamen als Bildunterschrift. Projektseiten zeigen keine Bildunterschriften.',
+            en: "Replaces the media item's caption or project name. Project pages show no captions.",
+            de: 'Ersetzt die Bildunterschrift des Mediums bzw. den Projektnamen. Projektseiten zeigen keine Bildunterschriften.',
           },
         },
       },
