@@ -42,6 +42,10 @@ reintroduce those sources here unless asked.
 - `pnpm payload migrate:create <name>`: after any schema change that should ship. `pnpm dev`
   pushes schema changes into the dev database, but production only runs the migrations in
   `src/migrations` (on startup). Commit the generated files; never edit an applied migration.
+  The push happens on the first request that needs Payload (e.g. `/admin`), not when `pnpm dev`
+  starts; drizzle's questions then wait in that terminal. It skips the migrations' data copies.
+  To avoid rename questions, split a change that adds and drops tables or columns into two
+  migrations (add, then drop with the data copied in SQL).
 - `pnpm test:unit` (Vitest, no database; importer planners in `tests/unit/`) / `pnpm test:int`
   (Vitest, needs Postgres) / `pnpm test:e2e` (Playwright) / `pnpm test` (all). `pnpm lint`.
 - `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
