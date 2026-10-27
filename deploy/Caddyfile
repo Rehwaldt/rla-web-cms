@@ -1,4 +1,4 @@
-# Caddy fetches and renews the Let's Encrypt certificates for both domains by itself, as soon as
+# Caddy fetches and renews the Let's Encrypt certificates for all domains by itself, as soon as
 # their DNS points at this server and ports 80/443 are open.
 {$CMS_DOMAIN} {
 	encode zstd gzip
@@ -16,4 +16,9 @@
 	handle {
 		reverse_proxy website:80
 	}
+}
+
+# The bare domain and the former staging host redirect to the website. Same DNS rule as above.
+rehwaldt.de, staging.rehwaldt.de {
+	redir https://{$WEBSITE_DOMAIN}{uri} permanent
 }
