@@ -130,8 +130,10 @@ table → collection mapping and all legacy quirks are documented in `src/migrat
 
 ## Migration decisions (2026-09-29)
 
-- **Freeze and cut over.** During development the importer may wipe and reload freely. At cutover
-  it runs one last time and the legacy admin tool is switched off.
+- **Freeze and cut over.** Done 2026-10-27: the final import ran against production and the legacy
+  admin tool is frozen. Production is now the only source of content; data only flows down to dev,
+  never up. One-off data fixes on production ship as data migrations (e.g.
+  `20261027_093710_fill_search_index`), not as scripts run over a tunnel.
 - **Import everything**, including unpublished and retired records (as drafts), so the legacy
   database never has to be consulted again. Exceptions: legacy image slots and page sections the
   current site doesn't render, and one abandoned page draft.
