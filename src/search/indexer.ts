@@ -61,12 +61,12 @@ export async function indexDocument(payload: Payload, collection: SearchableColl
 }
 
 /** Rebuilds the whole index. */
-export async function reindexAll(payload: Payload, log: (line: string) => void = () => {}) {
+export async function reindexAll(payload: Payload, log: (line: string) => void = () => {}, options: Options = {}) {
   for (const collection of SEARCHABLE_COLLECTIONS) {
-    const byLanguage = await readByLanguage(payload, collection, null, {})
+    const byLanguage = await readByLanguage(payload, collection, null, options)
     const entries = [...byLanguage.values()].flatMap((docs) => entriesFor(collection, docs))
-    await removeEntries(payload, collection, null, {})
-    await addEntries(payload, entries, {})
+    await removeEntries(payload, collection, null, options)
+    await addEntries(payload, entries, options)
     log(`${collection}: ${byLanguage.size} documents, ${entries.length} entries`)
   }
 }
