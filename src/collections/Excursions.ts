@@ -2,6 +2,7 @@ import type { ArrayFieldValidation, CollectionConfig, TextFieldSingleValidation 
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { linksField } from '@/fields/links'
 import { richTextField } from '@/fields/richText'
+import { STOP_TYPES } from '@/fields/stopTypes'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
@@ -74,6 +75,7 @@ export const Excursions: CollectionConfig = {
       type: 'array',
       validate: uniqueDates,
       admin: {
+        initCollapsed: true,
         description: {
           en: 'In the order the website shows them. A day without a date is not scheduled yet; the website leaves it out.',
           de: 'In der Reihenfolge, in der die Website sie zeigt. Ein Tag ohne Datum ist noch nicht eingeplant; die Website lässt ihn weg.',
@@ -93,6 +95,7 @@ export const Excursions: CollectionConfig = {
           labels: { singular: { en: 'Stop', de: 'Station' }, plural: { en: 'Stops', de: 'Stationen' } },
           type: 'array',
           admin: {
+            initCollapsed: true,
             description: {
               en: 'In running order. To move a stop to another day: copy its row, add a row on that day and paste onto it, then delete the original.',
               de: 'In der Reihenfolge des Ablaufs. Station an einen anderen Tag verschieben: Zeile kopieren, am anderen Tag eine Zeile hinzufügen und darauf einfügen, dann das Original löschen.',
@@ -117,13 +120,7 @@ export const Excursions: CollectionConfig = {
                   type: 'select',
                   required: true,
                   defaultValue: 'default',
-                  options: [
-                    { label: { en: 'Stop', de: 'Station' }, value: 'default' },
-                    { label: { en: 'Optional stop', de: 'Optionale Station' }, value: 'optional' },
-                    { label: { en: 'Break', de: 'Pause' }, value: 'break' },
-                    { label: { en: 'Meeting point', de: 'Treffpunkt' }, value: 'meetUp' },
-                    { label: { en: 'Meal', de: 'Essen' }, value: 'food' },
-                  ],
+                  options: [...STOP_TYPES],
                   admin: {
                     width: '25%',
                     description: {

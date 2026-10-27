@@ -1,7 +1,9 @@
 'use client'
 
 import React from 'react'
-import { useRowLabel, useTranslation } from '@payloadcms/ui'
+import { getTranslation } from '@payloadcms/translations'
+import { useFormFields, useRowLabel, useTranslation } from '@payloadcms/ui'
+import { NUMBERED_STOP_TYPE, STOP_TYPES } from '@/fields/stopTypes'
 import type { TranslationKeys, Translations } from '@/i18n/translations'
 
 // Row labels of an excursion's days and stops, so collapsed rows still say which is which.
@@ -20,12 +22,29 @@ export function DayRowLabel() {
 }
 
 export function StopRowLabel() {
-  const { data, rowNumber } = useRowLabel<{ title?: string | null; time?: string | null }>()
-  const { t } = useTranslation<Translations, TranslationKeys>()
-  const number = String((rowNumber ?? 0) + 1).padStart(2, '0')
+  const {
+    data,
+    path,
+    rowNumber = 0,
+  } = useRowLabel<{ title?: string | null; time?: string | null; type?: string | null }>()
+  const { i18n, t } = useTranslation<Translations, TranslationKeys>()
+  // Numbered stops count up per day, skipping the rows of other types, as on the website.
+  const arrayPath = path.slice(0, path.lastIndexOf('.'))
+  const position = useFormFields(([fields]) => {
+    let count = 0
+    for (let i = 0; i < rowNumber; i++) {
+      if (fields[`${arrayPath}.${i}.type`]?.value === NUMBERED_STOP_TYPE) count++
+    }
+    return count + 1
+  })
+  const type = STOP_TYPES.find(({ value }) => value === (data?.type ?? NUMBERED_STOP_TYPE))
+  const prefix =
+    !type || type.value === NUMBERED_STOP_TYPE
+      ? String(position).padStart(2, '0')
+      : getTranslation(type.label, i18n)
   return (
     <span>
-      {number} · {data?.time ? `${data.time} ` : ''}
+      {prefix} · {data?.time ? `${data.time} · ` : ''}
       {data?.title || t('excursions:untitledStop')}
     </span>
   )
