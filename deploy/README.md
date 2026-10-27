@@ -185,8 +185,8 @@ The importer saves new uploads into the PC's `public/media`. Copy them to the se
 (step 4 above).
 
 The site search's index is rebuilt the same way, with `pnpm search:reindex` in place of
-`pnpm migrate:website` (the importer already does it at its end). Needed once after the search
-index first ships: its migration only creates the empty table.
+`pnpm migrate:website` (the importer already does it at its end). Normally never needed: hooks keep
+the index current, and migration `20261027_093710_fill_search_index` filled it once on deploy.
 
 ## Backups
 
