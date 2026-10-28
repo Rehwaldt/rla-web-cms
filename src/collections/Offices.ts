@@ -22,17 +22,27 @@ export const Offices: CollectionConfig = {
   access: { read: anyone },
   fields: [
     {
-      name: 'name',
-      label: { en: 'Name', de: 'Name' },
-      type: 'text',
-      localized: true,
-      validate: requiredInDefaultLocale,
-    },
-    { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
-    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
-    {
       type: 'tabs',
       tabs: [
+        {
+          label: { en: 'General', de: 'Allgemein' },
+          fields: [
+            {
+              name: 'name',
+              label: { en: 'Name', de: 'Name' },
+              type: 'text',
+              localized: true,
+              validate: requiredInDefaultLocale,
+            },
+            {
+              name: 'image',
+              label: { en: 'Image', de: 'Bild' },
+              type: 'upload',
+              relationTo: 'media',
+            },
+            ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+          ],
+        },
         {
           label: { en: 'Address', de: 'Adresse' },
           fields: [
@@ -97,20 +107,29 @@ export const Offices: CollectionConfig = {
                       type: 'text',
                       admin: { width: '50%', placeholder: '+49 351 1234567' },
                     },
-                    { name: 'fax', label: { en: 'Fax', de: 'Fax' }, type: 'text', admin: { width: '50%' } },
+                    {
+                      name: 'fax',
+                      label: { en: 'Fax', de: 'Fax' },
+                      type: 'text',
+                      admin: { width: '50%' },
+                    },
                   ],
                 },
                 { name: 'email', label: { en: 'Email', de: 'E-Mail' }, type: 'email' },
               ],
             },
-            ...richTextField('contactNote', { en: 'Contact note', de: 'Kontakthinweis' }, {
-              admin: {
-                description: {
-                  en: 'Extra contact details for one language, e.g. a local contact person.',
-                  de: 'Zusätzliche Kontaktangaben für eine Sprache, z. B. eine Ansprechperson vor Ort.',
+            ...richTextField(
+              'contactNote',
+              { en: 'Contact note', de: 'Kontakthinweis' },
+              {
+                admin: {
+                  description: {
+                    en: 'Extra contact details for one language, e.g. a local contact person.',
+                    de: 'Zusätzliche Kontaktangaben für eine Sprache, z. B. eine Ansprechperson vor Ort.',
+                  },
                 },
               },
-            }),
+            ),
           ],
         },
       ],
