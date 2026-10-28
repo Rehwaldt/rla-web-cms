@@ -37,7 +37,7 @@ export const Projects: CollectionConfig = {
           unique: true,
           index: true,
           admin: {
-            width: '30%',
+            width: '200px',
             description: {
               en: 'Short code shared across RLA systems and used in website URLs.',
               de: 'Wird von allen RLA-Systemen gemeinsam genutzt und steht in den URLs der Website.',
@@ -49,7 +49,6 @@ export const Projects: CollectionConfig = {
           label: { en: 'Name', de: 'Name' },
           type: 'text',
           localized: true,
-          admin: { width: '70%' },
         },
       ],
     },
@@ -203,6 +202,15 @@ export const Projects: CollectionConfig = {
               ],
             },
             {
+              name: 'categories',
+              label: { en: 'Categories', de: 'Kategorien' },
+              type: 'relationship',
+              relationTo: 'project-categories',
+              hasMany: true,
+              validate: childrenOnly('project-categories'),
+              admin: { components: { Field: '@/components/cms/CategoryPicker#CategoryPicker' } },
+            },
+            {
               type: 'row',
               fields: [
                 {
@@ -282,15 +290,6 @@ export const Projects: CollectionConfig = {
                   ],
                 },
               ],
-            },
-            {
-              name: 'categories',
-              label: { en: 'Categories', de: 'Kategorien' },
-              type: 'relationship',
-              relationTo: 'project-categories',
-              hasMany: true,
-              validate: childrenOnly('project-categories'),
-              admin: { components: { Field: '@/components/cms/CategoryPicker#CategoryPicker' } },
             },
             {
               name: 'similarProjects',
