@@ -45,7 +45,10 @@ reintroduce those sources here unless asked.
   The push happens on the first request that needs Payload (e.g. `/admin`), not when `pnpm dev`
   starts; drizzle's questions then wait in that terminal. It skips the migrations' data copies.
   To avoid rename questions, split a change that adds and drops tables or columns into two
-  migrations (add, then drop with the data copied in SQL).
+  migrations (add, then drop with the data copied in SQL). Payload names a select's enum
+  `enum_{table}_{field}` without leading underscores, so a select called `status` gets the drafts'
+  `_status` enum (the migration then lacks a `CREATE TYPE`); give such a field an `enumName`
+  (projects: `project_status`). `migrate:down` rolls back the whole last batch, not one migration.
 - `pnpm test:unit` (Vitest, no database; importer planners in `tests/unit/`) / `pnpm test:int`
   (Vitest, needs Postgres) / `pnpm test:e2e` (Playwright) / `pnpm test` (all). `pnpm lint`.
 - `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
