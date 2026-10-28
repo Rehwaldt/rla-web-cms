@@ -37,6 +37,13 @@ main() {
       app_dir=/srv/rla-website/app ;;
     *) fail "unknown service: $service" ;;
   esac
+
+  # One deploy at a time on this server, whichever service: the two repos' workflows don't wait
+  # for each other, and one deploy's image prune or registry logout breaks the other's pull
+  # ("lease does not exist", 2026-10-28).
+  exec 9> /tmp/rla-deploy.lock
+  flock -w 900 9 || fail "another deploy has held the lock for 15 minutes"
+
   cd "$app_dir/deploy"
 
   # Deploy files (compose file, Caddyfile, scripts) from the same commit as the image
