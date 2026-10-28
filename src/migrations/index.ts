@@ -15,6 +15,7 @@ import * as migration_20261026_183223_search_index from './20261026_183223_searc
 import * as migration_20261027_093710_fill_search_index from './20261027_093710_fill_search_index';
 import * as migration_20261028_115541_drop_dark_controls from './20261028_115541_drop_dark_controls';
 import * as migration_20261028_130559_project_status from './20261028_130559_project_status';
+import * as migration_20261028_132908_drop_ongoing from './20261028_132908_drop_ongoing';
 
 export const migrations = [
   {
@@ -100,6 +101,11 @@ export const migrations = [
   {
     up: migration_20261028_130559_project_status.up,
     down: migration_20261028_130559_project_status.down,
-    name: '20261028_130559_project_status'
+    name: '20261028_130559_project_status',
+  },
+  {
+    up: migration_20261028_132908_drop_ongoing.up,
+    down: migration_20261028_132908_drop_ongoing.down,
+    name: '20261028_132908_drop_ongoing'
   },
 ];

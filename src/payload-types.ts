@@ -209,7 +209,6 @@ export interface Project {
    */
   completionYear?: number | null;
   status: 'completed' | 'ongoing';
-  ongoing?: boolean | null;
   /**
    * Display location, usually the city.
    */
@@ -1331,7 +1330,6 @@ export interface ProjectsSelect<T extends boolean = true> {
   type?: T;
   completionYear?: T;
   status?: T;
-  ongoing?: T;
   place?: T;
   region?: T;
   country?: T;

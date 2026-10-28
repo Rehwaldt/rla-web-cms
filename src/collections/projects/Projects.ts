@@ -162,15 +162,6 @@ export const Projects: CollectionConfig = {
                 },
               ],
             },
-            // Predecessor of status, kept in step with it until the website reads status (then
-            // dropped by a migration).
-            {
-              name: 'ongoing',
-              label: { en: 'Ongoing', de: 'Laufend' },
-              type: 'checkbox',
-              admin: { hidden: true },
-              hooks: { beforeChange: [({ siblingData }) => siblingData.status === 'ongoing'] },
-            },
             {
               type: 'row',
               fields: [
