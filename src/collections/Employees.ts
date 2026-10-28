@@ -1,12 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { legacyIdField } from '@/fields/legacyId'
-import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
 
-// Public team profile. Names are localized because some people have a Chinese spelling of
-// their name; other languages fall back to the German entry.
+// Public team profile.
 export const Employees: CollectionConfig = {
   slug: 'employees',
   labels: {
@@ -27,26 +25,55 @@ export const Employees: CollectionConfig = {
       type: 'row',
       fields: [
         {
-          name: 'academicTitle',
-          label: { en: 'Academic title', de: 'Akademischer Titel' },
-          type: 'text',
-          admin: { width: '20%', placeholder: 'Dipl.-Ing.' },
-        },
-        {
           name: 'firstName',
           label: { en: 'First name', de: 'Vorname' },
           type: 'text',
-          localized: true,
-          validate: requiredInDefaultLocale,
+          required: true,
           admin: { width: '40%' },
         },
         {
           name: 'lastName',
           label: { en: 'Last name', de: 'Nachname' },
           type: 'text',
-          localized: true,
-          validate: requiredInDefaultLocale,
+          required: true,
           admin: { width: '40%' },
+        },
+        {
+          name: 'chineseName',
+          label: { en: 'Chinese name', de: 'Chinesischer Name' },
+          type: 'text',
+          admin: {
+            width: '20%',
+            placeholder: '吴婧',
+            description: {
+              en: 'Written in full, surname first. The Chinese website shows it instead of first and last name.',
+              de: 'Vollständig, Familienname zuerst. Die chinesische Website zeigt ihn statt Vor- und Nachname.',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'portrait',
+      label: { en: 'Portrait', de: 'Porträt' },
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'academicTitle',
+          label: { en: 'Academic title', de: 'Akademischer Titel' },
+          type: 'text',
+          admin: { width: '50%', placeholder: 'Dipl.-Ing.' },
+        },
+        {
+          name: 'university',
+          label: { en: 'University', de: 'Hochschule' },
+          type: 'text',
+          localized: true,
+          admin: { width: '50%' },
         },
       ],
     },
@@ -54,11 +81,11 @@ export const Employees: CollectionConfig = {
       name: 'fullName',
       label: { en: 'Name', de: 'Name' },
       type: 'text',
-      localized: true,
       admin: { hidden: true },
       hooks: {
         beforeChange: [
-          ({ siblingData }) => `${siblingData?.firstName ?? ''} ${siblingData?.lastName ?? ''}`.trim(),
+          ({ siblingData }) =>
+            `${siblingData?.firstName ?? ''} ${siblingData?.lastName ?? ''}`.trim(),
         ],
       },
     },
@@ -103,7 +130,6 @@ export const Employees: CollectionConfig = {
         },
       ],
     },
-    { name: 'portrait', label: { en: 'Portrait', de: 'Porträt' }, type: 'upload', relationTo: 'media' },
     {
       name: 'profession',
       label: { en: 'Profession', de: 'Beruf' },
@@ -116,7 +142,6 @@ export const Employees: CollectionConfig = {
         },
       },
     },
-    { name: 'university', label: { en: 'University', de: 'Hochschule' }, type: 'text', localized: true },
     {
       name: 'chamberMembership',
       label: { en: 'Chamber membership', de: 'Kammermitgliedschaft' },

@@ -51,16 +51,18 @@ describe('planEmployees', () => {
       {
         standorte: [{ index: 1 }],
         bilder,
-        mitarbeiter: [{ index: 1, aktiv: 1, vorname: 'Anna', vorname_zh: '安娜', standort: 1, bild: 3 }],
+        mitarbeiter: [
+          { index: 1, aktiv: 1, vorname: 'Jing', nachname: 'Wu', vorname_zh: '吴', nachname_zh: '婧', standort: 1, bild: 3 },
+        ],
       },
       ['a.jpg'],
     )
     const [employee] = planEmployees(ctx)
     expect(employee).toMatchObject({
       status: 'published',
-      data: { firstName: 'Anna', office: ref('offices', 1), portrait: ref('media', 3) },
-      localized: { zh: { firstName: '安娜' } },
+      data: { firstName: 'Jing', lastName: 'Wu', chineseName: '吴婧', office: ref('offices', 1), portrait: ref('media', 3) },
     })
+    expect(employee.localized.zh ?? {}).not.toHaveProperty('firstName')
   })
 
   it('imports former employees as drafts without a portrait', () => {
@@ -69,7 +71,7 @@ describe('planEmployees', () => {
       ['a.jpg'],
     )
     const [employee] = planEmployees(ctx)
-    expect(employee).toMatchObject({ status: 'draft', data: { office: null, portrait: null } })
+    expect(employee).toMatchObject({ status: 'draft', data: { chineseName: null, office: null, portrait: null } })
     expect(ctx.usedImageIds()).toEqual([])
     expect(issues('Employee with an unknown office')).toEqual(['employee 2'])
   })

@@ -91,19 +91,23 @@ export function planEmployees(ctx: PlanContext): DocPlan[] {
         ctx.report.add('Status note stored as a qualification (check by hand)', `${where} [${locale}]: ${value}`)
       }
     }
+    // The Chinese name parts are in reading order (surname in `vorname_zh`), so joined they give the
+    // name as written.
+    const chineseName = `${str(row, 'vorname_zh') ?? ''}${str(row, 'nachname_zh') ?? ''}` || null
     return docPlan({
       collection: 'employees',
       legacyId,
       status: active ? 'published' : 'draft',
       perLocale: byLocale({
-        firstName: { de: str(row, 'vorname'), zh: str(row, 'vorname_zh') },
-        lastName: { de: str(row, 'nachname'), zh: str(row, 'nachname_zh') },
         profession: ctx.plainByLocale(row, 'beruf', where),
         university: ctx.plainByLocale(row, 'uni', where),
         chamberMembership: ctx.plainByLocale(row, 'kammer', where),
         qualification,
       }),
       shared: {
+        firstName: str(row, 'vorname'),
+        lastName: str(row, 'nachname'),
+        chineseName,
         academicTitle: ctx.plain(str(row, 'titel_de'), where),
         email: str(row, 'email'),
         phone: str(row, 'telefon'),

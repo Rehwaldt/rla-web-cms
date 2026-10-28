@@ -838,9 +838,15 @@ export interface PublicationCategory {
  */
 export interface Employee {
   id: number;
+  firstName: string;
+  lastName: string;
+  /**
+   * Written in full, surname first. The Chinese website shows it instead of first and last name.
+   */
+  chineseName?: string | null;
+  portrait?: (number | null) | Media;
   academicTitle?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
+  university?: string | null;
   fullName?: string | null;
   office?: (number | null) | Office;
   /**
@@ -849,12 +855,10 @@ export interface Employee {
   joinedYear?: number | null;
   email?: string | null;
   phone?: string | null;
-  portrait?: (number | null) | Media;
   /**
    * Degree and field, e.g. "M.Sc. Landscape Architecture".
    */
   profession?: string | null;
-  university?: string | null;
   /**
    * Membership in a chamber of architects.
    */
@@ -1632,17 +1636,18 @@ export interface PublicationCategoriesSelect<T extends boolean = true> {
  * via the `definition` "employees_select".
  */
 export interface EmployeesSelect<T extends boolean = true> {
-  academicTitle?: T;
   firstName?: T;
   lastName?: T;
+  chineseName?: T;
+  portrait?: T;
+  academicTitle?: T;
+  university?: T;
   fullName?: T;
   office?: T;
   joinedYear?: T;
   email?: T;
   phone?: T;
-  portrait?: T;
   profession?: T;
-  university?: T;
   chamberMembership?: T;
   qualification?: T;
   legacyId?: T;

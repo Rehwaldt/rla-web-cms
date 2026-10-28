@@ -18,6 +18,7 @@ import * as migration_20261028_130559_project_status from './20261028_130559_pro
 import * as migration_20261028_132908_drop_ongoing from './20261028_132908_drop_ongoing';
 import * as migration_20261028_140538_published_in from './20261028_140538_published_in';
 import * as migration_20261028_140604_drop_journal_and_book from './20261028_140604_drop_journal_and_book';
+import * as migration_20261028_154216_employee_names from './20261028_154216_employee_names';
 
 export const migrations = [
   {
@@ -118,6 +119,11 @@ export const migrations = [
   {
     up: migration_20261028_140604_drop_journal_and_book.up,
     down: migration_20261028_140604_drop_journal_and_book.down,
-    name: '20261028_140604_drop_journal_and_book'
+    name: '20261028_140604_drop_journal_and_book',
+  },
+  {
+    up: migration_20261028_154216_employee_names.up,
+    down: migration_20261028_154216_employee_names.down,
+    name: '20261028_154216_employee_names'
   },
 ];
