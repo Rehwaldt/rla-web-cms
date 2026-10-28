@@ -45,10 +45,6 @@ export const Employees: CollectionConfig = {
           admin: {
             width: '20%',
             placeholder: '吴婧',
-            description: {
-              en: 'Written in full, surname first. The Chinese website shows it instead of first and last name.',
-              de: 'Vollständig, Familienname zuerst. Die chinesische Website zeigt ihn statt Vor- und Nachname.',
-            },
           },
         },
       ],

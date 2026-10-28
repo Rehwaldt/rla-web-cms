@@ -2,7 +2,7 @@ import fs from 'fs'
 import { bool, num, pipeList, str } from '../legacy'
 import { byLocale, docPlan } from './build'
 import type { PlanContext } from './context'
-import { flowBlocks, flowNews, localesWithFlag, localesWithValue, parseLinks, reportFlowNews, splitTimeline } from './parsers'
+import { flowBlocks, flowNews, localesWithFlag, localesWithValue, parseLinks, reportFlowNews, definitionListsToParagraphs } from './parsers'
 import { type DocPlan, type Locale, LEGACY_SUFFIX, LOCALES, ref } from './types'
 
 const linksByLocale = (ctx: PlanContext, row: Record<string, unknown>, where: string) =>
@@ -306,14 +306,12 @@ export function planPages(ctx: PlanContext): DocPlan[] {
     const featuredNews = Object.fromEntries(
       LOCALES.map((locale) => [locale, flowNews(ctx, str(row, `flow_${LEGACY_SUFFIX[locale]}`), `${where} [${locale}]`)]),
     )
-    // Definition lists (the founder's CV) become the timeline; the rest stays rich text.
-    const content: Record<string, unknown> = {}
-    const timeline: Record<string, unknown> = {}
-    for (const locale of LOCALES) {
-      const text = splitTimeline(ctx, str(row, `text_${LEGACY_SUFFIX[locale]}`), `${where} [${locale}]`)
-      content[locale] = ctx.richText(text.html, `${where} text [${locale}]`)
-      timeline[locale] = text.timeline
-    }
+    const content = Object.fromEntries(
+      LOCALES.map((locale) => {
+        const html = definitionListsToParagraphs(ctx, str(row, `text_${LEGACY_SUFFIX[locale]}`), `${where} [${locale}]`)
+        return [locale, ctx.richText(html, `${where} text [${locale}]`)]
+      }),
+    )
     plans.push(
       docPlan({
         collection: 'pages',
@@ -323,7 +321,6 @@ export function planPages(ctx: PlanContext): DocPlan[] {
           title: ctx.plainByLocale(row, 'titel', where),
           subtitle,
           content,
-          timeline,
           flow,
           featuredNews,
         }),

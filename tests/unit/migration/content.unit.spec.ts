@@ -201,7 +201,7 @@ describe('planPages', () => {
     expect(issues('Page with an unmapped key (skipped)')).toEqual(['page 3 (unknown)'])
   })
 
-  it('turns the CV definition list into a timeline per language', () => {
+  it('turns the CV definition list into paragraphs of the content per language', () => {
     const { ctx } = harness({
       buero: [
         {
@@ -213,9 +213,9 @@ describe('planPages', () => {
       ],
     })
     const [page] = planPages(ctx)
-    expect(page.data).toMatchObject({ key: 'founder-vita', timeline: [{ period: '2006', text: 'Büro in Peking' }] })
-    expect(page.data.content).toBeUndefined()
-    expect(page.localized.zh?.timeline).toEqual([{ period: '1965年', text: '出生于罗斯托克' }])
+    expect(page.data).toMatchObject({ key: 'founder-vita', content: { html: '<p><strong>2006</strong><br>Büro in Peking</p>' } })
+    expect(page.data).not.toHaveProperty('timeline')
+    expect(page.localized.zh?.content).toEqual({ html: '<p><strong>1965年</strong><br>出生于罗斯托克</p>' })
     expect(page.localized.en).toBeUndefined()
   })
 

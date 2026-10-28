@@ -41,9 +41,7 @@ labels use these words so that one concept never gets two German names.
   with a title and subtitle of its own; journals and books aren't told apart.
 - **Job** (de: *Stellenangebot*): open position at an office.
 - **Page** (de: *Seite*): stand-alone website page (office profile, contact, imprint, …) fetched
-  by its **key** (de: *Seitenschlüssel*). A page can carry a **timeline** (de: *Zeitleiste*):
-  periods (de: *Zeitraum*) with an entry (de: *Eintrag*) each, shown in two columns, e.g. the
-  founder's CV.
+  by its **key** (de: *Seitenschlüssel*).
 - **Employee** (de: *Mitarbeitende*): public team profile.
 - **Office** (de: *Büro*): an office location (Dresden, Berlin, Prague, Beijing, …).
 - **Excursion** (de: *Exkursion*): a trip of the office to visit built landscape architecture,

@@ -538,16 +538,6 @@ export interface Page {
   } | null;
   contentHtml?: string | null;
   /**
-   * Periods and what happened in them, shown as two columns after the content, e.g. a CV.
-   */
-  timeline?:
-    | {
-        period: string;
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
    * Grid of images, texts and references. Each language has its own flow.
    */
   flow?: (FlowImageBlock | FlowTextBlock | FlowTopicReferenceBlock)[] | null;
@@ -840,9 +830,6 @@ export interface Employee {
   id: number;
   firstName: string;
   lastName: string;
-  /**
-   * Written in full, surname first. The Chinese website shows it instead of first and last name.
-   */
   chineseName?: string | null;
   portrait?: (number | null) | Media;
   academicTitle?: string | null;
@@ -1441,13 +1428,6 @@ export interface PagesSelect<T extends boolean = true> {
   image?: T;
   content?: T;
   contentHtml?: T;
-  timeline?:
-    | T
-    | {
-        period?: T;
-        text?: T;
-        id?: T;
-      };
   flow?:
     | T
     | {

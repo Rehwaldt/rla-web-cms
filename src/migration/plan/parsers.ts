@@ -81,10 +81,10 @@ export function legacyHref(href: string): { project: string } | { url: string } 
 }
 
 // ---------------------------------------------------------------------------------------------
-// Timeline: a page's definition list (<dt>period</dt><dd>entry</dd>…), e.g. the founder's CV
+// Definition lists (<dt>period</dt><dd>entry</dd>…) in a page's HTML, e.g. the founder's CV
 // ---------------------------------------------------------------------------------------------
 
-let timelineDom: JSDOM | undefined
+let definitionListDom: JSDOM | undefined
 
 // Only <br> breaks a line; line breaks in the HTML source are plain whitespace.
 const LINE_BREAK = ''
@@ -98,41 +98,44 @@ const elementText = (element: Element): string => {
 }
 
 /**
- * Moves the definition lists out of a page's HTML into timeline entries, since Lexical has no
- * definition list. Returns the remaining HTML (null if nothing is left). The legacy lists leave
- * some `<dd>` unclosed and have stray empty ones; the HTML parser and the empty-entry check
- * absorb that.
+ * Turns the definition lists in a page's HTML into one paragraph per entry, the period in bold on
+ * the first line, since Lexical has no definition list. Returns null if nothing is left. The legacy
+ * lists leave some `<dd>` unclosed and have stray empty ones; the HTML parser and the empty-entry
+ * check absorb that.
  */
-export function splitTimeline(
-  ctx: PlanContext,
-  html: string | null,
-  where: string,
-): { html: string | null; timeline: Data[] } {
-  if (!html || !/<dl\b/i.test(html)) return { html, timeline: [] }
-  timelineDom ??= new JSDOM('')
-  const container = timelineDom.window.document.createElement('div')
+export function definitionListsToParagraphs(ctx: PlanContext, html: string | null, where: string): string | null {
+  if (!html || !/<dl\b/i.test(html)) return html
+  definitionListDom ??= new JSDOM('')
+  const document = definitionListDom.window.document
+  const container = document.createElement('div')
   container.innerHTML = html
-  const timeline: { period: string; text: string }[] = []
   for (const list of container.querySelectorAll('dl')) {
+    const entries: { period: string; lines: string[] }[] = []
     for (const item of list.children) {
       const text = elementText(item)
-      if (item.tagName === 'DT') timeline.push({ period: text, text: '' })
+      if (item.tagName === 'DT') entries.push({ period: text, lines: [] })
       else if (item.tagName === 'DD' && text) {
-        const entry = timeline.at(-1)
-        if (entry) entry.text = entry.text ? `${entry.text}\n${text}` : text
-        else ctx.report.add('Timeline entry without a period (dropped)', `${where}: ${text}`)
+        const entry = entries.at(-1)
+        if (entry) entry.lines.push(...text.split('\n'))
+        else ctx.report.add('Definition list entry without a period (dropped)', `${where}: ${text}`)
       }
     }
-    list.remove()
+    const paragraphs = entries.flatMap(({ period, lines }) => {
+      if (!period || lines.length === 0) {
+        ctx.report.add('Incomplete definition list entry (dropped)', `${where}: "${period}" "${lines.join(' ')}"`)
+        return []
+      }
+      const paragraph = document.createElement('p')
+      const strong = document.createElement('strong')
+      strong.textContent = period
+      paragraph.append(strong)
+      for (const line of lines) paragraph.append(document.createElement('br'), line)
+      return [paragraph]
+    })
+    list.replaceWith(...paragraphs)
   }
-  for (const { period, text } of timeline) {
-    if (!period || !text) ctx.report.add('Incomplete timeline entry (dropped)', `${where}: "${period}" "${text}"`)
-  }
-  ctx.report.add('Definition list (moved to the timeline)', where)
-  return {
-    html: container.textContent?.trim() ? container.innerHTML.trim() : null,
-    timeline: timeline.filter(({ period, text }) => period && text),
-  }
+  ctx.report.add('Definition list (turned into paragraphs)', where)
+  return container.textContent?.trim() ? container.innerHTML.trim() : null
 }
 
 // ---------------------------------------------------------------------------------------------

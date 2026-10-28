@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  definitionListsToParagraphs,
   flowBlocks,
   flowNews,
   flowNewsIds,
@@ -9,7 +10,6 @@ import {
   localesWithValue,
   parseLinks,
   resolveCountry,
-  splitTimeline,
 } from '@/migration/plan/parsers'
 import { ref } from '@/migration/plan/types'
 import { harness } from './fixtures'
@@ -50,37 +50,29 @@ describe('legacyHref', () => {
   })
 })
 
-describe('splitTimeline', () => {
-  it('moves definition-list pairs into timeline entries and keeps the rest', () => {
+describe('definitionListsToParagraphs', () => {
+  it('turns each definition-list pair into a paragraph, period in bold, and keeps the rest', () => {
     const { ctx, issues } = harness()
-    const html = '<p>Intro</p><dl class="curriculum">\n  <dt>1985-1990</dt>\n  <dd>Studium,\n TU Dresden</dd><dt>seit 1993</dt><dd>a<br />b</dd></dl>'
-    expect(splitTimeline(ctx, html, 'page 1')).toEqual({
-      html: '<p>Intro</p>',
-      timeline: [
-        { period: '1985-1990', text: 'Studium, TU Dresden' },
-        { period: 'seit 1993', text: 'a\nb' },
-      ],
-    })
-    expect(issues('Definition list (moved to the timeline)')).toEqual(['page 1'])
+    const html = '<p>Intro</p><dl class="curriculum">\n  <dt>1985-1990</dt>\n  <dd>Studium,\n TU Dresden</dd><dt>seit 1993</dt><dd>a<br />b & c</dd></dl>'
+    expect(definitionListsToParagraphs(ctx, html, 'page 1')).toBe(
+      '<p>Intro</p><p><strong>1985-1990</strong><br>Studium, TU Dresden</p><p><strong>seit 1993</strong><br>a<br>b &amp; c</p>',
+    )
+    expect(issues('Definition list (turned into paragraphs)')).toEqual(['page 1'])
   })
 
-  it('absorbs unclosed and empty <dd>s, and leaves nothing if the list was all', () => {
+  it('absorbs unclosed and empty <dd>s', () => {
     const { ctx, issues } = harness()
     const html = '<dl><dd>orphan</dd><dt>2016</dt><dd>Prag<dt>2019</dt><dd>Berlin<dd>\n</dl>'
-    expect(splitTimeline(ctx, html, 'p')).toEqual({
-      html: null,
-      timeline: [
-        { period: '2016', text: 'Prag' },
-        { period: '2019', text: 'Berlin' },
-      ],
-    })
-    expect(issues('Timeline entry without a period (dropped)')).toEqual(['p: orphan'])
+    expect(definitionListsToParagraphs(ctx, html, 'p')).toBe(
+      '<p><strong>2016</strong><br>Prag</p><p><strong>2019</strong><br>Berlin</p>',
+    )
+    expect(issues('Definition list entry without a period (dropped)')).toEqual(['p: orphan'])
   })
 
   it('passes HTML without a definition list through', () => {
     const { ctx } = harness()
-    expect(splitTimeline(ctx, '<p>x</p>', 'p')).toEqual({ html: '<p>x</p>', timeline: [] })
-    expect(splitTimeline(ctx, null, 'p')).toEqual({ html: null, timeline: [] })
+    expect(definitionListsToParagraphs(ctx, '<p>x</p>', 'p')).toBe('<p>x</p>')
+    expect(definitionListsToParagraphs(ctx, null, 'p')).toBeNull()
   })
 })
 

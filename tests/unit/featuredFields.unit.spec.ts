@@ -9,7 +9,7 @@ describe('featured fields', () => {
   it('gives pages a sortable list per language of news and of projects', async () => {
     const config: SanitizedConfig = await configPromise
     const pages = config.collections.find((collection) => collection.slug === 'pages')!
-    const field = (name: string) => pages.fields.find((candidate) => 'name' in candidate && candidate.name === name)
+    const field = (name: string) => pages.flattenedFields.find((candidate) => candidate.name === name)
     for (const [name, relationTo] of [
       ['featuredNews', 'news'],
       ['featuredProjects', 'projects'],
