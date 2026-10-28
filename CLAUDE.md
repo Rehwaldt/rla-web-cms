@@ -43,7 +43,9 @@ reintroduce those sources here unless asked.
   pushes schema changes into the dev database, but production only runs the migrations in
   `src/migrations` (on startup). Commit the generated files; never edit an applied migration.
   The push happens on the first request that needs Payload (e.g. `/admin`), not when `pnpm dev`
-  starts; drizzle's questions then wait in that terminal. It skips the migrations' data copies.
+  starts; drizzle's questions then wait in that terminal. It skips the migrations' data copies:
+  when it warns about dropping columns a migration copies from, answer N (that exits `pnpm dev`),
+  run the migration's add + copy SQL on the dev database, then restart and accept the drops.
   To avoid rename questions, split a change that adds and drops tables or columns into two
   migrations (add, then drop with the data copied in SQL). Payload names a select's enum
   `enum_{table}_{field}` without leading underscores, so a select called `status` gets the drafts'
