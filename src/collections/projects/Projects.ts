@@ -317,20 +317,7 @@ export const Projects: CollectionConfig = {
         },
         {
           label: { en: 'Flow', de: 'Flow' },
-          fields: [
-            {
-              name: 'darkControls',
-              label: { en: 'Dark controls', de: 'Dunkle Buttons' },
-              type: 'checkbox',
-              admin: {
-                description: {
-                  en: 'Draw the page controls in dark colors, for light hero images.',
-                  de: 'Buttons der Seite dunkel darstellen, für helle Titelbilder.',
-                },
-              },
-            },
-            flowField({ captions: false }),
-          ],
+          fields: [flowField({ captions: false })],
         },
         {
           label: { en: 'Links', de: 'Links' },

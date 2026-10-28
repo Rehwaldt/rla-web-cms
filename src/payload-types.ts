@@ -165,21 +165,20 @@ export interface UserAuthOperations {
  */
 export interface Project {
   id: number;
-  name?: string | null;
   /**
    * Short code shared across RLA systems and used in website URLs.
    */
   code?: string | null;
+  name?: string | null;
   codeAndName?: string | null;
-  type?: ('competition' | 'object' | 'concept') | null;
   /**
-   * Still in planning or under construction.
+   * Large image at the top of the project page.
    */
-  ongoing?: boolean | null;
+  heroImage?: (number | null) | Media;
   /**
-   * The planned year while the project is ongoing.
+   * Tile image in listings and galleries.
    */
-  completionYear?: number | null;
+  previewImage?: (number | null) | Media;
   motto?: string | null;
   /**
    * Short teaser shown in listings.
@@ -204,16 +203,15 @@ export interface Project {
     [k: string]: unknown;
   } | null;
   descriptionHtml?: string | null;
-  categories?: (number | ProjectCategory)[] | null;
+  type?: ('competition' | 'object' | 'concept') | null;
   /**
-   * Similarity is symmetric: projects listing this one appear under "Listed as similar by".
+   * The planned year while the project is ongoing.
    */
-  similarProjects?: (number | Project)[] | null;
-  listedAsSimilarBy?: {
-    docs?: (number | Project)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
+  completionYear?: number | null;
+  /**
+   * Still in planning or under construction.
+   */
+  ongoing?: boolean | null;
   /**
    * Display location, usually the city.
    */
@@ -245,13 +243,13 @@ export interface Project {
         | 'TR'
       )
     | null;
-  client?: string | null;
-  architect?: string | null;
-  planningPartners?: string | null;
   /**
    * In hectares.
    */
   area?: number | null;
+  client?: string | null;
+  architect?: string | null;
+  planningPartners?: string | null;
   /**
    * Free-form extra fact, e.g. image credits.
    */
@@ -267,18 +265,16 @@ export interface Project {
      */
     purchased?: boolean | null;
   };
+  categories?: (number | ProjectCategory)[] | null;
   /**
-   * Large image at the top of the project page.
+   * Similarity is symmetric: projects listing this one appear under "Listed as similar by".
    */
-  heroImage?: (number | null) | Media;
-  /**
-   * Tile image in listings and galleries.
-   */
-  previewImage?: (number | null) | Media;
-  /**
-   * Draw the page controls in dark colors, for light hero images.
-   */
-  darkControls?: boolean | null;
+  similarProjects?: (number | Project)[] | null;
+  listedAsSimilarBy?: {
+    docs?: (number | Project)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   /**
    * Grid of images, texts and references.
    */
@@ -309,34 +305,6 @@ export interface Project {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "project-categories".
- */
-export interface ProjectCategory {
-  id: number;
-  _order?: string | null;
-  name?: string | null;
-  /**
-   * Column of the project filter menu this top-level group appears in.
-   */
-  menuColumn?: ('1' | '2' | '3' | '4') | null;
-  /**
-   * ID in the legacy website database. Set by the importer.
-   */
-  legacyId?: number | null;
-  parent?: (number | null) | ProjectCategory;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | ProjectCategory;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -414,6 +382,34 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories".
+ */
+export interface ProjectCategory {
+  id: number;
+  _order?: string | null;
+  name?: string | null;
+  /**
+   * Column of the project filter menu this top-level group appears in.
+   */
+  menuColumn?: ('1' | '2' | '3' | '4') | null;
+  /**
+   * ID in the legacy website database. Set by the importer.
+   */
+  legacyId?: number | null;
+  parent?: (number | null) | ProjectCategory;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | ProjectCategory;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1325,26 +1321,25 @@ export interface PayloadMigration {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
-  name?: T;
   code?: T;
+  name?: T;
   codeAndName?: T;
-  type?: T;
-  ongoing?: T;
-  completionYear?: T;
+  heroImage?: T;
+  previewImage?: T;
   motto?: T;
   summary?: T;
   description?: T;
   descriptionHtml?: T;
-  categories?: T;
-  similarProjects?: T;
-  listedAsSimilarBy?: T;
+  type?: T;
+  completionYear?: T;
+  ongoing?: T;
   place?: T;
   region?: T;
   country?: T;
+  area?: T;
   client?: T;
   architect?: T;
   planningPartners?: T;
-  area?: T;
   additionalInfo?: T;
   competition?:
     | T
@@ -1353,9 +1348,9 @@ export interface ProjectsSelect<T extends boolean = true> {
         prize?: T;
         purchased?: T;
       };
-  heroImage?: T;
-  previewImage?: T;
-  darkControls?: T;
+  categories?: T;
+  similarProjects?: T;
+  listedAsSimilarBy?: T;
   flow?:
     | T
     | {

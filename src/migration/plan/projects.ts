@@ -107,7 +107,6 @@ export function planProjects(ctx: PlanContext): DocPlan[] {
         categories,
         heroImage: ctx.imageRef(num(row, 'titelbild'), `${where} hero image`),
         previewImage: ctx.imageRef(num(row, 'vorschaubild'), `${where} preview image`),
-        darkControls: bool(row, 'dunkle_buttons'),
         similarProjects: [...(similar.get(String(legacyId)) ?? [])].map((key) => ref('projects', key)),
         visibleIn: localesWithFlag(row, 'anzeige'),
       },
