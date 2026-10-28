@@ -2,9 +2,9 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."enum_projects_project_status" AS ENUM('completed', 'ongoing');
-  ALTER TABLE "projects" ADD COLUMN "status" "enum_projects_project_status" DEFAULT 'completed';
-  ALTER TABLE "_projects_v" ADD COLUMN "version_status" "enum_projects_project_status" DEFAULT 'completed';`)
+   CREATE TYPE "public"."project_status" AS ENUM('completed', 'ongoing');
+  ALTER TABLE "projects" ADD COLUMN "status" "project_status" DEFAULT 'completed';
+  ALTER TABLE "_projects_v" ADD COLUMN "version_status" "project_status" DEFAULT 'completed';`)
 
   // The new columns start as 'completed'; ongoing projects (and their versions) carry over.
   await db.execute(sql`
@@ -16,5 +16,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   await db.execute(sql`
    ALTER TABLE "projects" DROP COLUMN "status";
   ALTER TABLE "_projects_v" DROP COLUMN "version_status";
-  DROP TYPE "public"."enum_projects_project_status";`)
+  DROP TYPE "public"."project_status";`)
 }

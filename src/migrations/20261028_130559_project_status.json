@@ -1090,7 +1090,7 @@
         },
         "status": {
           "name": "status",
-          "type": "enum_projects_project_status",
+          "type": "project_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
@@ -2720,7 +2720,7 @@
         },
         "version_status": {
           "name": "version_status",
-          "type": "enum_projects_project_status",
+          "type": "project_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
@@ -20922,8 +20922,8 @@
         "concept"
       ]
     },
-    "public.enum_projects_project_status": {
-      "name": "enum_projects_project_status",
+    "public.project_status": {
+      "name": "project_status",
       "schema": "public",
       "values": [
         "completed",

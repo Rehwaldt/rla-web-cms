@@ -155,7 +155,7 @@ export const Projects: CollectionConfig = {
                   type: 'select',
                   options: [...PROJECT_STATUSES],
                   // The default name, enum_projects_status, is taken by the drafts' _status.
-                  enumName: 'enum_projects_project_status',
+                  enumName: 'project_status',
                   required: true,
                   defaultValue: 'completed',
                   admin: { width: '30%' },
