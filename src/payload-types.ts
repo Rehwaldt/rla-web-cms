@@ -205,12 +205,10 @@ export interface Project {
   descriptionHtml?: string | null;
   type?: ('competition' | 'object' | 'concept') | null;
   /**
-   * The planned year while the project is ongoing.
+   * The completion year, or the expected one until the project is completed.
    */
   completionYear?: number | null;
-  /**
-   * Still in planning or under construction.
-   */
+  status: 'completed' | 'ongoing';
   ongoing?: boolean | null;
   /**
    * Display location, usually the city.
@@ -247,6 +245,7 @@ export interface Project {
    * In hectares.
    */
   area?: number | null;
+  categories?: (number | ProjectCategory)[] | null;
   client?: string | null;
   architect?: string | null;
   planningPartners?: string | null;
@@ -265,7 +264,6 @@ export interface Project {
      */
     purchased?: boolean | null;
   };
-  categories?: (number | ProjectCategory)[] | null;
   /**
    * Similarity is symmetric: projects listing this one appear under "Listed as similar by".
    */
@@ -1332,11 +1330,13 @@ export interface ProjectsSelect<T extends boolean = true> {
   descriptionHtml?: T;
   type?: T;
   completionYear?: T;
+  status?: T;
   ongoing?: T;
   place?: T;
   region?: T;
   country?: T;
   area?: T;
+  categories?: T;
   client?: T;
   architect?: T;
   planningPartners?: T;
@@ -1348,7 +1348,6 @@ export interface ProjectsSelect<T extends boolean = true> {
         prize?: T;
         purchased?: T;
       };
-  categories?: T;
   similarProjects?: T;
   listedAsSimilarBy?: T;
   flow?:

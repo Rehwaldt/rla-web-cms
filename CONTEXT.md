@@ -15,8 +15,12 @@ labels use these words so that one concept never gets two German names.
 - **Project type** (de: *Projektart*): `competition` (de: *Wettbewerb*, a competition entry),
   `object` (de: *Objektplanung*, a built or buildable design) or `concept` (de: *Konzept*, a study
   or concept plan).
-- **Ongoing** (de: *Laufend*): a project still in planning or under construction. Its
-  **completion year** (de: *Fertigstellungsjahr*) is the planned year.
+- **Project status** (de: *Projektstatus*): whether the work on a project is still running, for
+  every project type: `completed` (de: *Abgeschlossen*; a submitted competition entry or a
+  finished concept counts too) or `ongoing` (de: *Laufend*, in planning or under construction).
+  The intranet's statuses (in planning, under construction, paused, cancelled) are to replace
+  `ongoing` once its projects are migrated. Until a project is completed, its **completion year**
+  (de: *Fertigstellungsjahr*) is the expected one.
 - **Project category** (de: *Projektkategorie*): node in a two-level tree. Top-level **groups**
   (de: *Gruppe*) sit in one of four **menu columns** (de: *Menüspalte*) of the project filter;
   child categories are what projects are tagged with.

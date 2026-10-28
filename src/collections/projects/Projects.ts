@@ -5,6 +5,7 @@ import { countryField } from '@/fields/country'
 import { flowField } from '@/fields/flow'
 import { legacyIdField } from '@/fields/legacyId'
 import { linksField } from '@/fields/links'
+import { PROJECT_STATUSES } from '@/fields/projectStatus'
 import { richTextField } from '@/fields/richText'
 import { childrenOnly } from '@/fields/validation'
 import { visibleInField } from '@/fields/visibleIn'
@@ -143,24 +144,32 @@ export const Projects: CollectionConfig = {
                   admin: {
                     width: '35%',
                     description: {
-                      en: 'The planned year while the project is ongoing.',
-                      de: 'Bei laufenden Projekten das geplante Jahr.',
+                      en: 'The completion year, or the expected one until the project is completed.',
+                      de: 'Das Fertigstellungsjahr, bzw. das voraussichtliche, solange das Projekt nicht abgeschlossen ist.',
                     },
                   },
                 },
                 {
-                  name: 'ongoing',
-                  label: { en: 'Ongoing', de: 'Laufend' },
-                  type: 'checkbox',
-                  admin: {
-                    width: '30%',
-                    description: {
-                      en: 'Still in planning or under construction.',
-                      de: 'Noch in Planung oder im Bau.',
-                    },
-                  },
+                  name: 'status',
+                  label: { en: 'Project status', de: 'Projektstatus' },
+                  type: 'select',
+                  options: [...PROJECT_STATUSES],
+                  // The default name, enum_projects_status, is taken by the drafts' _status.
+                  enumName: 'enum_projects_project_status',
+                  required: true,
+                  defaultValue: 'completed',
+                  admin: { width: '30%' },
                 },
               ],
+            },
+            // Predecessor of status, kept in step with it until the website reads status (then
+            // dropped by a migration).
+            {
+              name: 'ongoing',
+              label: { en: 'Ongoing', de: 'Laufend' },
+              type: 'checkbox',
+              admin: { hidden: true },
+              hooks: { beforeChange: [({ siblingData }) => siblingData.status === 'ongoing'] },
             },
             {
               type: 'row',

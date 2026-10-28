@@ -95,7 +95,7 @@ export function planProjects(ctx: PlanContext): DocPlan[] {
       shared: {
         code,
         type: projectType(ctx, row, where),
-        ongoing,
+        status: ongoing ? 'ongoing' : 'completed',
         completionYear: year(ctx, completed ?? planned, where),
         area: num(row, 'flaeche'),
         country,

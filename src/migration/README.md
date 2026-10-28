@@ -90,7 +90,7 @@ The website database keeps changing until the cutover and is read live.
   proof of concept built from the page image and the flow's images, not an editorial selection.
 - **Project type**: `als_wettbewerb` → competition; else `als_projekt` → object if
   `objektplanung`, else concept. Rows matching neither are reported.
-- **Completion**: `in_planung` → `ongoing`; `fertigstellung`, else `fertigstellung_geplant` →
+- **Completion**: `in_planung` → `status` `ongoing`, else `completed`; `fertigstellung`, else `fertigstellung_geplant` →
   `completionYear`.
 - **Country** (`land_{lang}`): free text in four languages → ISO code; region names
   (`Sachsen`, `Provinz Guangdong`, …) → `region` + their country.

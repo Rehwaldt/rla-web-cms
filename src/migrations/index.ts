@@ -14,6 +14,7 @@ import * as migration_20261026_165113_media_caption from './20261026_165113_medi
 import * as migration_20261026_183223_search_index from './20261026_183223_search_index';
 import * as migration_20261027_093710_fill_search_index from './20261027_093710_fill_search_index';
 import * as migration_20261028_115541_drop_dark_controls from './20261028_115541_drop_dark_controls';
+import * as migration_20261028_130559_project_status from './20261028_130559_project_status';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20261028_115541_drop_dark_controls.up,
     down: migration_20261028_115541_drop_dark_controls.down,
-    name: '20261028_115541_drop_dark_controls'
+    name: '20261028_115541_drop_dark_controls',
+  },
+  {
+    up: migration_20261028_130559_project_status.up,
+    down: migration_20261028_130559_project_status.down,
+    name: '20261028_130559_project_status'
   },
 ];
