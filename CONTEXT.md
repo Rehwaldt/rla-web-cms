@@ -36,7 +36,9 @@ labels use these words so that one concept never gets two German names.
 - **News category** (de: *News-Kategorie*): what a news item is about (competition, people, project
   update, …). Editors add their own; a news item can have several.
 - **Award** (de: *Auszeichnung*): prize received, with year and optional month.
-- **Publication** (de: *Publikation*): a book, or a piece published in a journal or in a book.
+- **Publication** (de: *Publikation*): a book, or an article published in a journal or in a book.
+  For an article, that journal or book is where it was **published in** (de: *Erschienen in*),
+  with a title and subtitle of its own; journals and books aren't told apart.
 - **Job** (de: *Stellenangebot*): open position at an office.
 - **Page** (de: *Seite*): stand-alone website page (office profile, contact, imprint, …) fetched
   by its **key** (de: *Seitenschlüssel*). A page can carry a **timeline** (de: *Zeitleiste*):

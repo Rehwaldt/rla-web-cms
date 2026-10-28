@@ -126,15 +126,14 @@ describe('planPublications', () => {
     return { ...h, result: planPublications(h.ctx) }
   }
 
-  it('maps articles with their book as book title', () => {
+  it('maps articles with their book as where they were published', () => {
     const [article] = plan().result.docs
     expect(article).toMatchObject({
       status: 'published',
       data: {
         title: 'Article',
         subtitle: 'Sub',
-        bookTitle: 'Book',
-        bookSubtitle: 'Book sub',
+        publishedIn: { title: 'Book', subtitle: 'Book sub' },
         category: ref('publication-categories', 2),
         file: ref('media', 'filename:a.pdf'),
         projects: [ref('projects', 7)],
@@ -147,7 +146,7 @@ describe('planPublications', () => {
     const book = result.docs[1]
     expect(book.status).toBe('draft')
     expect(book.data).toMatchObject({ title: 'Book', subtitle: 'S2' })
-    expect(book.data).not.toHaveProperty('bookTitle')
+    expect(book.data).toMatchObject({ publishedIn: { title: null, subtitle: null } })
     expect(issues('Book publication with two subtitles (book subtitle kept)')).toEqual(['publication 2'])
   })
 

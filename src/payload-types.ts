@@ -792,9 +792,10 @@ export interface Publication {
   title?: string | null;
   subtitle?: string | null;
   authors?: string | null;
-  journal?: string | null;
-  bookTitle?: string | null;
-  bookSubtitle?: string | null;
+  publishedIn?: {
+    title?: string | null;
+    subtitle?: string | null;
+  };
   editors?: string | null;
   publisher?: string | null;
   year?: number | null;
@@ -1597,9 +1598,12 @@ export interface PublicationsSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
   authors?: T;
-  journal?: T;
-  bookTitle?: T;
-  bookSubtitle?: T;
+  publishedIn?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+      };
   editors?: T;
   publisher?: T;
   year?: T;

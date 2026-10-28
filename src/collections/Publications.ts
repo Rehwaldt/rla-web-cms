@@ -5,8 +5,8 @@ import { visibleInField } from '@/fields/visibleIn'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
 
-// A publication is either a stand-alone book (title = book title) or a piece that appeared in a
-// journal or in a book (title = article/chapter, plus the journal or book fields).
+// A publication is either a stand-alone book (title = book title) or an article that appeared in
+// a journal or in a book (title = article/chapter, plus that journal or book in publishedIn).
 export const Publications: CollectionConfig = {
   slug: 'publications',
   labels: {
@@ -42,27 +42,28 @@ export const Publications: CollectionConfig = {
       label: { en: 'Published in', de: 'Erschienen in' },
       fields: [
         {
-          name: 'journal',
-          label: { en: 'Journal', de: 'Zeitschrift' },
-          type: 'text',
-          localized: true,
-        },
-        {
-          type: 'row',
+          name: 'publishedIn',
+          label: { en: 'Journal or book', de: 'Zeitschrift oder Buch' },
+          type: 'group',
           fields: [
             {
-              name: 'bookTitle',
-              label: { en: 'Book title', de: 'Buchtitel' },
-              type: 'text',
-              localized: true,
-              admin: { width: '50%' },
-            },
-            {
-              name: 'bookSubtitle',
-              label: { en: 'Book subtitle', de: 'Untertitel des Buchs' },
-              type: 'text',
-              localized: true,
-              admin: { width: '50%' },
+              type: 'row',
+              fields: [
+                {
+                  name: 'title',
+                  label: { en: 'Title', de: 'Titel' },
+                  type: 'text',
+                  localized: true,
+                  admin: { width: '50%' },
+                },
+                {
+                  name: 'subtitle',
+                  label: { en: 'Subtitle', de: 'Untertitel' },
+                  type: 'text',
+                  localized: true,
+                  admin: { width: '50%' },
+                },
+              ],
             },
           ],
         },

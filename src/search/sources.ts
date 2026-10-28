@@ -58,16 +58,19 @@ export const SEARCH_SOURCES = {
   },
   publications: {
     listed: true,
-    select: ['title', 'subtitle', 'bookTitle', 'bookSubtitle', 'authors', 'image', 'category'],
-    // books keep their title in bookTitle, as on the publications page
-    fields: (doc) => ({
-      ...nothing,
-      title: text(doc.title) || text(doc.bookTitle),
-      secondary: text(doc.authors),
-      body: text(doc.subtitle) || text(doc.bookSubtitle),
-      image: idOf(doc.image),
-      category: idOf(doc.category),
-    }),
+    select: ['title', 'subtitle', 'publishedIn', 'authors', 'image', 'category'],
+    // the journal or book an article appeared in finds the article too
+    fields: (doc) => {
+      const publishedIn = (doc.publishedIn ?? {}) as Record<string, unknown>
+      return {
+        ...nothing,
+        title: text(doc.title),
+        secondary: text(doc.authors),
+        body: [text(doc.subtitle), text(publishedIn.title), text(publishedIn.subtitle)].filter(Boolean).join(' '),
+        image: idOf(doc.image),
+        category: idOf(doc.category),
+      }
+    },
   },
   awards: {
     listed: true,

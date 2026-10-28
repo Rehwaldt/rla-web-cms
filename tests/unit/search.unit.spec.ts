@@ -100,9 +100,9 @@ describe('entriesFor', () => {
     expect(entriesFor('topics', { de: topic, zh: topic }).map((entry) => entry.language)).toEqual(['de', 'zh'])
   })
 
-  it('takes a book’s title and subtitle when the publication has none', () => {
-    const book = { id: 2, _status: 'published', visibleIn: ['de'], title: null, bookTitle: 'Das Buch', bookSubtitle: 'Teil 1', authors: 'A. B.', category: { id: 4 } }
-    expect(entriesFor('publications', { de: book })[0]).toMatchObject({ title: 'Das Buch', body: 'Teil 1', secondary: 'A. B.', category: 4 })
+  it('finds an article by the journal or book it appeared in', () => {
+    const article = { id: 2, _status: 'published', visibleIn: ['de'], title: 'Der Artikel', subtitle: 'Teil 1', publishedIn: { title: 'Das Buch', subtitle: null }, authors: 'A. B.', category: { id: 4 } }
+    expect(entriesFor('publications', { de: article })[0]).toMatchObject({ title: 'Der Artikel', body: 'Teil 1 Das Buch', secondary: 'A. B.', category: 4 })
   })
 
   it('pictures news with the preview image, else the hero image, else the first of the gallery', () => {

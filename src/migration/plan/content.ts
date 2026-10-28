@@ -211,9 +211,11 @@ export function planPublications(ctx: PlanContext): { docs: DocPlan[]; pdfs: Doc
           title: article ?? book,
           subtitle: article ? articleSubtitle : (bookSubtitle ?? articleSubtitle),
           authors: text('autor'),
-          journal: text('zeitschrift'),
-          bookTitle: article ? book : null,
-          bookSubtitle: article ? bookSubtitle : null,
+          // an article's journal or book; both kept, should a row name both
+          publishedIn: {
+            title: [text('zeitschrift'), article ? book : null].filter(Boolean).join(', ') || null,
+            subtitle: article ? bookSubtitle : null,
+          },
           editors: text('hrsg'),
           publisher: text('verlag'),
         },
