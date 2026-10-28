@@ -19,6 +19,7 @@ import * as migration_20261028_132908_drop_ongoing from './20261028_132908_drop_
 import * as migration_20261028_140538_published_in from './20261028_140538_published_in';
 import * as migration_20261028_140604_drop_journal_and_book from './20261028_140604_drop_journal_and_book';
 import * as migration_20261028_154216_employee_names from './20261028_154216_employee_names';
+import * as migration_20261028_161714_page_timeline_into_content from './20261028_161714_page_timeline_into_content';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20261028_154216_employee_names.up,
     down: migration_20261028_154216_employee_names.down,
-    name: '20261028_154216_employee_names'
+    name: '20261028_154216_employee_names',
+  },
+  {
+    up: migration_20261028_161714_page_timeline_into_content.up,
+    down: migration_20261028_161714_page_timeline_into_content.down,
+    name: '20261028_161714_page_timeline_into_content'
   },
 ];
