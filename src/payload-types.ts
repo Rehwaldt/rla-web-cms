@@ -165,9 +165,6 @@ export interface UserAuthOperations {
  */
 export interface Project {
   id: number;
-  /**
-   * Short code shared across RLA systems and used in website URLs.
-   */
   code?: string | null;
   name?: string | null;
   codeAndName?: string | null;
@@ -735,10 +732,10 @@ export interface Excursion {
 export interface Award {
   id: number;
   name?: string | null;
+  image?: (number | null) | Media;
   issuer?: string | null;
   year: number;
   month?: number | null;
-  image?: (number | null) | Media;
   description?: {
     root: {
       type: string;
@@ -1568,10 +1565,10 @@ export interface TopicsSelect<T extends boolean = true> {
  */
 export interface AwardsSelect<T extends boolean = true> {
   name?: T;
+  image?: T;
   issuer?: T;
   year?: T;
   month?: T;
-  image?: T;
   description?: T;
   descriptionHtml?: T;
   links?:

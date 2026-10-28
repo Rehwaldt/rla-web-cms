@@ -24,6 +24,7 @@ export const Awards: CollectionConfig = {
   versions: { drafts: true },
   fields: [
     { name: 'name', label: { en: 'Name', de: 'Name' }, type: 'text', localized: true },
+    { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
     { name: 'issuer', label: { en: 'Issuer', de: 'Verliehen von' }, type: 'text', localized: true },
     {
       type: 'row',
@@ -33,7 +34,7 @@ export const Awards: CollectionConfig = {
           label: { en: 'Year', de: 'Jahr' },
           type: 'number',
           required: true,
-          admin: { width: '25%' },
+          admin: { width: '50%' },
         },
         {
           name: 'month',
@@ -41,13 +42,6 @@ export const Awards: CollectionConfig = {
           type: 'number',
           min: 1,
           max: 12,
-          admin: { width: '25%' },
-        },
-        {
-          name: 'image',
-          label: { en: 'Image', de: 'Bild' },
-          type: 'upload',
-          relationTo: 'media',
           admin: { width: '50%' },
         },
       ],

@@ -37,13 +37,7 @@ export const Projects: CollectionConfig = {
           type: 'text',
           unique: true,
           index: true,
-          admin: {
-            width: '200px',
-            description: {
-              en: 'Short code shared across RLA systems and used in website URLs.',
-              de: 'Wird von allen RLA-Systemen gemeinsam genutzt und steht in den URLs der Website.',
-            },
-          },
+          admin: { width: '100px' },
         },
         {
           name: 'name',

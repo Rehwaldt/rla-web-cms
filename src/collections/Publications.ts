@@ -58,7 +58,7 @@ export const Publications: CollectionConfig = {
                 },
                 {
                   name: 'subtitle',
-                  label: { en: 'Subtitle', de: 'Untertitel' },
+                  label: { en: 'Subtitle/Edition', de: 'Untertitel/Ausgabe' },
                   type: 'text',
                   localized: true,
                   admin: { width: '50%' },
