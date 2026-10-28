@@ -31,15 +31,8 @@ export const Projects: CollectionConfig = {
       type: 'row',
       fields: [
         {
-          name: 'name',
-          label: { en: 'Name', de: 'Name' },
-          type: 'text',
-          localized: true,
-          admin: { width: '70%' },
-        },
-        {
           name: 'code',
-          label: { en: 'Project code', de: 'Projektkürzel' },
+          label: { en: 'Project Code', de: 'Projektkürzel' },
           type: 'text',
           unique: true,
           index: true,
@@ -50,6 +43,13 @@ export const Projects: CollectionConfig = {
               de: 'Wird von allen RLA-Systemen gemeinsam genutzt und steht in den URLs der Website.',
             },
           },
+        },
+        {
+          name: 'name',
+          label: { en: 'Name', de: 'Name' },
+          type: 'text',
+          localized: true,
+          admin: { width: '70%' },
         },
       ],
     },
@@ -64,39 +64,28 @@ export const Projects: CollectionConfig = {
               type: 'row',
               fields: [
                 {
-                  name: 'type',
-                  label: { en: 'Project type', de: 'Projektart' },
-                  type: 'select',
-                  options: [
-                    { label: { en: 'Competition', de: 'Wettbewerb' }, value: 'competition' },
-                    { label: { en: 'Object planning', de: 'Objektplanung' }, value: 'object' },
-                    { label: { en: 'Concept', de: 'Konzept' }, value: 'concept' },
-                  ],
-                  admin: { width: '34%' },
-                },
-                {
-                  name: 'ongoing',
-                  label: { en: 'Ongoing', de: 'Laufend' },
-                  type: 'checkbox',
+                  name: 'heroImage',
+                  label: { en: 'Hero image', de: 'Titelbild' },
+                  type: 'upload',
+                  relationTo: 'media',
                   admin: {
-                    width: '33%',
+                    width: '50%',
                     description: {
-                      en: 'Still in planning or under construction.',
-                      de: 'Noch in Planung oder im Bau.',
+                      en: 'Large image at the top of the project page.',
+                      de: 'Großes Bild oben auf der Projektseite.',
                     },
                   },
                 },
                 {
-                  name: 'completionYear',
-                  label: { en: 'Completion year', de: 'Fertigstellungsjahr' },
-                  type: 'number',
-                  min: 1950,
-                  max: 2200,
+                  name: 'previewImage',
+                  label: { en: 'Preview image', de: 'Vorschaubild' },
+                  type: 'upload',
+                  relationTo: 'media',
                   admin: {
-                    width: '33%',
+                    width: '50%',
                     description: {
-                      en: 'The planned year while the project is ongoing.',
-                      de: 'Bei laufenden Projekten das geplante Jahr.',
+                      en: 'Tile image in listings and galleries.',
+                      de: 'Kachelbild in Listen und Galerien.',
                     },
                   },
                 },
@@ -127,36 +116,6 @@ export const Projects: CollectionConfig = {
                 },
               },
             ),
-            {
-              name: 'categories',
-              label: { en: 'Categories', de: 'Kategorien' },
-              type: 'relationship',
-              relationTo: 'project-categories',
-              hasMany: true,
-              validate: childrenOnly('project-categories'),
-              admin: { components: { Field: '@/components/cms/CategoryPicker#CategoryPicker' } },
-            },
-            {
-              name: 'similarProjects',
-              label: { en: 'Similar projects', de: 'Ähnliche Projekte' },
-              type: 'relationship',
-              relationTo: 'projects',
-              hasMany: true,
-              filterOptions: ({ id }) => ({ id: { not_equals: id } }),
-              admin: {
-                description: {
-                  en: 'Similarity is symmetric: projects listing this one appear under "Listed as similar by".',
-                  de: 'Ähnlichkeit gilt in beide Richtungen: Projekte, die dieses hier aufführen, erscheinen unter „Als ähnlich verknüpft von“.',
-                },
-              },
-            },
-            {
-              name: 'listedAsSimilarBy',
-              label: { en: 'Listed as similar by', de: 'Als ähnlich verknüpft von' },
-              type: 'join',
-              collection: 'projects',
-              on: 'similarProjects',
-            },
           ],
         },
         {
@@ -166,12 +125,54 @@ export const Projects: CollectionConfig = {
               type: 'row',
               fields: [
                 {
+                  name: 'type',
+                  label: { en: 'Project type', de: 'Projektart' },
+                  type: 'select',
+                  options: [
+                    { label: { en: 'Competition', de: 'Wettbewerb' }, value: 'competition' },
+                    { label: { en: 'Object planning', de: 'Objektplanung' }, value: 'object' },
+                    { label: { en: 'Concept', de: 'Konzept' }, value: 'concept' },
+                  ],
+                  admin: { width: '35%' },
+                },
+                {
+                  name: 'completionYear',
+                  label: { en: 'Completion year', de: 'Fertigstellungsjahr' },
+                  type: 'number',
+                  min: 1950,
+                  max: 2200,
+                  admin: {
+                    width: '35%',
+                    description: {
+                      en: 'The planned year while the project is ongoing.',
+                      de: 'Bei laufenden Projekten das geplante Jahr.',
+                    },
+                  },
+                },
+                {
+                  name: 'ongoing',
+                  label: { en: 'Ongoing', de: 'Laufend' },
+                  type: 'checkbox',
+                  admin: {
+                    width: '30%',
+                    description: {
+                      en: 'Still in planning or under construction.',
+                      de: 'Noch in Planung oder im Bau.',
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
                   name: 'place',
                   label: { en: 'Place', de: 'Ort' },
                   type: 'text',
                   localized: true,
                   admin: {
-                    width: '40%',
+                    width: '25%',
                     description: {
                       en: 'Display location, usually the city.',
                       de: 'Angezeigter Ort, meist die Stadt.',
@@ -184,14 +185,21 @@ export const Projects: CollectionConfig = {
                   type: 'text',
                   localized: true,
                   admin: {
-                    width: '30%',
+                    width: '25%',
                     description: {
                       en: 'Optional state or province, shown instead of the country.',
                       de: 'Optionales Bundesland oder optionale Provinz, wird statt des Landes angezeigt.',
                     },
                   },
                 },
-                countryField({ admin: { width: '30%' } }),
+                countryField({ admin: { width: '25%' } }),
+                {
+                  name: 'area',
+                  label: { en: 'Area', de: 'Fläche' },
+                  type: 'number',
+                  min: 0,
+                  admin: { width: '25%', description: { en: 'In hectares.', de: 'In Hektar.' } },
+                },
               ],
             },
             {
@@ -202,33 +210,21 @@ export const Projects: CollectionConfig = {
                   label: { en: 'Client', de: 'Auftraggeber' },
                   type: 'text',
                   localized: true,
-                  admin: { width: '50%' },
+                  admin: { width: '34%' },
                 },
                 {
                   name: 'architect',
                   label: { en: 'Architect', de: 'Architektur' },
                   type: 'text',
                   localized: true,
-                  admin: { width: '50%' },
+                  admin: { width: '33%' },
                 },
-              ],
-            },
-            {
-              type: 'row',
-              fields: [
                 {
                   name: 'planningPartners',
                   label: { en: 'Planning partners', de: 'Planungspartner' },
                   type: 'text',
                   localized: true,
-                  admin: { width: '70%' },
-                },
-                {
-                  name: 'area',
-                  label: { en: 'Area', de: 'Fläche' },
-                  type: 'number',
-                  min: 0,
-                  admin: { width: '30%', description: { en: 'In hectares.', de: 'In Hektar.' } },
+                  admin: { width: '33%' },
                 },
               ],
             },
@@ -287,42 +283,41 @@ export const Projects: CollectionConfig = {
                 },
               ],
             },
+            {
+              name: 'categories',
+              label: { en: 'Categories', de: 'Kategorien' },
+              type: 'relationship',
+              relationTo: 'project-categories',
+              hasMany: true,
+              validate: childrenOnly('project-categories'),
+              admin: { components: { Field: '@/components/cms/CategoryPicker#CategoryPicker' } },
+            },
+            {
+              name: 'similarProjects',
+              label: { en: 'Similar projects', de: 'Ähnliche Projekte' },
+              type: 'relationship',
+              relationTo: 'projects',
+              hasMany: true,
+              filterOptions: ({ id }) => ({ id: { not_equals: id } }),
+              admin: {
+                description: {
+                  en: 'Similarity is symmetric: projects listing this one appear under "Listed as similar by".',
+                  de: 'Ähnlichkeit gilt in beide Richtungen: Projekte, die dieses hier aufführen, erscheinen unter „Als ähnlich verknüpft von“.',
+                },
+              },
+            },
+            {
+              name: 'listedAsSimilarBy',
+              label: { en: 'Listed as similar by', de: 'Als ähnlich verknüpft von' },
+              type: 'join',
+              collection: 'projects',
+              on: 'similarProjects',
+            },
           ],
         },
         {
-          label: { en: 'Media', de: 'Medien' },
+          label: { en: 'Flow', de: 'Flow' },
           fields: [
-            {
-              type: 'row',
-              fields: [
-                {
-                  name: 'heroImage',
-                  label: { en: 'Hero image', de: 'Titelbild' },
-                  type: 'upload',
-                  relationTo: 'media',
-                  admin: {
-                    width: '50%',
-                    description: {
-                      en: 'Large image at the top of the project page.',
-                      de: 'Großes Bild oben auf der Projektseite.',
-                    },
-                  },
-                },
-                {
-                  name: 'previewImage',
-                  label: { en: 'Preview image', de: 'Vorschaubild' },
-                  type: 'upload',
-                  relationTo: 'media',
-                  admin: {
-                    width: '50%',
-                    description: {
-                      en: 'Tile image in listings and galleries.',
-                      de: 'Kachelbild in Listen und Galerien.',
-                    },
-                  },
-                },
-              ],
-            },
             {
               name: 'darkControls',
               label: { en: 'Dark controls', de: 'Dunkle Buttons' },

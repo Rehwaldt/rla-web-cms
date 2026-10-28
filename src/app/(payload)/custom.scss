@@ -17,6 +17,10 @@
   height: 64px;
 }
 
+.field-type.row .row__fields > .field-type.checkbox {
+  justify-content: center;
+}
+
 // Workspace switcher (src/components/cms/Workspaces). On desktop it sits in the navigation's top
 // bar, right of the collapse button (which spans the first --gutter-h); the navigation is
 // position: sticky, so it stays put while the links scroll. On phones it heads the link list.
