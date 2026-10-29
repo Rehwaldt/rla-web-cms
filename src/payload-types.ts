@@ -849,7 +849,6 @@ export interface Employee {
    * Not public. Empty while the person works here.
    */
   exitDate?: string | null;
-  joinedYear?: number | null;
   entryYear?: number | null;
   academicTitle?: string | null;
   university?: string | null;
@@ -1643,7 +1642,6 @@ export interface EmployeesSelect<T extends boolean = true> {
   office?: T;
   entryDate?: T;
   exitDate?: T;
-  joinedYear?: T;
   entryYear?: T;
   academicTitle?: T;
   university?: T;

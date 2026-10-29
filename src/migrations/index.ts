@@ -22,6 +22,7 @@ import * as migration_20261028_154216_employee_names from './20261028_154216_emp
 import * as migration_20261028_161714_page_timeline_into_content from './20261028_161714_page_timeline_into_content';
 import * as migration_20261028_162950_drop_page_timeline from './20261028_162950_drop_page_timeline';
 import * as migration_20261029_102100_employee_dates from './20261029_102100_employee_dates';
+import * as migration_20261029_111720_drop_joined_year from './20261029_111720_drop_joined_year';
 
 export const migrations = [
   {
@@ -142,6 +143,11 @@ export const migrations = [
   {
     up: migration_20261029_102100_employee_dates.up,
     down: migration_20261029_102100_employee_dates.down,
-    name: '20261029_102100_employee_dates'
+    name: '20261029_102100_employee_dates',
+  },
+  {
+    up: migration_20261029_111720_drop_joined_year.up,
+    down: migration_20261029_111720_drop_joined_year.down,
+    name: '20261029_111720_drop_joined_year'
   },
 ];

@@ -140,21 +140,6 @@ export const Employees: CollectionConfig = {
                 },
               ],
             },
-            {
-              // Replaced by entryDate and kept in step with it; goes once the website reads entryYear.
-              name: 'joinedYear',
-              label: { en: 'Year joined', de: 'Eintrittsjahr' },
-              type: 'number',
-              admin: { hidden: true },
-              hooks: {
-                beforeChange: [
-                  ({ siblingData }) =>
-                    siblingData?.entryDate
-                      ? new Date(siblingData.entryDate).getUTCFullYear()
-                      : null,
-                ],
-              },
-            },
             // Public stand-in for the entry date, set by the beforeRead hook above.
             {
               name: 'entryYear',
