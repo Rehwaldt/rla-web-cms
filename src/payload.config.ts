@@ -17,7 +17,7 @@ import { Media } from './collections/Media'
 
 import { Projects } from './collections/projects/Projects'
 import { ProjectCategories } from './collections/projects/ProjectCategories'
-import { Topics } from './collections/projects/Topics'
+import { Topics } from './collections/Topics'
 
 import { News } from './collections/News'
 import { NewsCategories } from './collections/NewsCategories'
