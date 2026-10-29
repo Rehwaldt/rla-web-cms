@@ -50,6 +50,7 @@ async function readCms(cms: Cms) {
       qualifications: ((doc.qualifications as Doc[]) ?? []).flatMap((entry) => text(entry.name) ?? []),
       degree: [text(doc.profession), text(doc.university)].filter(Boolean).join(', ') || null,
       exitDate: text(doc.exitDate),
+      archived: doc.archived === true,
     }
   })
   return { cmsGroups, cmsPeople }

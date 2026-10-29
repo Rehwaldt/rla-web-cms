@@ -28,16 +28,18 @@ export const Employees: CollectionConfig = {
   },
   access: { read: publishedOrAuthenticated },
   versions: { drafts: true },
-  // The beforeRead hook needs the dates even when a request selects other fields.
-  forceSelect: { entryDate: true, exitDate: true },
+  // The beforeRead hook needs these even when a request selects other fields.
+  forceSelect: { entryDate: true, exitDate: true, archived: true },
   hooks: {
     // Runs before field access strips the dates from anonymous reads, so the website still gets
     // what it needs from them. The day pickers store noon UTC, so the UTC date is the picked day.
+    // Someone works here until archived or until the exit date (employeeListFilter agrees).
     beforeRead: [
       ({ doc }) => {
         const today = new Date().toISOString().slice(0, 10)
         doc.entryYear = doc.entryDate ? new Date(doc.entryDate).getUTCFullYear() : null
-        doc.active = !doc.exitDate || new Date(doc.exitDate).toISOString().slice(0, 10) >= today
+        doc.active =
+          !doc.archived && (!doc.exitDate || new Date(doc.exitDate).toISOString().slice(0, 10) >= today)
         return doc
       },
     ],
@@ -303,6 +305,19 @@ export const Employees: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'archived',
+      label: { en: 'Archived', de: 'Archiviert' },
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'No longer works here, also when the exit date is unknown. Left out of the list and the website.',
+          de: 'Arbeitet nicht mehr hier, auch wenn das Austrittsdatum unbekannt ist. Fehlt in der Liste und auf der Website.',
+        },
+      },
+    },
     legacyIdField,
     intranetIdField,
     {
@@ -314,8 +329,8 @@ export const Employees: CollectionConfig = {
         position: 'sidebar',
         readOnly: true,
         description: {
-          en: 'Until the exit date.',
-          de: 'Bis zum Austrittsdatum.',
+          en: 'Until archived or the exit date.',
+          de: 'Bis zur Archivierung oder zum Austrittsdatum.',
         },
       },
     },

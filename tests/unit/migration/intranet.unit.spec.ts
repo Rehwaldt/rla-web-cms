@@ -41,6 +41,7 @@ const employee = (overrides: Partial<CmsPerson> = {}): CmsPerson => ({
   qualifications: [],
   degree: null,
   exitDate: null,
+  archived: false,
   ...overrides,
 })
 
@@ -156,16 +157,21 @@ describe('planIntranet: employees', () => {
       { external: [911, 999] },
     )
     expect(creates).toEqual([
-      { intranetId: 910, data: { firstName: 'Jana', lastName: 'Doe', external: false }, groups: [4], qualifications: ['Gutachterin'] },
+      {
+        intranetId: 910,
+        data: { firstName: 'Jana', lastName: 'Doe', external: false, archived: true },
+        groups: [4],
+        qualifications: ['Gutachterin'],
+      },
       {
         intranetId: 911,
-        data: { firstName: 'Ole', lastName: 'Frei', email: 'ole@rehwaldt.de', mobilePhone: '0170 1', external: true },
+        data: { firstName: 'Ole', lastName: 'Frei', email: 'ole@rehwaldt.de', mobilePhone: '0170 1', external: true, archived: false },
         groups: [5, 6],
         qualifications: [],
       },
     ])
     expect(issues('Created as external draft')).toEqual(['Ole Frei (intranet 911)'])
-    expect(issues('Retired, created without an exit date (add it by hand)')).toEqual(['Jana Doe (intranet 910, retired)'])
+    expect(issues('Retired, created archived (no exit date)')).toEqual(['Jana Doe (intranet 910, retired)'])
     expect(issues('External with an unknown intranet id')).toEqual(['999'])
   })
 
@@ -201,8 +207,19 @@ describe('planIntranet: employees', () => {
       ],
     )
     expect(issues('Portrait only in the intranet')).toHaveLength(1)
-    expect(issues('Retired in the intranet, no exit date in the CMS')).toHaveLength(1)
+    expect(issues('Retired in the intranet, but published (archive by hand?)')).toHaveLength(1)
     expect(issues('Not retired in the intranet, but the exit date has passed')).toHaveLength(1)
+  })
+
+  it('archives retired drafts without an exit date, not published ones', () => {
+    const { employees } = plan(
+      [person({ intranetId: 900, groups: [], retired: true }), person({ intranetId: 901, groups: [], retired: true, email: 'b@rehwaldt.de' })],
+      [
+        employee({ intranetId: 900, status: 'draft' }),
+        employee({ id: 2, intranetId: 901, email: 'b@rehwaldt.de', firstName: 'B' }),
+      ],
+    )
+    expect(employees).toEqual([{ id: 1, status: 'draft', data: { archived: true } }])
   })
 
   it('lists employees the intranet doesn’t have', () => {

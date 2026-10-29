@@ -890,6 +890,10 @@ export interface Employee {
    */
   external?: boolean | null;
   /**
+   * No longer works here, also when the exit date is unknown. Left out of the list and the website.
+   */
+  archived?: boolean | null;
+  /**
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
@@ -898,7 +902,7 @@ export interface Employee {
    */
   intranetId?: number | null;
   /**
-   * Until the exit date.
+   * Until archived or the exit date.
    */
   active?: boolean | null;
   updatedAt: string;
@@ -1716,6 +1720,7 @@ export interface EmployeesSelect<T extends boolean = true> {
   mobilePhone?: T;
   code?: T;
   external?: T;
+  archived?: T;
   legacyId?: T;
   intranetId?: T;
   active?: T;

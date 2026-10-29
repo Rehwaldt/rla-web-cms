@@ -174,7 +174,8 @@ pnpm migrate:intranet --target https://cms.rehwaldt.de
   nobody else matched and without an intranet id).
 - The intranet is the source of the groups; certificates and mobile phones only fill what the CMS
   lacks. Name, degree, portrait and retirement are compared and reported.
-- People the CMS doesn't have become drafts (the intranet links them to projects).
+- People the CMS doesn't have become drafts (the intranet links them to projects). Retired
+  people without an exit date are archived (drafts only; published ones are just reported).
 - `migration/intranet-pairs.json` (gitignored):
   `{ "pairs": { "<employee id>": <intranet id> }, "skip": [<intranet id>], "external": [<intranet id>] }`;
   `external` marks people it creates who work with the office without being employed.

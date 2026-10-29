@@ -5,9 +5,10 @@ import type { IntranetGroup, IntranetPerson } from './source'
 // Plans the intranet import: the specialist groups as a tree (without the intranet's wrapping root
 // "Fachgruppen"), and per employee the groups, certificates, mobile phone and intranet id. The
 // intranet is the source of the groups; certificates and mobile phones only fill what the CMS
-// lacks. Name, degree, portrait and leaving are only compared and reported. People the CMS doesn't
-// have become drafts (the intranet links them to projects), marked external where the pairs file
-// says so. Pure apart from the report, so it's tested.
+// lacks. Retired people without an exit date are archived (drafts only). Name, degree, portrait and
+// leaving are otherwise only compared and reported. People the CMS doesn't have become drafts (the
+// intranet links them to projects), marked external where the pairs file says so. Pure apart from
+// the report, so it's tested.
 
 export type CmsGroup = { id: number; intranetId: number | null; name: string; parent: number | null }
 
@@ -25,6 +26,7 @@ export type CmsPerson = {
   qualifications: string[] // German list
   degree: string | null // profession and university, German
   exitDate: string | null
+  archived: boolean
 }
 
 export type IntranetPlan = {
@@ -35,13 +37,13 @@ export type IntranetPlan = {
   employees: {
     id: number
     status: CmsPerson['status']
-    data: { intranetId?: number; mobilePhone?: string }
+    data: { intranetId?: number; mobilePhone?: string; archived?: true }
     groups?: number[] // intranet ids
     qualifications?: string[] // German list
   }[]
   creates: {
     intranetId: number
-    data: { firstName: string; lastName: string; email?: string; mobilePhone?: string; external: boolean }
+    data: { firstName: string; lastName: string; email?: string; mobilePhone?: string; external: boolean; archived: boolean }
     groups: number[] // intranet ids
     qualifications: string[] // German list
   }[]
@@ -207,7 +209,14 @@ export function planIntranet(
     }
     if (person.hasPortrait && !employee.hasPortrait) report.add('Portrait only in the intranet', where)
     const exitDate = employee.exitDate?.slice(0, 10) ?? null
-    if (person.retired && !exitDate) report.add('Retired in the intranet, no exit date in the CMS', where)
+    // Retired without a known exit date: archived, so lists and the website leave them out. A
+    // published employee is only reported, as archiving would take them off the website.
+    if (person.retired && !exitDate && !employee.archived) {
+      if (employee.status === 'draft') {
+        update.data.archived = true
+        changes.push('archived')
+      } else report.add('Retired in the intranet, but published (archive by hand?)', where)
+    }
     if (person.retired === false && exitDate && exitDate < today) {
       report.add('Not retired in the intranet, but the exit date has passed', `${where}: ${exitDate}`)
     }
@@ -240,12 +249,13 @@ export function planIntranet(
         ...(person.email ? { email: person.email } : {}),
         ...(person.mobilePhone ? { mobilePhone: person.mobilePhone } : {}),
         external: isExternal,
+        archived: Boolean(person.retired),
       },
       groups: person.groups.filter((id) => !roots.has(id)),
       qualifications: person.certificates,
     })
     report.add(isExternal ? 'Created as external draft' : 'Created as draft', where)
-    if (person.retired) report.add('Retired, created without an exit date (add it by hand)', where)
+    if (person.retired) report.add('Retired, created archived (no exit date)', where)
     if (person.hasPortrait) report.add('Portrait only in the intranet', where)
   }
 }
