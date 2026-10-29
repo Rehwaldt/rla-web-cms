@@ -28,6 +28,7 @@ import { Jobs } from './collections/Jobs'
 import { Pages } from './collections/Pages'
 
 import { Employees } from './collections/Employees'
+import { Expertise } from './collections/Expertise'
 import { Offices } from './collections/Offices'
 
 import { Excursions } from './collections/Excursions'
@@ -82,6 +83,7 @@ export default buildConfig({
     Publications,
     PublicationCategories,
     Employees,
+    Expertise,
     Offices,
     Jobs,
     Mines,
@@ -121,7 +123,7 @@ export default buildConfig({
   sharp,
   plugins: [
     nestedDocsPlugin({
-      collections: ['project-categories'],
+      collections: ['project-categories', 'expertise'],
       generateLabel: (_docs, doc) => String(doc.name ?? ''),
     }),
   ],

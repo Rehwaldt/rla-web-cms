@@ -24,6 +24,7 @@ import * as migration_20261028_162950_drop_page_timeline from './20261028_162950
 import * as migration_20261029_102100_employee_dates from './20261029_102100_employee_dates';
 import * as migration_20261029_111720_drop_joined_year from './20261029_111720_drop_joined_year';
 import * as migration_20261029_134843_employee_code from './20261029_134843_employee_code';
+import * as migration_20261029_151659_expertise_and_qualifications from './20261029_151659_expertise_and_qualifications';
 
 export const migrations = [
   {
@@ -154,6 +155,11 @@ export const migrations = [
   {
     up: migration_20261029_134843_employee_code.up,
     down: migration_20261029_134843_employee_code.down,
-    name: '20261029_134843_employee_code'
+    name: '20261029_134843_employee_code',
+  },
+  {
+    up: migration_20261029_151659_expertise_and_qualifications.up,
+    down: migration_20261029_151659_expertise_and_qualifications.down,
+    name: '20261029_151659_expertise_and_qualifications'
   },
 ];

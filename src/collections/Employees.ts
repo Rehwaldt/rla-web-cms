@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { employeeListFilter } from '@/collections/employeeListFilter'
+import { intranetIdField } from '@/fields/intranetId'
 import { legacyIdField } from '@/fields/legacyId'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
@@ -146,6 +147,20 @@ export const Employees: CollectionConfig = {
                 },
               ],
             },
+            {
+              name: 'expertise',
+              label: { en: 'Specialist groups', de: 'Fachgruppen' },
+              type: 'relationship',
+              relationTo: 'expertise',
+              hasMany: true,
+              access: { read: authenticated },
+              admin: {
+                description: {
+                  en: 'What the person takes care of in the office. Not public.',
+                  de: 'Wofür die Person im Büro zuständig ist. Nicht öffentlich.',
+                },
+              },
+            },
             // Public stand-in for the entry date, set by the beforeRead hook above.
             {
               name: 'entryYear',
@@ -202,10 +217,37 @@ export const Employees: CollectionConfig = {
               },
             },
             {
+              // Replaced by qualifications; goes once the website reads them.
               name: 'qualification',
               label: { en: 'Qualification', de: 'Qualifikation' },
               type: 'text',
               localized: true,
+              admin: { hidden: true },
+            },
+            {
+              // Localized as a whole: each language lists the qualifications it shows.
+              name: 'qualifications',
+              label: { en: 'Qualifications', de: 'Qualifikationen' },
+              labels: {
+                singular: { en: 'Qualification', de: 'Qualifikation' },
+                plural: { en: 'Qualifications', de: 'Qualifikationen' },
+              },
+              type: 'array',
+              localized: true,
+              admin: {
+                description: {
+                  en: 'Certificates and further qualifications, one per entry.',
+                  de: 'Zertifikate und Zusatzqualifikationen, eine pro Eintrag.',
+                },
+              },
+              fields: [
+                {
+                  name: 'name',
+                  label: { en: 'Name', de: 'Bezeichnung' },
+                  type: 'text',
+                  required: true,
+                },
+              ],
             },
           ],
         },
@@ -230,7 +272,12 @@ export const Employees: CollectionConfig = {
                   name: 'mobilePhone',
                   label: { en: 'Mobile phone', de: 'Mobiltelefon' },
                   type: 'text',
-                  admin: { width: '50%', placeholder: '+49 351 1234567' },
+                  access: { read: authenticated },
+                  admin: {
+                    width: '50%',
+                    placeholder: '+49 351 1234567',
+                    description: { en: 'Not public.', de: 'Nicht öffentlich.' },
+                  },
                 },
               ],
             },
@@ -252,6 +299,7 @@ export const Employees: CollectionConfig = {
       },
     },
     legacyIdField,
+    intranetIdField,
     {
       name: 'active',
       label: { en: 'Works here', de: 'Arbeitet hier' },

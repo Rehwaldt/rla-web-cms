@@ -48,6 +48,12 @@ labels use these words so that one concept never gets two German names.
   works here. The admin's list leaves out former employees unless asked to show them.
 - **Code** (de: *Kürzel*): an employee's short code from WerkX (e.g. `TmHn`), unique across all
   offices.
+- **Specialist group** (de: *Fachgruppe*; collection `expertise`): something employees take care
+  of in the office, in a tree of subject areas (*Fachthemen*), planning phases (*Planen*) and office
+  services (*Service*). From the intranet; internal, not on the website.
+- **Qualification** (de: *Qualifikation*): a certificate or further qualification of an employee,
+  listed per language. A chamber authorization is a **chamber membership** (de:
+  *Kammermitgliedschaft*), not a qualification.
 - **Office** (de: *Büro*): an office location (Dresden, Berlin, Prague, Beijing, …).
 - **Excursion** (de: *Exkursion*): a trip of the office to visit built landscape architecture,
   e.g. "RLA Berlin" in September 2026, shown as a map with a timeline. Made of **days** (de:

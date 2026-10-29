@@ -78,6 +78,7 @@ export interface Config {
     publications: Publication;
     'publication-categories': PublicationCategory;
     employees: Employee;
+    expertise: Expertise;
     offices: Office;
     jobs: Job;
     mines: Mine;
@@ -107,6 +108,7 @@ export interface Config {
     publications: PublicationsSelect<false> | PublicationsSelect<true>;
     'publication-categories': PublicationCategoriesSelect<false> | PublicationCategoriesSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
+    expertise: ExpertiseSelect<false> | ExpertiseSelect<true>;
     offices: OfficesSelect<false> | OfficesSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
     mines: MinesSelect<false> | MinesSelect<true>;
@@ -849,6 +851,10 @@ export interface Employee {
    * Not public. Empty while the person works here.
    */
   exitDate?: string | null;
+  /**
+   * What the person takes care of in the office. Not public.
+   */
+  expertise?: (number | Expertise)[] | null;
   entryYear?: number | null;
   academicTitle?: string | null;
   university?: string | null;
@@ -861,8 +867,20 @@ export interface Employee {
    */
   chamberMembership?: string | null;
   qualification?: string | null;
+  /**
+   * Certificates and further qualifications, one per entry.
+   */
+  qualifications?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   email?: string | null;
   phone?: string | null;
+  /**
+   * Not public.
+   */
   mobilePhone?: string | null;
   /**
    * Short code from WerkX, e.g. "TmHn". Unique across all offices.
@@ -872,6 +890,10 @@ export interface Employee {
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
+  /**
+   * ID in the intranet (WordPress). Set by the intranet import.
+   */
+  intranetId?: number | null;
   /**
    * Until the exit date.
    */
@@ -970,6 +992,30 @@ export interface Office {
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expertise".
+ */
+export interface Expertise {
+  id: number;
+  _order?: string | null;
+  name?: string | null;
+  /**
+   * ID in the intranet (WordPress). Set by the intranet import.
+   */
+  intranetId?: number | null;
+  parent?: (number | null) | Expertise;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Expertise;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1252,6 +1298,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'employees';
         value: number | Employee;
+      } | null)
+    | ({
+        relationTo: 'expertise';
+        value: number | Expertise;
       } | null)
     | ({
         relationTo: 'offices';
@@ -1646,21 +1696,49 @@ export interface EmployeesSelect<T extends boolean = true> {
   office?: T;
   entryDate?: T;
   exitDate?: T;
+  expertise?: T;
   entryYear?: T;
   academicTitle?: T;
   university?: T;
   profession?: T;
   chamberMembership?: T;
   qualification?: T;
+  qualifications?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
   email?: T;
   phone?: T;
   mobilePhone?: T;
   code?: T;
   legacyId?: T;
+  intranetId?: T;
   active?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "expertise_select".
+ */
+export interface ExpertiseSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  intranetId?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,5 +1,5 @@
-import type { FieldAccess } from 'payload'
+import type { PayloadRequest } from 'payload'
 
-// For personal data the website must not see: only logged-in users read the field, and anonymous
-// queries can't filter by it either.
-export const authenticated: FieldAccess = ({ req }) => Boolean(req.user)
+// For internal or personal data the website must not see: only logged-in users read it, and
+// anonymous queries can't filter by it either. Works as collection and as field access.
+export const authenticated = ({ req }: { req: PayloadRequest }) => Boolean(req.user)
