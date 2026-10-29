@@ -290,6 +290,19 @@ export const Employees: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'external',
+      label: { en: 'External', de: 'Extern' },
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Works with the office regularly without being employed here, e.g. freelance.',
+          de: 'Arbeitet regelmäßig mit dem Büro, ohne hier angestellt zu sein, z. B. freiberuflich.',
+        },
+      },
+    },
     legacyIdField,
     intranetIdField,
     {

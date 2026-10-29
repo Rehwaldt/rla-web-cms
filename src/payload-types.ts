@@ -886,6 +886,10 @@ export interface Employee {
    */
   code?: string | null;
   /**
+   * Works with the office regularly without being employed here, e.g. freelance.
+   */
+  external?: boolean | null;
+  /**
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
@@ -1711,6 +1715,7 @@ export interface EmployeesSelect<T extends boolean = true> {
   phone?: T;
   mobilePhone?: T;
   code?: T;
+  external?: T;
   legacyId?: T;
   intranetId?: T;
   active?: T;
