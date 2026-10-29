@@ -157,3 +157,24 @@ set in the shell, never in `.env`. `WERKX_API_URL` defaults to `http://webserver
 - `migration/werkx-pairs.json` (gitignored) fixes what the rules get wrong:
   `{ "pairs": { "<employee id>": "<WerkX code>" }, "skip": ["<WerkX code>"] }`.
 - The report never contains a date of birth, only whether it was set or changed.
+
+## Intranet employee data (`intranet/`)
+
+A one-off import from the intranet (WordPress, `WP_BASE_URL`, public REST API): the specialist
+groups ("Fachgruppen", collection `expertise`, without the intranet's wrapping root) and per
+employee the groups, certificates (as German qualifications), mobile phone and intranet id. Runs
+and logs in like the WerkX import:
+
+```sh
+pnpm migrate:intranet --target http://localhost:3000 --dry-run
+pnpm migrate:intranet --target https://cms.rehwaldt.de
+```
+
+- Matches by intranet id, then the pairs file, then email, then name parts (among employees
+  nobody else matched and without an intranet id).
+- The intranet is the source of the groups; certificates and mobile phones only fill what the CMS
+  lacks. Name, degree, portrait and retirement are compared and reported.
+- People the CMS doesn't have become drafts (the intranet links them to projects).
+- `migration/intranet-pairs.json` (gitignored):
+  `{ "pairs": { "<employee id>": <intranet id> }, "skip": [<intranet id>], "external": [<intranet id>] }`;
+  `external` marks people it creates who work with the office without being employed.

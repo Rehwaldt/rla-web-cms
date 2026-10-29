@@ -61,6 +61,7 @@ reintroduce those sources here unless asked.
 - `pnpm migrate:werkx --target <CMS url> [--dry-run]`: one-off import of employee dates and codes
   from WerkX (done on production 2026-10-29). Writes over the target's REST API with a login set in
   the shell (`CMS_TOKEN` or `CMS_EMAIL`/`CMS_PASSWORD`); see `src/migration/README.md`.
+  `pnpm migrate:intranet` works the same way for the intranet's specialist groups and employee data.
 - Refreshing dev from production: full `pg_restore` of a fresh `backup.sh` dump into an emptied
   `public` schema (`--no-owner --no-privileges`), leaving out the PostGIS image's extras
   (`postgis_topology`, `postgis_tiger_geocoder`, `fuzzystrmatch`) via a TOC list. Dev then has the

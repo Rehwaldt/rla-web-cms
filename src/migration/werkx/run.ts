@@ -2,7 +2,7 @@ import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
 import { Report } from '../report'
-import { Cms } from './cms'
+import { Cms } from '../cms'
 import { planWerkx } from './plan'
 import { readWerkxPeople } from './source'
 

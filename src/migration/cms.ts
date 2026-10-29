@@ -1,8 +1,8 @@
-import type { CmsEmployee, EmployeeData } from './plan'
+import type { CmsEmployee, EmployeeData } from './werkx/plan'
 
-// The CMS as the WerkX import sees it: its REST API, logged in as an editor. Going through the API
-// (rather than the database) keeps hooks, access and version history, and works against the
-// production server from the office.
+// The CMS as the WerkX and intranet imports see it: its REST API, logged in as an editor. Going
+// through the API (rather than the database) keeps hooks, access and version history, and works
+// against the production server from the office.
 
 type Doc = Record<string, unknown>
 
@@ -38,7 +38,7 @@ export class Cms {
     return new Cms(base, body.token)
   }
 
-  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  async request<T>(method: string, path: string, body?: unknown): Promise<T> {
     const response = await fetch(`${this.url}/api/${path}`, {
       method,
       headers: { Authorization: `JWT ${this.token}`, 'Content-Type': 'application/json' },
@@ -57,17 +57,22 @@ export class Cms {
     return Object.fromEntries(docs.map((office) => [String(office.name), Number(office.id)]))
   }
 
+  // Ids of documents whose latest version is a draft: for a published document, unpublished changes
+  // an update would publish along with its own.
+  async latestDrafts(collection: string): Promise<Set<number>> {
+    const versions = await this.request<{ docs: Doc[] }>(
+      'GET',
+      `${collection}/versions?pagination=false&depth=0&where[latest][equals]=true`,
+    )
+    return new Set(
+      versions.docs.flatMap((version) => ((version.version as Doc)?._status === 'draft' ? [Number(version.parent)] : [])),
+    )
+  }
+
   async employees(): Promise<CmsEmployee[]> {
     const officeNames = Object.fromEntries(Object.entries(await this.offices()).map(([name, id]) => [id, name]))
     const { docs } = await this.request<{ docs: Doc[] }>('GET', 'employees?pagination=false&depth=0')
-    // Latest versions: a published employee whose latest version is a draft has unpublished changes.
-    const versions = await this.request<{ docs: Doc[] }>(
-      'GET',
-      'employees/versions?pagination=false&depth=0&where[latest][equals]=true',
-    )
-    const latestStatus = new Map(
-      versions.docs.map((version) => [Number(version.parent), (version.version as Doc)?._status]),
-    )
+    const latestDrafts = await this.latestDrafts('employees')
     const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
     return docs.map((doc) => {
       const status = doc._status === 'published' ? 'published' : 'draft'
@@ -82,7 +87,7 @@ export class Cms {
         exitDate: text(doc.exitDate),
         birthDate: text(doc.birthDate),
         status,
-        pendingDraft: status === 'published' && latestStatus.get(Number(doc.id)) === 'draft',
+        pendingDraft: status === 'published' && latestDrafts.has(Number(doc.id)),
       }
     })
   }
