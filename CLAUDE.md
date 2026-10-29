@@ -58,6 +58,13 @@ reintroduce those sources here unless asked.
   `pnpm migrate:website:verify [projectCode]` spot-checks the result. It ends by rebuilding the
   search index.
 - `pnpm search:reindex`: rebuilds the site search's index (below) from scratch.
+- `pnpm migrate:werkx --target <CMS url> [--dry-run]`: one-off import of employee dates and codes
+  from WerkX (done on production 2026-10-29). Writes over the target's REST API with a login set in
+  the shell (`CMS_TOKEN` or `CMS_EMAIL`/`CMS_PASSWORD`); see `src/migration/README.md`.
+- Refreshing dev from production: full `pg_restore` of a fresh `backup.sh` dump into an emptied
+  `public` schema (`--no-owner --no-privileges`), leaving out the PostGIS image's extras
+  (`postgis_topology`, `postgis_tiger_geocoder`, `fuzzystrmatch`) via a TOC list. Dev then has the
+  production users.
 
 ## Deployment
 
