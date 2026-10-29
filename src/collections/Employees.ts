@@ -217,14 +217,6 @@ export const Employees: CollectionConfig = {
               },
             },
             {
-              // Replaced by qualifications; goes once the website reads them.
-              name: 'qualification',
-              label: { en: 'Qualification', de: 'Qualifikation' },
-              type: 'text',
-              localized: true,
-              admin: { hidden: true },
-            },
-            {
               // Localized as a whole: each language lists the qualifications it shows.
               name: 'qualifications',
               label: { en: 'Qualifications', de: 'Qualifikationen' },

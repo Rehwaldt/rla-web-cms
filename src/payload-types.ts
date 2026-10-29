@@ -866,7 +866,6 @@ export interface Employee {
    * Membership in a chamber of architects.
    */
   chamberMembership?: string | null;
-  qualification?: string | null;
   /**
    * Certificates and further qualifications, one per entry.
    */
@@ -1702,7 +1701,6 @@ export interface EmployeesSelect<T extends boolean = true> {
   university?: T;
   profession?: T;
   chamberMembership?: T;
-  qualification?: T;
   qualifications?:
     | T
     | {
