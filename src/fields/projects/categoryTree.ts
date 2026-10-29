@@ -1,3 +1,5 @@
+import { idOf } from '@/fields/validation'
+
 // Arranges project categories like the website's project filter menu: top-level groups in their
 // menu column, each with its child categories. Used by the category picker on projects.
 
@@ -14,7 +16,6 @@ export type CategoryGroup = { id: CategoryId; name: string; children: { id: Cate
 
 const MENU_COLUMNS = ['1', '2', '3', '4']
 
-export const idOf = (ref: CategoryId | { id: CategoryId }) => String(typeof ref === 'object' ? ref.id : ref)
 
 /**
  * Columns of groups, in menu column order. `categories` must already be in display order (the

@@ -11,7 +11,8 @@ import {
   useTranslation,
 } from '@payloadcms/ui'
 import React, { useEffect, useMemo, useState } from 'react'
-import { buildCategoryColumns, type CategoryId, type CategoryNode, idOf, toggleCategory } from '@/fields/categoryTree'
+import { buildCategoryColumns, type CategoryId, type CategoryNode, toggleCategory } from '@/fields/projects/categoryTree'
+import { idOf } from '@/fields/validation'
 import { DEFAULT_LOCALE, LOCALE_CODES } from '@/locales'
 import type { TranslationKeys, Translations } from '@/i18n/translations'
 import './index.css'

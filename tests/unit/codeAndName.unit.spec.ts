@@ -1,6 +1,6 @@
 import type { FieldHook } from 'payload'
 import { describe, expect, it } from 'vitest'
-import { buildCodeAndName, codeAndNameField } from '@/fields/codeAndName'
+import { buildCodeAndName, codeAndNameField } from '@/fields/projects/codeAndName'
 
 describe('buildCodeAndName', () => {
   it('joins code and name in every locale', () => {

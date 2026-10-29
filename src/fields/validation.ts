@@ -1,6 +1,9 @@
 import type { CollectionSlug, RelationshipFieldManyValidation, TextFieldSingleValidation } from 'payload'
 import { DEFAULT_LOCALE } from '@/locales'
-import { idOf } from './categoryTree'
+
+// The id of a relationship value, populated or not.
+export const idOf = (ref: number | string | { id: number | string }) =>
+  String(typeof ref === 'object' ? ref.id : ref)
 
 // For localized fields that must exist in the default locale but may be empty in the others
 // (where the fallback applies). `required: true` on a localized field demands every locale.

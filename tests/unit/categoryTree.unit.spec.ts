@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { buildCategoryColumns, type CategoryNode, toggleCategory } from '@/fields/categoryTree'
+import { buildCategoryColumns, type CategoryNode, toggleCategory } from '@/fields/projects/categoryTree'
 import { childrenOnly } from '@/fields/validation'
 
 // In display order, as the collection's drag-and-drop order returns them.
