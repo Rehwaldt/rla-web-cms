@@ -495,11 +495,14 @@ export interface Topic {
     [k: string]: unknown;
   } | null;
   descriptionHtml?: string | null;
-  projects?: (number | Project)[] | null;
   /**
    * Grid of images, texts and references.
    */
   flow?: (FlowImageBlock | FlowTextBlock | FlowTopicReferenceBlock)[] | null;
+  /**
+   * In the order the topic page shows them.
+   */
+  projects?: (number | Project)[] | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
@@ -514,10 +517,6 @@ export interface Topic {
  */
 export interface Page {
   id: number;
-  /**
-   * Identifier the website uses to fetch this page, e.g. "office-profile".
-   */
-  key: string;
   title?: string | null;
   subtitle?: string | null;
   image?: (number | null) | Media;
@@ -553,6 +552,10 @@ export interface Page {
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
+  /**
+   * Identifier the website uses to fetch this page, e.g. "office-profile".
+   */
+  key: string;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -831,17 +834,25 @@ export interface Employee {
   firstName: string;
   lastName: string;
   chineseName?: string | null;
-  portrait?: (number | null) | Media;
-  academicTitle?: string | null;
-  university?: string | null;
   fullName?: string | null;
+  /**
+   * Not public.
+   */
+  birthDate?: string | null;
+  portrait?: (number | null) | Media;
   office?: (number | null) | Office;
   /**
-   * Year the person joined the office.
+   * Not public; the website shows the year only.
    */
+  entryDate?: string | null;
+  /**
+   * Not public. Empty while the person works here.
+   */
+  exitDate?: string | null;
   joinedYear?: number | null;
-  email?: string | null;
-  phone?: string | null;
+  entryYear?: number | null;
+  academicTitle?: string | null;
+  university?: string | null;
   /**
    * Degree and field, e.g. "M.Sc. Landscape Architecture".
    */
@@ -851,10 +862,17 @@ export interface Employee {
    */
   chamberMembership?: string | null;
   qualification?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  mobilePhone?: string | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
+  /**
+   * Until the exit date.
+   */
+  active?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1422,7 +1440,6 @@ export interface ProjectCategoriesSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
-  key?: T;
   title?: T;
   subtitle?: T;
   image?: T;
@@ -1438,6 +1455,7 @@ export interface PagesSelect<T extends boolean = true> {
   featuredNews?: T;
   featuredProjects?: T;
   legacyId?: T;
+  key?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1530,7 +1548,6 @@ export interface TopicsSelect<T extends boolean = true> {
   image?: T;
   description?: T;
   descriptionHtml?: T;
-  projects?: T;
   flow?:
     | T
     | {
@@ -1538,6 +1555,7 @@ export interface TopicsSelect<T extends boolean = true> {
         text?: T | FlowTextBlockSelect<T>;
         topicReference?: T | FlowTopicReferenceBlockSelect<T>;
       };
+  projects?: T;
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1619,18 +1637,24 @@ export interface EmployeesSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
   chineseName?: T;
+  fullName?: T;
+  birthDate?: T;
   portrait?: T;
+  office?: T;
+  entryDate?: T;
+  exitDate?: T;
+  joinedYear?: T;
+  entryYear?: T;
   academicTitle?: T;
   university?: T;
-  fullName?: T;
-  office?: T;
-  joinedYear?: T;
-  email?: T;
-  phone?: T;
   profession?: T;
   chamberMembership?: T;
   qualification?: T;
+  email?: T;
+  phone?: T;
+  mobilePhone?: T;
   legacyId?: T;
+  active?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

@@ -83,6 +83,7 @@ export function planEmployees(ctx: PlanContext): DocPlan[] {
     const legacyId = num(row, 'index')!
     const where = `employee ${legacyId}`
     const active = bool(row, 'aktiv')
+    const entryYear = num(row, 'bueroeintritt')
     const officeId = num(row, 'standort')
     if (officeId !== null && !officeIds.has(officeId)) ctx.report.add('Employee with an unknown office', where)
     const qualification = ctx.plainByLocale(row, 'quali', where)
@@ -111,7 +112,9 @@ export function planEmployees(ctx: PlanContext): DocPlan[] {
         academicTitle: ctx.plain(str(row, 'titel_de'), where),
         email: str(row, 'email'),
         phone: str(row, 'telefon'),
-        joinedYear: num(row, 'bueroeintritt'),
+        // The legacy table has the year only; 1 January stands in for the day (noon UTC, as the
+        // admin's day picker stores dates).
+        entryDate: entryYear ? `${entryYear}-01-01T12:00:00.000Z` : null,
         office: officeId !== null && officeIds.has(officeId) ? ref('offices', officeId) : null,
         // Former employees keep no portrait.
         portrait: active ? ctx.imageRef(num(row, 'bild'), `${where} portrait`) : null,

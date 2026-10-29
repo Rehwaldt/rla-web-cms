@@ -98,6 +98,8 @@ Reuse these instead of re-declaring the shapes:
 - `countryField()`: ISO 3166-1 alpha-2 country select.
 - `publishedOrAuthenticated` / `anyone`: read access. Anonymous requests (the website) only see
   published documents.
+- `authenticated` (field access): personal data only logged-in users read or query (employees'
+  dates). Derive what the website needs in a collection `beforeRead` hook, which still sees them.
 - `websitePreview(slug)` / `websiteGlobalPreview(slug)` (`src/websitePreview.ts`): the Preview
   button, linking the website's `/{lang}/go/{slug}/{id}` resolver. Give it to every collection the
   website shows; where a document lives there is the website's business (its `go.php`).
