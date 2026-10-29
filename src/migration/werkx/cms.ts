@@ -12,10 +12,19 @@ export class Cms {
     private readonly token: string,
   ) {}
 
-  // A token copied from the admin's `payload-token` cookie, or an email and password.
+  // A token copied from the admin's `payload-token` cookie, or an email and password. Checks that
+  // the CMS accepts it: a request it doesn't recognize would quietly read as a visitor, who sees
+  // published employees only, and the drafts would be created a second time.
   static async connect(url: string, auth: { token?: string; email?: string; password?: string }) {
-    const base = url.replace(/\/$/, '')
-    if (auth.token) return new Cms(base, auth.token)
+    const cms = await Cms.login(url.replace(/\/$/, ''), auth)
+    const { user } = await cms.request<{ user: { email?: string } | null }>('GET', 'users/me')
+    if (!user) throw new Error(`${cms.url} doesn't accept the login (token expired or copied incompletely?)`)
+    console.log(`Logged in to ${cms.url} as ${user.email}`)
+    return cms
+  }
+
+  private static async login(base: string, auth: { token?: string; email?: string; password?: string }) {
+    if (auth.token) return new Cms(base, auth.token.trim())
     if (!auth.email || !auth.password) throw new Error('Set CMS_TOKEN, or CMS_EMAIL and CMS_PASSWORD')
     const response = await fetch(`${base}/api/users/login`, {
       method: 'POST',

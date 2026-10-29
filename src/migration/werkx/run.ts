@@ -70,7 +70,8 @@ async function main() {
   console.log(`Report: ${file}`)
 }
 
+// exitCode rather than exit(): exiting with open fetch connections crashes Node on Windows.
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : error)
-  process.exit(1)
+  process.exitCode = 1
 })
