@@ -41,6 +41,7 @@ function plan(people: WerkxPerson[], employees: CmsEmployee[], options: Partial<
   const result = planWerkx(people, employees, report, {
     pairs: {},
     skip: [],
+    offices: ['Dresden', 'Berlin'],
     officeIds: { Dresden: 1, Berlin: 2 },
     today: '2026-10-29',
     adminUrl: (id) => `/admin/collections/employees/${id}`,
@@ -172,6 +173,17 @@ describe('planWerkx', () => {
     )
     expect(issues('Published, leaves the website (exit date passed)')).toHaveLength(1)
     expect(issues('Inactive in WerkX without an exit date')).toHaveLength(1)
+  })
+
+  it('takes no dates for someone now in an office WerkX doesn’t cover', () => {
+    // A stint in Dresden, then a move to Prague: WerkX's exit date ends the Dresden stint only.
+    const { updates, issues } = plan(
+      [person({ exitDate: '2018-02-09', active: false })],
+      [employee({ office: 'Prag' })],
+    )
+    expect(updates).toEqual([{ id: 1, status: 'published', data: { code: 'MxMn' } }])
+    expect(issues("Works in Prag, which WerkX doesn't cover (dates kept)")).toHaveLength(1)
+    expect(issues('Published, leaves the website (exit date passed)')).toEqual([])
   })
 
   it('reports differences in name, email and office without changing them', () => {

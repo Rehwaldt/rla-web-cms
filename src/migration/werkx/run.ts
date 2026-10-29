@@ -41,6 +41,7 @@ async function main() {
   const plan = planWerkx(people, employees, report, {
     pairs,
     skip,
+    offices: [...new Set(people.flatMap((person) => (person.location ? [person.location] : [])))],
     officeIds,
     today: new Date().toISOString().slice(0, 10),
     adminUrl: (id) => `${cms.url}/admin/collections/employees/${id}`,

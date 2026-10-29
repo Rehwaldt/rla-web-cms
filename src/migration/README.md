@@ -151,6 +151,8 @@ set in the shell, never in `.env`. `WERKX_API_URL` defaults to `http://webserver
 - WerkX wins on entry, exit and birth date and fills in the code; name, email and office are kept
   and differences reported. It never clears a date WerkX doesn't have, and skips employees with
   unpublished changes or another code.
+- Employees in an office WerkX doesn't cover (Prague, Beijing) only get their code: WerkX knows
+  just an earlier stint in Dresden or Berlin, whose exit date would take them off the website.
 - People only WerkX knows become drafts (first name = first word). Status is never changed.
 - `migration/werkx-pairs.json` (gitignored) fixes what the rules get wrong:
   `{ "pairs": { "<employee id>": "<WerkX code>" }, "skip": ["<WerkX code>"] }`.

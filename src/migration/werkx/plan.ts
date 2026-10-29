@@ -39,6 +39,7 @@ export type WerkxPlan = {
 export type PlanOptions = {
   pairs: Record<string, string> // CMS id → WerkX code, for people the rules can't match
   skip: string[] // WerkX codes to leave out, e.g. a second account of the same person
+  offices: string[] // names of the offices WerkX covers
   officeIds: Record<string, number> // office name → id
   today: string // YYYY-MM-DD
   adminUrl: (id: number) => string
@@ -65,13 +66,14 @@ export function planWerkx(
   people: WerkxPerson[],
   employees: CmsEmployee[],
   report: Report,
-  { pairs, skip, officeIds, today, adminUrl }: PlanOptions,
+  { pairs, skip, offices, officeIds, today, adminUrl }: PlanOptions,
 ): WerkxPlan {
   const plan: WerkxPlan = { updates: [], creates: [] }
   const label = (employee: CmsEmployee) =>
     `${employee.firstName} ${employee.lastName} (${employee.status}) ${adminUrl(employee.id)}`
   const werkxLabel = (person: WerkxPerson) => `${person.name} (${person.code})`
   const matchedIds = new Set<number>()
+  const werkxOffices = new Set(offices)
 
   for (const code of skip) {
     const person = people.find((candidate) => candidate.code === code)
@@ -157,6 +159,16 @@ export function planWerkx(
     const data: EmployeeData = {}
     const changes: string[] = []
     if (!employee.code) data.code = person.code
+    // Someone who moved to an office WerkX doesn't cover (Prague, Beijing) still works here; WerkX
+    // only knows the stint in its own office, so its dates would end the current one.
+    if (employee.office && !werkxOffices.has(employee.office)) {
+      report.add(`Works in ${employee.office}, which WerkX doesn't cover (dates kept)`, where)
+      if (data.code) {
+        plan.updates.push({ id: employee.id, status: employee.status, data })
+        report.add('Updated', `${where}: code`)
+      } else report.count('unchanged')
+      return
+    }
     for (const field of ['entryDate', 'exitDate'] as const) {
       const value = person[field]
       if (value && value !== dayOf(employee[field])) {
