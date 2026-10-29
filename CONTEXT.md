@@ -42,9 +42,12 @@ labels use these words so that one concept never gets two German names.
 - **Job** (de: *Stellenangebot*): open position at an office.
 - **Page** (de: *Seite*): stand-alone website page (office profile, contact, imprint, …) fetched
   by its **key** (de: *Seitenschlüssel*).
-- **Employee** (de: *Mitarbeitende*): public team profile. Entry, exit and birth dates are not public;
-  the website gets the **entry year** and whether the person still **works here** (no exit date, or
-  one not yet passed).
+- **Employee** (de: *Mitarbeitende*): a person who works or worked at the office. Published employees
+  who still **work here** (no exit date, or one not yet passed) appear on the team page. Entry, exit
+  and birth dates are not public; the website gets the **entry year** and whether the person still
+  works here. The admin's list leaves out former employees unless asked to show them.
+- **Code** (de: *Kürzel*): an employee's short code from WerkX (e.g. `TmHn`), unique across all
+  offices.
 - **Office** (de: *Büro*): an office location (Dresden, Berlin, Prague, Beijing, …).
 - **Excursion** (de: *Exkursion*): a trip of the office to visit built landscape architecture,
   e.g. "RLA Berlin" in September 2026, shown as a map with a timeline. Made of **days** (de:

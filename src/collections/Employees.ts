@@ -1,11 +1,13 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
+import { employeeListFilter } from '@/collections/employeeListFilter'
 import { legacyIdField } from '@/fields/legacyId'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
 
-// Public team profile.
+// A person who works or worked at the office. Published employees who still work here make up the
+// website's team page.
 export const Employees: CollectionConfig = {
   slug: 'employees',
   labels: {
@@ -18,6 +20,10 @@ export const Employees: CollectionConfig = {
     useAsTitle: 'fullName',
     group: GROUPS.office,
     defaultColumns: ['fullName', 'office', 'email', 'active', '_status'],
+    baseFilter: employeeListFilter,
+    components: {
+      beforeListTable: ['@/components/cms/FormerEmployeesToggle#FormerEmployeesToggle'],
+    },
   },
   access: { read: publishedOrAuthenticated },
   versions: { drafts: true },
@@ -231,6 +237,19 @@ export const Employees: CollectionConfig = {
           ],
         },
       ],
+    },
+    {
+      name: 'code',
+      label: { en: 'Code', de: 'Kürzel' },
+      type: 'text',
+      unique: true,
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Short code from WerkX, e.g. "TmHn". Unique across all offices.',
+          de: 'Kürzel aus WerkX, z. B. „TmHn“. Eindeutig über alle Büros.',
+        },
+      },
     },
     legacyIdField,
     {

@@ -865,6 +865,10 @@ export interface Employee {
   phone?: string | null;
   mobilePhone?: string | null;
   /**
+   * Short code from WerkX, e.g. "TmHn". Unique across all offices.
+   */
+  code?: string | null;
+  /**
    * ID in the legacy website database. Set by the importer.
    */
   legacyId?: number | null;
@@ -1651,6 +1655,7 @@ export interface EmployeesSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   mobilePhone?: T;
+  code?: T;
   legacyId?: T;
   active?: T;
   updatedAt?: T;

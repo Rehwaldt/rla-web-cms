@@ -27,6 +27,7 @@ import { FlowField as FlowField_6f6c7c13f4b35b34dcb49ef9b42a7aa4 } from '@/compo
 import { default as default_37d1fa2b7db612be3b3bdaa17fa5f495 } from '@/components/cms/MapFieldLoader'
 import { StopRowLabel as StopRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
 import { DayRowLabel as DayRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
+import { FormerEmployeesToggle as FormerEmployeesToggle_a601c0feb77b21b8214acd42f000fe56 } from '@/components/cms/FormerEmployeesToggle'
 import { WorkspaceNav as WorkspaceNav_0f7cad10d25d282056ca6a858cba9e2a } from '@/components/cms/Workspaces/Nav'
 import { WorkspaceCollectionCards as WorkspaceCollectionCards_845c9a6e101c9cea1e077ab82d99d8c4 } from '@/components/cms/Workspaces/CollectionCards'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -62,6 +63,7 @@ export const importMap = {
   "@/components/cms/MapFieldLoader#default": default_37d1fa2b7db612be3b3bdaa17fa5f495,
   "@/components/cms/ExcursionRowLabels#StopRowLabel": StopRowLabel_a37e46a305a5cdd636965ec6f3b19917,
   "@/components/cms/ExcursionRowLabels#DayRowLabel": DayRowLabel_a37e46a305a5cdd636965ec6f3b19917,
+  "@/components/cms/FormerEmployeesToggle#FormerEmployeesToggle": FormerEmployeesToggle_a601c0feb77b21b8214acd42f000fe56,
   "@/components/cms/Workspaces/Nav#WorkspaceNav": WorkspaceNav_0f7cad10d25d282056ca6a858cba9e2a,
   "@/components/cms/Workspaces/CollectionCards#WorkspaceCollectionCards": WorkspaceCollectionCards_845c9a6e101c9cea1e077ab82d99d8c4,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
