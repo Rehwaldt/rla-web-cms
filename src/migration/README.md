@@ -130,3 +130,28 @@ The website database keeps changing until the cutover and is read live.
 - Anything that can't be mapped cleanly (dangling references, missing files, HTML in plain-text
   fields, link URLs Lexical would encode, unknown countries) goes into the import report instead of
   being guessed.
+
+## WerkX employee dates (`werkx/`)
+
+A one-off import of the employees' entry, exit and birth dates and codes from WerkX, the office's
+time tracking (Dresden and Berlin only; Prague: #47). Unlike the website importer it reads WerkX's
+on-prem API and writes through the target CMS's REST API, so it runs on an office machine and
+works against production without a database connection.
+
+```sh
+pnpm migrate:werkx --target http://localhost:3000 --dry-run   # plan, write only the report
+pnpm migrate:werkx --target https://cms.rehwaldt.de           # import (re-runnable)
+```
+
+Logs in with `CMS_TOKEN` (the admin's `payload-token` cookie) or `CMS_EMAIL` + `CMS_PASSWORD`,
+set in the shell, never in `.env`. `WERKX_API_URL` defaults to `http://webserver:8000`.
+
+- Matches by code, then the pairs file, then email, then name parts (every part of the CMS name
+  in the WerkX name, accents and case ignored), the last only among employees nobody else matched.
+- WerkX wins on entry, exit and birth date and fills in the code; name, email and office are kept
+  and differences reported. It never clears a date WerkX doesn't have, and skips employees with
+  unpublished changes or another code.
+- People only WerkX knows become drafts (first name = first word). Status is never changed.
+- `migration/werkx-pairs.json` (gitignored) fixes what the rules get wrong:
+  `{ "pairs": { "<employee id>": "<WerkX code>" }, "skip": ["<WerkX code>"] }`.
+- The report never contains a date of birth, only whether it was set or changed.
