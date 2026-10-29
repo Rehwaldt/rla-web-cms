@@ -22,17 +22,47 @@ export const Topics: CollectionConfig = {
   access: { read: publishedOrAuthenticated },
   versions: { drafts: true },
   fields: [
-    { name: 'name', label: { en: 'Name', de: 'Name' }, type: 'text', localized: true },
-    { name: 'image', label: { en: 'Image', de: 'Bild' }, type: 'upload', relationTo: 'media' },
-    ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
     {
-      name: 'projects',
-      label: { en: 'Projects', de: 'Projekte' },
-      type: 'relationship',
-      relationTo: 'projects',
-      hasMany: true,
+      type: 'tabs',
+      tabs: [
+        {
+          label: { en: 'Overview', de: 'Übersicht' },
+          fields: [
+            { name: 'name', label: { en: 'Name', de: 'Name' }, type: 'text', localized: true },
+            {
+              name: 'image',
+              label: { en: 'Image', de: 'Bild' },
+              type: 'upload',
+              relationTo: 'media',
+            },
+            ...richTextField('description', { en: 'Description', de: 'Beschreibung' }),
+          ],
+        },
+        {
+          label: { en: 'Flow', de: 'Flow' },
+          fields: [flowField()],
+        },
+        {
+          label: { en: 'Featured', de: 'Verlinkungen' },
+          fields: [
+            {
+              name: 'projects',
+              label: { en: 'Projects', de: 'Projekte' },
+              type: 'relationship',
+              relationTo: 'projects',
+              hasMany: true,
+              admin: {
+                isSortable: true,
+                description: {
+                  en: 'In the order the topic page shows them.',
+                  de: 'In der Reihenfolge, in der die Themenseite sie zeigt.',
+                },
+              },
+            },
+          ],
+        },
+      ],
     },
-    flowField(),
     legacyIdField,
   ],
 }

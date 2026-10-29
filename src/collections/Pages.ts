@@ -30,21 +30,6 @@ export const Pages: CollectionConfig = {
         {
           label: { en: 'Overview', de: 'Übersicht' },
           fields: [
-            {
-              name: 'key',
-              label: { en: 'Key', de: 'Seitenschlüssel' },
-              type: 'text',
-              required: true,
-              unique: true,
-              index: true,
-              admin: {
-                position: 'sidebar',
-                description: {
-                  en: 'Identifier the website uses to fetch this page, e.g. "office-profile".',
-                  de: 'Kennung, mit der die Website diese Seite abruft, z. B. „office-profile“.',
-                },
-              },
-            },
             { name: 'title', label: { en: 'Title', de: 'Titel' }, type: 'text', localized: true },
             {
               name: 'subtitle',
@@ -72,5 +57,20 @@ export const Pages: CollectionConfig = {
       ],
     },
     legacyIdField,
+    {
+      name: 'key',
+      label: { en: 'Key', de: 'Seitenschlüssel' },
+      type: 'text',
+      required: true,
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Identifier the website uses to fetch this page, e.g. "office-profile".',
+          de: 'Kennung, mit der die Website diese Seite abruft, z. B. „office-profile“.',
+        },
+      },
+    },
   ],
 }
