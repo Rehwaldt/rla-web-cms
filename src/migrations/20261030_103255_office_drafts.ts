@@ -63,10 +63,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE UNIQUE INDEX "_offices_v_locales_locale_parent_id_unique" ON "_offices_v_locales" USING btree ("_locale","_parent_id");
   CREATE INDEX "offices__status_idx" ON "offices" USING btree ("_status");`)
 
-  // The imported offices stay on the website. Offices created in the admin since the cutover start
-  // as drafts until an editor publishes them.
+  // Existing offices stay on the website (the column defaults to draft).
   await db.execute(sql`
-   UPDATE "offices" SET "_status" = 'published' WHERE "legacy_id" IS NOT NULL;`)
+   UPDATE "offices" SET "_status" = 'published';`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
