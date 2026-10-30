@@ -65,7 +65,6 @@ export const Offices: CollectionConfig = {
                   name: 'company',
                   label: { en: 'Company', de: 'Firma' },
                   type: 'text',
-                  localized: true,
                   admin: {
                     description: { en: 'Name on the letterbox.', de: 'Name auf dem Briefkasten.' },
                   },
