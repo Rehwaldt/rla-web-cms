@@ -68,8 +68,10 @@
   min-width: 0;
 }
 
-.category-view__group-name {
-  font-weight: 600;
+/* Also beats the name button's `font: inherit` below. */
+.category-view__group-name,
+.category-view__name.category-view__group-name {
+  font-weight: 700;
 }
 
 .category-view__body {
