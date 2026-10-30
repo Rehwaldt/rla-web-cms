@@ -23,7 +23,8 @@ export const capImageSize: CollectionBeforeOperationHook = async ({ args, operat
   if ((operation !== 'create' && operation !== 'update') || !file || !sharp || !RESIZABLE.test(file.mimetype)) {
     return args
   }
-  const input = file.tempFilePath ?? file.data
+  // Without temp files Payload sets tempFilePath to '', not undefined.
+  const input = file.tempFilePath || file.data
   const { width = 0, height = 0, pages = 1 } = await sharp(input).metadata()
   if (pages > 1 || !cappedSize(width, height)) return args
 
