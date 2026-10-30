@@ -17,7 +17,7 @@ export const Expertise: CollectionConfig = {
   orderable: true,
   admin: {
     useAsTitle: 'name',
-    group: GROUPS.office,
+    group: GROUPS.team,
     defaultColumns: ['name', 'parent'],
   },
   access: {

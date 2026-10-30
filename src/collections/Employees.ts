@@ -19,7 +19,7 @@ export const Employees: CollectionConfig = {
   admin: {
     preview: websitePreview('employees'),
     useAsTitle: 'fullName',
-    group: GROUPS.office,
+    group: GROUPS.team,
     defaultColumns: ['fullName', 'office', 'email', 'active', '_status'],
     baseFilter: employeeListFilter,
     components: {
@@ -39,7 +39,8 @@ export const Employees: CollectionConfig = {
         const today = new Date().toISOString().slice(0, 10)
         doc.entryYear = doc.entryDate ? new Date(doc.entryDate).getUTCFullYear() : null
         doc.active =
-          !doc.archived && (!doc.exitDate || new Date(doc.exitDate).toISOString().slice(0, 10) >= today)
+          !doc.archived &&
+          (!doc.exitDate || new Date(doc.exitDate).toISOString().slice(0, 10) >= today)
         return doc
       },
     ],

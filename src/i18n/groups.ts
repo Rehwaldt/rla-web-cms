@@ -6,6 +6,7 @@ export const GROUPS = {
   excursions: { en: 'Excursions', de: 'Exkursionen' },
   publications: { en: 'Publications', de: 'Publikationen' },
   office: { en: 'Office', de: 'Büro' },
+  team: { en: 'Team', de: 'Team' },
   media: { en: 'Media', de: 'Medien' },
   minescapes: { en: 'Minescapes', de: 'Minescapes' },
   admin: { en: 'Admin', de: 'Verwaltung' },

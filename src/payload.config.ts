@@ -24,12 +24,13 @@ import { NewsCategories } from './collections/NewsCategories'
 import { Awards } from './collections/Awards'
 import { Publications } from './collections/Publications'
 import { PublicationCategories } from './collections/PublicationCategories'
-import { Jobs } from './collections/Jobs'
 import { Pages } from './collections/Pages'
 
 import { Employees } from './collections/Employees'
 import { Expertise } from './collections/Expertise'
+
 import { Offices } from './collections/Offices'
+import { Jobs } from './collections/Jobs'
 
 import { Excursions } from './collections/Excursions'
 import { Mines } from './collections/Mines'
