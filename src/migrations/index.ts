@@ -28,6 +28,7 @@ import * as migration_20261029_151659_expertise_and_qualifications from './20261
 import * as migration_20261029_152636_drop_qualification from './20261029_152636_drop_qualification';
 import * as migration_20261029_154324_employee_external from './20261029_154324_employee_external';
 import * as migration_20261029_155150_employee_archived from './20261029_155150_employee_archived';
+import * as migration_20261030_090708_office_leader from './20261030_090708_office_leader';
 
 export const migrations = [
   {
@@ -178,6 +179,11 @@ export const migrations = [
   {
     up: migration_20261029_155150_employee_archived.up,
     down: migration_20261029_155150_employee_archived.down,
-    name: '20261029_155150_employee_archived'
+    name: '20261029_155150_employee_archived',
+  },
+  {
+    up: migration_20261030_090708_office_leader.up,
+    down: migration_20261030_090708_office_leader.down,
+    name: '20261030_090708_office_leader'
   },
 ];

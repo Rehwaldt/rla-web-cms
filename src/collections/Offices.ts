@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/publishedOrAuthenticated'
+import { currentEmployees } from '@/collections/employeeListFilter'
 import { countryField } from '@/fields/country'
 import { legacyIdField } from '@/fields/legacyId'
 import { richTextField } from '@/fields/richText'
@@ -33,6 +34,13 @@ export const Offices: CollectionConfig = {
               type: 'text',
               localized: true,
               validate: requiredInDefaultLocale,
+            },
+            {
+              name: 'leader',
+              label: { en: 'Office lead', de: 'Büroleitung' },
+              type: 'relationship',
+              relationTo: 'employees',
+              filterOptions: currentEmployees,
             },
             {
               name: 'image',

@@ -1,13 +1,11 @@
-import type { BaseFilter } from 'payload'
+import type { BaseFilter, Where } from 'payload'
 
 // URL parameter of the employee list that shows former employees too (FormerEmployeesToggle).
 export const SHOW_FORMER_PARAM = 'former'
 
-// The employee list leaves out former employees, like the website does: archived ones and those
-// whose exit date has passed. The day pickers store noon UTC, so an exit date of today is still
-// after midnight UTC.
-export const employeeListFilter: BaseFilter = ({ req }) => {
-  if (req.query?.[SHOW_FORMER_PARAM] === '1') return null
+// People who still work here, like the website shows them: neither archived nor past their exit
+// date. The day pickers store noon UTC, so an exit date of today is still after midnight UTC.
+export const currentEmployees = (): Where => {
   const today = `${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`
   return {
     and: [
@@ -16,3 +14,7 @@ export const employeeListFilter: BaseFilter = ({ req }) => {
     ],
   }
 }
+
+// The employee list leaves out former employees unless the toggle asks for them.
+export const employeeListFilter: BaseFilter = ({ req }) =>
+  req.query?.[SHOW_FORMER_PARAM] === '1' ? null : currentEmployees()
