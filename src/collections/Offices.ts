@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/publishedOrAuthenticated'
+import { authenticated } from '@/access/authenticated'
 import { currentEmployees } from '@/collections/employeeListFilter'
 import { countryField } from '@/fields/country'
 import { legacyIdField } from '@/fields/legacyId'
@@ -123,7 +124,19 @@ export const Offices: CollectionConfig = {
                     },
                   ],
                 },
-                { name: 'email', label: { en: 'Email', de: 'E-Mail' }, type: 'email' },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'email', label: { en: 'Email', de: 'E-Mail' }, type: 'email' },
+                    {
+                      name: 'teamEmail',
+                      label: { en: 'Team email', de: 'Team-E-Mail' },
+                      type: 'email',
+                      access: { read: authenticated },
+                      admin: { description: { en: 'Not public.', de: 'Nicht öffentlich.' } },
+                    },
+                  ],
+                },
               ],
             },
             ...richTextField(

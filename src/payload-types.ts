@@ -917,6 +917,7 @@ export interface Office {
   id: number;
   _order?: string | null;
   name?: string | null;
+  leader?: (number | null) | Employee;
   image?: (number | null) | Media;
   description?: {
     root: {
@@ -975,6 +976,10 @@ export interface Office {
     phone?: string | null;
     fax?: string | null;
     email?: string | null;
+    /**
+     * Not public.
+     */
+    teamEmail?: string | null;
   };
   /**
    * Extra contact details for one language, e.g. a local contact person.
@@ -1755,6 +1760,7 @@ export interface ExpertiseSelect<T extends boolean = true> {
 export interface OfficesSelect<T extends boolean = true> {
   _order?: T;
   name?: T;
+  leader?: T;
   image?: T;
   description?: T;
   descriptionHtml?: T;
@@ -1774,6 +1780,7 @@ export interface OfficesSelect<T extends boolean = true> {
         phone?: T;
         fax?: T;
         email?: T;
+        teamEmail?: T;
       };
   contactNote?: T;
   contactNoteHtml?: T;

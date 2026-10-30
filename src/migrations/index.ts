@@ -29,6 +29,7 @@ import * as migration_20261029_152636_drop_qualification from './20261029_152636
 import * as migration_20261029_154324_employee_external from './20261029_154324_employee_external';
 import * as migration_20261029_155150_employee_archived from './20261029_155150_employee_archived';
 import * as migration_20261030_090708_office_leader from './20261030_090708_office_leader';
+import * as migration_20261030_092011_office_team_email from './20261030_092011_office_team_email';
 
 export const migrations = [
   {
@@ -184,6 +185,11 @@ export const migrations = [
   {
     up: migration_20261030_090708_office_leader.up,
     down: migration_20261030_090708_office_leader.down,
-    name: '20261030_090708_office_leader'
+    name: '20261030_090708_office_leader',
+  },
+  {
+    up: migration_20261030_092011_office_team_email.up,
+    down: migration_20261030_092011_office_team_email.down,
+    name: '20261030_092011_office_team_email'
   },
 ];
