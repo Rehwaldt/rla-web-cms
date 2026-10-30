@@ -62,20 +62,23 @@ export const Offices: CollectionConfig = {
               type: 'group',
               fields: [
                 {
+                  name: 'company',
+                  label: { en: 'Company', de: 'Firma' },
+                  type: 'text',
+                  admin: {
+                    description: {
+                      en: 'Name on the letterbox.',
+                      de: 'Name auf dem Briefkasten.',
+                    },
+                  },
+                },
+                {
                   type: 'row',
                   fields: [
                     {
                       type: 'group',
                       admin: { width: '50%', hideGutter: true },
                       fields: [
-                        {
-                          name: 'company',
-                          label: { en: 'Company', de: 'Firma' },
-                          type: 'text',
-                          admin: {
-                            description: { en: 'Name on the letterbox.', de: 'Name auf dem Briefkasten.' },
-                          },
-                        },
                         { name: 'street', label: { en: 'Street', de: 'Straße' }, type: 'text' },
                         {
                           type: 'row',
@@ -84,18 +87,18 @@ export const Offices: CollectionConfig = {
                               name: 'postalCode',
                               label: { en: 'Postal code', de: 'PLZ' },
                               type: 'text',
-                              admin: { width: '30%' },
+                              admin: { width: '40%' },
                             },
                             {
                               name: 'city',
                               label: { en: 'City', de: 'Ort' },
                               type: 'text',
                               localized: true,
-                              admin: { width: '40%' },
+                              admin: { width: '60%' },
                             },
-                            countryField({ admin: { width: '30%' } }),
                           ],
                         },
+                        countryField(),
                       ],
                     },
                     {
