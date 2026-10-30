@@ -52,6 +52,10 @@ reintroduce those sources here unless asked.
   `enum_{table}_{field}` without leading underscores, so a select called `status` gets the drafts'
   `_status` enum (the migration then lacks a `CREATE TYPE`); give such a field an `enumName`
   (projects: `project_status`). `migrate:down` rolls back the whole last batch, not one migration.
+  Turning on drafts for a collection with data: the new `_status` defaults to draft (hiding every
+  doc from the website) and the admin lists drafts collections from their `_v` table, so the
+  migration must also publish the existing docs and give each a latest `_v` row
+  (`20261030_103255_office_drafts`).
 - `pnpm test:unit` (Vitest, no database; importer planners in `tests/unit/`) / `pnpm test:int`
   (Vitest, needs Postgres) / `pnpm test:e2e` (Playwright) / `pnpm test` (all). `pnpm lint`.
 - `pnpm migrate:website [--dry-run]`: imports the legacy website database (see
