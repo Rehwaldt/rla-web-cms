@@ -1,0 +1,180 @@
+/* Categories view: the category picker's columns (CategoryPicker/index.css) with draggable
+   entries. */
+
+.category-view__usage {
+  margin: 0 0 1rem;
+  color: var(--theme-elevation-500);
+}
+
+.category-view__unsaved {
+  position: sticky;
+  top: var(--app-header-height, 0);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--theme-warning-400);
+  border-radius: var(--style-radius-s, 3px);
+  background: var(--theme-warning-100);
+}
+.category-view__unsaved > span {
+  margin-right: auto;
+}
+
+.category-view__columns {
+  margin-bottom: 2rem;
+}
+
+.category-view__column {
+  min-height: 6rem;
+  border-radius: var(--style-radius-s, 3px);
+}
+.category-view__column--over {
+  background: var(--theme-elevation-50);
+}
+
+.category-view__column-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.5rem;
+  color: var(--theme-elevation-500);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.category-view__column-header .btn {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.category-view__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  background: var(--theme-bg);
+}
+
+.category-view__group-header,
+.category-view__category {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.category-view__group-name {
+  font-weight: 600;
+}
+
+.category-view__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-height: 2rem;
+  padding: 0.15rem 0 0.15rem 0.5rem;
+  border-left: 2px solid var(--theme-elevation-100);
+}
+.category-view__body--over {
+  border-left-color: var(--theme-elevation-400);
+}
+
+.category-view__empty {
+  color: var(--theme-elevation-400);
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+.category-view__handle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s, 3px);
+  background: none;
+  color: var(--theme-elevation-400);
+  cursor: grab;
+  touch-action: none;
+}
+.category-view__handle:hover,
+.category-view__handle:focus-visible {
+  color: var(--theme-elevation-800);
+  background: var(--theme-elevation-100);
+}
+.category-view__handle svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.category-view__name {
+  flex: 1;
+  min-width: 0;
+  padding: 0.1rem 0;
+  border: 0;
+  background: none;
+  color: var(--theme-elevation-800);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.category-view__name:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.category-view__name:disabled {
+  cursor: not-allowed;
+}
+
+.category-view__count {
+  flex-shrink: 0;
+  min-width: 1.6rem;
+  padding: 0 0.35rem;
+  border-radius: 1rem;
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-600);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  text-align: center;
+  text-decoration: none;
+}
+.category-view__count:hover {
+  background: var(--theme-elevation-200);
+  color: var(--theme-elevation-900);
+}
+
+.category-view__add {
+  flex-shrink: 0;
+}
+
+/* The entry's place while it's dragged; the overlay follows the pointer. */
+.category-view__placeholder {
+  opacity: 0.35;
+}
+
+.category-view__overlay {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: var(--style-radius-s, 3px);
+  background: var(--theme-bg);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  cursor: grabbing;
+}
+.category-view__overlay svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.category-view__overlay--group {
+  font-weight: 600;
+}

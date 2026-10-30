@@ -5,11 +5,12 @@ import { legacyIdField } from '@/fields/legacyId'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { GROUPS } from '@/i18n/groups'
 import { websitePreview } from '@/websitePreview'
+import { groupsOnly, keepGroupsWithCategories, topLevelParent } from './categoryRules'
 
-// Two-level tree (top-level groups with child categories). The `parent` and `breadcrumbs` fields
-// come from the nested-docs plugin, declared here so they get translated labels; drag-and-drop
-// order in the list view is the display order. Above the list, an overview groups the categories
-// like the picker on projects.
+// Two-level tree (top-level groups with child categories), kept so by categoryRules. The `parent`
+// and `breadcrumbs` fields come from the nested-docs plugin, declared here so they get translated
+// labels. `_order` is the display order. The list view is replaced by the categories view
+// (CategoryView), which lays them out like the website's project filter menu.
 // Labelled just "Categories": the collection only appears under the Projects group.
 export const ProjectCategories: CollectionConfig = {
   slug: 'project-categories',
@@ -23,9 +24,10 @@ export const ProjectCategories: CollectionConfig = {
     useAsTitle: 'name',
     group: GROUPS.projects,
     defaultColumns: ['name', 'parent', 'menuColumn'],
-    components: { beforeListTable: ['@/components/cms/CategoryPicker/CategoryOverview#CategoryOverview'] },
+    components: { views: { list: { Component: '@/components/cms/CategoryView#CategoryView' } } },
   },
   access: { read: anyone },
+  hooks: { beforeDelete: [keepGroupsWithCategories] },
   fields: [
     {
       name: 'name',
@@ -53,6 +55,8 @@ export const ProjectCategories: CollectionConfig = {
     legacyIdField,
     createParentField('project-categories', {
       label: { en: 'Parent group', de: 'Übergeordnete Gruppe' },
+      filterOptions: groupsOnly,
+      validate: topLevelParent('project-categories'),
     }),
     // Maintained by the plugin and only read by the website, so editors don't need to see it.
     createBreadcrumbsField('project-categories', { admin: { hidden: true } }),

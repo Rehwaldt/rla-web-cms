@@ -7,9 +7,13 @@ import type { CategoryNode } from '@/fields/projects/categoryTree'
 /**
  * All categories in display order, named in `locale`. `undefined` while loading, `null` if they
  * couldn't be loaded. Loads again when the editor returns to the tab, e.g. after editing the
- * categories in another one, and whenever `reloadKey` changes.
+ * categories in another one (unless `reloadOnVisible` is off), and whenever `reloadKey` changes.
  */
-export const useCategories = (collection: string, locale: string, reloadKey?: unknown) => {
+export const useCategories = (
+  collection: string,
+  locale: string,
+  { reloadKey, reloadOnVisible = true }: { reloadKey?: unknown; reloadOnVisible?: boolean } = {},
+) => {
   const {
     config: {
       serverURL,
@@ -20,12 +24,13 @@ export const useCategories = (collection: string, locale: string, reloadKey?: un
   const [reloads, setReloads] = useState(0)
 
   useEffect(() => {
+    if (!reloadOnVisible) return
     const onVisible = () => {
       if (document.visibilityState === 'visible') setReloads((count) => count + 1)
     }
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
-  }, [])
+  }, [reloadOnVisible])
 
   useEffect(() => {
     let cancelled = false
@@ -33,6 +38,7 @@ export const useCategories = (collection: string, locale: string, reloadKey?: un
       'select[name]': 'true',
       'select[parent]': 'true',
       'select[menuColumn]': 'true',
+      'select[_order]': 'true',
       depth: '0',
       limit: '0',
       sort: '_order',

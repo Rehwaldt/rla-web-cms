@@ -24,7 +24,7 @@ import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { CategoryPicker as CategoryPicker_bcf38a0befb8590123163e2dad7990f6 } from '@/components/cms/CategoryPicker'
 import { FlowField as FlowField_6f6c7c13f4b35b34dcb49ef9b42a7aa4 } from '@/components/cms/FlowField'
-import { CategoryOverview as CategoryOverview_b6bd8e491bb02a745441cace2d7a44cc } from '@/components/cms/CategoryPicker/CategoryOverview'
+import { CategoryView as CategoryView_2dcc1144d54e5eff37deca9619a08de5 } from '@/components/cms/CategoryView'
 import { default as default_37d1fa2b7db612be3b3bdaa17fa5f495 } from '@/components/cms/MapFieldLoader'
 import { StopRowLabel as StopRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
 import { DayRowLabel as DayRowLabel_a37e46a305a5cdd636965ec6f3b19917 } from '@/components/cms/ExcursionRowLabels'
@@ -61,7 +61,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/cms/CategoryPicker#CategoryPicker": CategoryPicker_bcf38a0befb8590123163e2dad7990f6,
   "@/components/cms/FlowField#FlowField": FlowField_6f6c7c13f4b35b34dcb49ef9b42a7aa4,
-  "@/components/cms/CategoryPicker/CategoryOverview#CategoryOverview": CategoryOverview_b6bd8e491bb02a745441cace2d7a44cc,
+  "@/components/cms/CategoryView#CategoryView": CategoryView_2dcc1144d54e5eff37deca9619a08de5,
   "@/components/cms/MapFieldLoader#default": default_37d1fa2b7db612be3b3bdaa17fa5f495,
   "@/components/cms/ExcursionRowLabels#StopRowLabel": StopRowLabel_a37e46a305a5cdd636965ec6f3b19917,
   "@/components/cms/ExcursionRowLabels#DayRowLabel": DayRowLabel_a37e46a305a5cdd636965ec6f3b19917,

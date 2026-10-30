@@ -28,11 +28,6 @@ describe('buildCategoryColumns', () => {
   it('leaves out groups without children', () => {
     expect(columns.flat().map((group) => group.id)).not.toContain(3)
   })
-
-  it('keeps groups without children when asked', () => {
-    const all = buildCategoryColumns(CATEGORIES, { includeEmptyGroups: true })
-    expect(all.map((groups) => groups.map((group) => group.id))).toEqual([[1, 2], [3], [9], [4]])
-  })
 })
 
 describe('toggleCategory', () => {
