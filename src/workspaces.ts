@@ -16,7 +16,7 @@ export const WORKSPACES: Workspace[] = [
   {
     slug: 'website',
     label: { en: 'Website', de: 'Website' },
-    sections: ['projects', 'content', 'news', 'publications', 'office'],
+    sections: ['projects', 'content', 'news', 'publications', 'office', 'team'],
   },
   {
     slug: 'minescapes',
@@ -59,7 +59,10 @@ export function workspaceSections<G extends { label: string }>(
   const current = WORKSPACES.find(({ slug }) => slug === workspace)
   if (!current) return { own: groups.filter(({ label }) => !sharedLabels.has(label)), shared }
 
-  const filed = new Set([...WORKSPACES.flatMap(({ sections }) => labels(sections)), ...sharedLabels])
+  const filed = new Set([
+    ...WORKSPACES.flatMap(({ sections }) => labels(sections)),
+    ...sharedLabels,
+  ])
   return {
     own: [
       ...labels(current.sections).flatMap(withLabel),
