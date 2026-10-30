@@ -34,7 +34,16 @@ export default function MapFieldClient({ path }: { path: string }) {
 
   return (
     <div style={{ marginBottom: '20px', flexGrow: '1' }}>
-      <div style={{ height: '400px', width: '100%', borderRadius: '4px', overflow: 'hidden' }}>
+      {/* Own stacking context: Leaflet's panes (z-index 400+) would cover Payload's dropdowns */}
+      <div
+        style={{
+          height: '400px',
+          width: '100%',
+          borderRadius: '4px',
+          overflow: 'hidden',
+          isolation: 'isolate',
+        }}
+      >
         <MapContainer
           center={center}
           zoom={value ? 12 : 3}
