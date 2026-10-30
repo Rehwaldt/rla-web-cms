@@ -63,6 +63,8 @@ const en = {
     loadFailed: 'The categories could not be loaded.',
     empty: 'No categories yet.',
     edit: 'Edit categories',
+    overview: 'Categories by group',
+    untitled: '(untitled)',
     childrenOnly: 'Only categories within a group can be selected, not the groups themselves.',
   },
   map: {
@@ -147,6 +149,8 @@ const de: typeof en = {
     loadFailed: 'Die Kategorien konnten nicht geladen werden.',
     empty: 'Noch keine Kategorien vorhanden.',
     edit: 'Kategorien bearbeiten',
+    overview: 'Kategorien nach Gruppen',
+    untitled: '(ohne Namen)',
     childrenOnly: 'Auswählbar sind nur Kategorien innerhalb einer Gruppe, nicht die Gruppen selbst.',
   },
   map: {

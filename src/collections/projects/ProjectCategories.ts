@@ -8,7 +8,8 @@ import { websitePreview } from '@/websitePreview'
 
 // Two-level tree (top-level groups with child categories). The `parent` and `breadcrumbs` fields
 // come from the nested-docs plugin, declared here so they get translated labels; drag-and-drop
-// order in the list view is the display order.
+// order in the list view is the display order. Above the list, an overview groups the categories
+// like the picker on projects.
 // Labelled just "Categories": the collection only appears under the Projects group.
 export const ProjectCategories: CollectionConfig = {
   slug: 'project-categories',
@@ -22,6 +23,7 @@ export const ProjectCategories: CollectionConfig = {
     useAsTitle: 'name',
     group: GROUPS.projects,
     defaultColumns: ['name', 'parent', 'menuColumn'],
+    components: { beforeListTable: ['@/components/cms/CategoryPicker/CategoryOverview#CategoryOverview'] },
   },
   access: { read: anyone },
   fields: [

@@ -87,3 +87,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Overview above the categories list: the same columns, with links instead of checkboxes. */
+
+.category-overview__link {
+  color: var(--theme-elevation-800);
+  text-decoration: none;
+}
+.category-overview__link:hover {
+  text-decoration: underline;
+}

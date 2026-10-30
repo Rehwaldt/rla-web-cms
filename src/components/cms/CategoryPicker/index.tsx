@@ -10,65 +10,17 @@ import {
   useField,
   useTranslation,
 } from '@payloadcms/ui'
-import React, { useEffect, useMemo, useState } from 'react'
-import { buildCategoryColumns, type CategoryId, type CategoryNode, toggleCategory } from '@/fields/projects/categoryTree'
+import React, { useMemo } from 'react'
+import { buildCategoryColumns, type CategoryId, toggleCategory } from '@/fields/projects/categoryTree'
 import { idOf } from '@/fields/validation'
 import { DEFAULT_LOCALE, LOCALE_CODES } from '@/locales'
 import type { TranslationKeys, Translations } from '@/i18n/translations'
+import { useCategories } from './useCategories'
 import './index.css'
 
 // Replaces the paginated relationship dropdown for project categories: all categories at once,
 // grouped and in columns like the website's project filter menu. Only the categories within a
 // group can be ticked. The value stays a plain hasMany relationship.
-
-/**
- * All categories in display order, named in `locale`. `undefined` while loading, `null` if they
- * couldn't be loaded. Loads again when the editor returns to the tab, e.g. after editing the
- * categories in another one.
- */
-const useCategories = (collection: string, locale: string) => {
-  const {
-    config: {
-      serverURL,
-      routes: { api },
-    },
-  } = useConfig()
-  const [categories, setCategories] = useState<CategoryNode[] | null>()
-  const [reloads, setReloads] = useState(0)
-
-  useEffect(() => {
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') setReloads((count) => count + 1)
-    }
-    document.addEventListener('visibilitychange', onVisible)
-    return () => document.removeEventListener('visibilitychange', onVisible)
-  }, [])
-
-  useEffect(() => {
-    let cancelled = false
-    const params = new URLSearchParams({
-      'select[name]': 'true',
-      'select[parent]': 'true',
-      'select[menuColumn]': 'true',
-      depth: '0',
-      limit: '0',
-      sort: '_order',
-      locale,
-    })
-    fetch(`${serverURL}${api}/${collection}?${params}`, { credentials: 'include' })
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then(
-        (result: { docs: CategoryNode[] }) => !cancelled && setCategories(result.docs),
-        // A failed reload keeps the list already shown.
-        () => !cancelled && setCategories((previous) => previous ?? null),
-      )
-    return () => {
-      cancelled = true
-    }
-  }, [collection, locale, reloads, serverURL, api])
-
-  return categories
-}
 
 export const CategoryPicker: React.FC<RelationshipFieldClientProps> = ({
   field,
