@@ -63,9 +63,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE UNIQUE INDEX "_offices_v_locales_locale_parent_id_unique" ON "_offices_v_locales" USING btree ("_locale","_parent_id");
   CREATE INDEX "offices__status_idx" ON "offices" USING btree ("_status");`)
 
-  // Existing offices stay on the website (the column defaults to draft).
+  // Existing offices stay on the website (the column defaults to draft) and get a published version,
+  // which the admin's list and edit views read for a collection with drafts.
   await db.execute(sql`
-   UPDATE "offices" SET "_status" = 'published';`)
+   UPDATE "offices" SET "_status" = 'published';
+  INSERT INTO "_offices_v" ("parent_id", "version__order", "version_leader_id", "version_image_id", "version_address_street", "version_address_postal_code", "version_address_country", "version_address_coordinates", "version_contact_phone", "version_contact_fax", "version_contact_email", "version_contact_team_email", "version_legacy_id", "version_updated_at", "version_created_at", "version__status", "created_at", "updated_at", "latest")
+  SELECT "id", "_order", "leader_id", "image_id", "address_street", "address_postal_code", "address_country"::text::"enum__offices_v_version_address_country", "address_coordinates", "contact_phone", "contact_fax", "contact_email", "contact_team_email", "legacy_id", "updated_at", "created_at", 'published', "updated_at", "updated_at", true
+  FROM "offices";
+  INSERT INTO "_offices_v_locales" ("version_name", "version_description", "version_address_company", "version_address_city", "version_contact_note", "_locale", "_parent_id")
+  SELECT l."name", l."description", l."address_company", l."address_city", l."contact_note", l."_locale", v."id"
+  FROM "offices_locales" l JOIN "_offices_v" v ON v."parent_id" = l."_parent_id";`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
