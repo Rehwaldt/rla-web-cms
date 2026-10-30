@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { anyone } from '@/access/publishedOrAuthenticated'
+import { publishedOrAuthenticated } from '@/access/publishedOrAuthenticated'
 import { authenticated } from '@/access/authenticated'
 import { currentEmployees } from '@/collections/employeeListFilter'
 import { countryField } from '@/fields/country'
@@ -19,9 +19,10 @@ export const Offices: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: GROUPS.office,
-    defaultColumns: ['name', 'address.city'],
+    defaultColumns: ['name', 'address.city', '_status'],
   },
-  access: { read: anyone },
+  access: { read: publishedOrAuthenticated },
+  versions: { drafts: true },
   fields: [
     {
       type: 'tabs',

@@ -1006,6 +1006,7 @@ export interface Office {
   legacyId?: number | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1787,6 +1788,7 @@ export interface OfficesSelect<T extends boolean = true> {
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
