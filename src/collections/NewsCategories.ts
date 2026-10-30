@@ -8,8 +8,8 @@ import { GROUPS } from '@/i18n/groups'
 export const NewsCategories: CollectionConfig = {
   slug: 'news-categories',
   labels: {
-    singular: { en: 'News category', de: 'News-Kategorie' },
-    plural: { en: 'News categories', de: 'News-Kategorien' },
+    singular: { en: 'Category', de: 'Kategorie' },
+    plural: { en: 'Categories', de: 'Kategorien' },
   },
   orderable: true,
   admin: {
