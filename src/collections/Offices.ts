@@ -62,31 +62,56 @@ export const Offices: CollectionConfig = {
               type: 'group',
               fields: [
                 {
-                  name: 'company',
-                  label: { en: 'Company', de: 'Firma' },
-                  type: 'text',
-                  admin: {
-                    description: { en: 'Name on the letterbox.', de: 'Name auf dem Briefkasten.' },
-                  },
-                },
-                { name: 'street', label: { en: 'Street', de: 'Straße' }, type: 'text' },
-                {
                   type: 'row',
                   fields: [
                     {
-                      name: 'postalCode',
-                      label: { en: 'Postal code', de: 'PLZ' },
-                      type: 'text',
-                      admin: { width: '30%' },
+                      type: 'group',
+                      admin: { width: '50%', hideGutter: true },
+                      fields: [
+                        {
+                          name: 'company',
+                          label: { en: 'Company', de: 'Firma' },
+                          type: 'text',
+                          admin: {
+                            description: { en: 'Name on the letterbox.', de: 'Name auf dem Briefkasten.' },
+                          },
+                        },
+                        { name: 'street', label: { en: 'Street', de: 'Straße' }, type: 'text' },
+                        {
+                          type: 'row',
+                          fields: [
+                            {
+                              name: 'postalCode',
+                              label: { en: 'Postal code', de: 'PLZ' },
+                              type: 'text',
+                              admin: { width: '30%' },
+                            },
+                            {
+                              name: 'city',
+                              label: { en: 'City', de: 'Ort' },
+                              type: 'text',
+                              localized: true,
+                              admin: { width: '40%' },
+                            },
+                            countryField({ admin: { width: '30%' } }),
+                          ],
+                        },
+                      ],
                     },
                     {
-                      name: 'city',
-                      label: { en: 'City', de: 'Ort' },
-                      type: 'text',
+                      name: 'text',
+                      label: { en: 'Address as text', de: 'Adresse als Text' },
+                      type: 'textarea',
                       localized: true,
-                      admin: { width: '40%' },
+                      admin: {
+                        width: '50%',
+                        rows: 9,
+                        description: {
+                          en: 'Replaces street, postal code and city on the website when filled.',
+                          de: 'Ersetzt Straße, PLZ und Ort auf der Website, wenn ausgefüllt.',
+                        },
+                      },
                     },
-                    countryField({ admin: { width: '30%' } }),
                   ],
                 },
                 {
@@ -139,18 +164,6 @@ export const Offices: CollectionConfig = {
                 },
               ],
             },
-            ...richTextField(
-              'contactNote',
-              { en: 'Contact note', de: 'Kontakthinweis' },
-              {
-                admin: {
-                  description: {
-                    en: 'Extra contact details for one language, e.g. a local contact person.',
-                    de: 'Zusätzliche Kontaktangaben für eine Sprache, z. B. eine Ansprechperson vor Ort.',
-                  },
-                },
-              },
-            ),
           ],
         },
       ],

@@ -28,12 +28,11 @@ describe('planOffices', () => {
     })
   })
 
-  it('localizes the city and the contact notes', () => {
+  it('localizes the city', () => {
     const beijing = plan().plans[1]
     expect(beijing.data.address).toMatchObject({ city: 'Peking', country: 'CN' })
     expect(beijing.localized.en?.address).toEqual({ city: 'Beijing' })
-    expect(beijing.localized.zh).toMatchObject({ address: { city: '北京' }, contactNote: { html: '<p>联系人</p>' } })
-    expect(JSON.stringify(beijing.data.contactNote)).toContain('Guangzhou')
+    expect(beijing.localized.zh?.address).toEqual({ city: '北京' })
   })
 
   it('reports offices without transcribed details', () => {

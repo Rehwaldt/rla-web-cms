@@ -4,9 +4,9 @@ import type { PlanContext } from './context'
 import { type Data, type DocPlan, ref } from './types'
 
 // The legacy offices store address and contact as one HTML blob per language. These structured
-// values were transcribed from those blobs by hand (legacy office id → values); only the parts
-// that don't fit the structure go into the per-language contact note.
-const OFFICE_DETAILS: Record<number, { address: Data; city: Data; contact: Data; contactNote?: Data }> = {
+// values were transcribed from those blobs by hand (legacy office id → values). The rest of the
+// blobs (the Guangzhou project office's address, a contact person) isn't imported.
+const OFFICE_DETAILS: Record<number, { address: Data; city: Data; contact: Data }> = {
   1: {
     address: { company: 'Rehwaldt Landschaftsarchitekten', street: 'Bautzner Strasse 133', postalCode: '01099', country: 'DE' },
     city: { de: 'Dresden' },
@@ -30,10 +30,6 @@ const OFFICE_DETAILS: Record<number, { address: Data; city: Data; contact: Data;
     },
     city: { de: 'Peking', en: 'Beijing', zh: '北京' },
     contact: { phone: '+86 13910622864', email: 'beijing@rehwaldt.net' },
-    contactNote: {
-      de:
-        '<p>RLA Rehwaldt Landscape Architects<br>project Office Guangzhou<br>Room 2103, Building 2, Phase 2,<br>Aoyuan International Center, No. 36<br>Wanhui 1st Road,<br>Nancun Town, Panyu District, Guangzhou City,<br>Guangdong Province</p>',
-    },
   },
   5: {
     address: { company: 'Rehwaldt Landscape Architects', street: 'Janáčkovo nábřeží 1211/11', postalCode: '150 00', country: 'CZ' },
@@ -53,11 +49,6 @@ export function planOffices(ctx: PlanContext): DocPlan[] {
       const perLocale = byLocale({
         name: ctx.plainByLocale(row, 'name', where),
         description: ctx.richTextByLocale(row, 'text', where),
-        contactNote: {
-          de: ctx.richText((details?.contactNote?.de as string) ?? null, where),
-          // The Chinese contact blob holds the full local address and a contact person.
-          zh: ctx.richText(str(row, 'kontakt_zh'), where),
-        },
       })
       for (const [locale, city] of Object.entries(details?.city ?? {})) {
         const localeData = perLocale[locale as keyof typeof perLocale]

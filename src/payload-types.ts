@@ -967,6 +967,10 @@ export interface Office {
         )
       | null;
     /**
+     * Replaces street, postal code and city on the website when filled.
+     */
+    text?: string | null;
+    /**
      * @minItems 2
      * @maxItems 2
      */
@@ -981,25 +985,6 @@ export interface Office {
      */
     teamEmail?: string | null;
   };
-  /**
-   * Extra contact details for one language, e.g. a local contact person.
-   */
-  contactNote?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contactNoteHtml?: string | null;
   /**
    * ID in the legacy website database. Set by the importer.
    */
@@ -1773,6 +1758,7 @@ export interface OfficesSelect<T extends boolean = true> {
         postalCode?: T;
         city?: T;
         country?: T;
+        text?: T;
         coordinates?: T;
       };
   contact?:
@@ -1783,8 +1769,6 @@ export interface OfficesSelect<T extends boolean = true> {
         email?: T;
         teamEmail?: T;
       };
-  contactNote?: T;
-  contactNoteHtml?: T;
   legacyId?: T;
   updatedAt?: T;
   createdAt?: T;
