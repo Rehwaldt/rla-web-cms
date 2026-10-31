@@ -52,7 +52,7 @@ html[data-content-locale='cs'] {
 
 .popup-button-list__button:has(> .localizer__locale-code) {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.375rem;
 }
 .localizer__locale-code {
@@ -98,8 +98,8 @@ html[data-content-locale='cs'] {
   margin-bottom: var(--spacing-field, 1.5rem);
 }
 .visible-in__options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-auto-flow: column;
   gap: 0.5rem 1.25rem;
   margin-bottom: 0.25rem;
 }
