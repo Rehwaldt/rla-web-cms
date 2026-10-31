@@ -108,6 +108,9 @@ labels use these words so that one concept never gets two German names.
   _Avoid_: mode, area
 - **Navigation section** (de: *Rubrik*): a heading of the admin navigation grouping collections
   (Projects, News, Publications, …). _Avoid_: group (a project category group is something else)
+- **Localized field** (de: *sprachabhängiges Feld*): a field with its own value per language,
+  marked in the admin with the flag of the language being edited. Every other field is shared by
+  all languages. _Avoid_: *übersetzbar* (suggests a translate action)
 
 ## Minescapes (provisional)
 

@@ -13,6 +13,8 @@ export const visibleInField: Field = {
   options: LOCALES.map(({ code, label }) => ({ label, value: code })),
   admin: {
     position: 'sidebar',
+    // A flagged checkbox per language instead of the dropdown.
+    components: { Field: '@/components/cms/LocaleFlags/VisibleInField#VisibleInField' },
     description: {
       en: 'Languages whose website lists this entry. It stays reachable by direct link in all of them.',
       de: 'Sprachen, deren Website diesen Eintrag aufführt. Per direktem Link bleibt er in allen erreichbar.',

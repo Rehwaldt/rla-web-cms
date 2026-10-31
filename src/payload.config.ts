@@ -56,6 +56,8 @@ export default buildConfig({
     // Navigation and dashboard show the sections of the user's workspace (src/workspaces.ts).
     components: {
       Nav: '@/components/cms/Workspaces/Nav#WorkspaceNav',
+      // Flags for the content locales on the switcher and on localized fields.
+      providers: ['@/components/cms/LocaleFlags/LocaleFlagsProvider#LocaleFlagsProvider'],
     },
     dashboard: {
       widgets: [

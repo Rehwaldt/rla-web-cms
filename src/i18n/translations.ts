@@ -111,6 +111,9 @@ const en = {
     label: 'Workspace',
     all: 'All',
   },
+  locales: {
+    localizedField: 'Localized field ({{locale}})',
+  },
 }
 
 const de: typeof en = {
@@ -220,6 +223,9 @@ const de: typeof en = {
   workspaces: {
     label: 'Arbeitsbereich',
     all: 'Alle',
+  },
+  locales: {
+    localizedField: 'Sprachabhängiges Feld ({{locale}})',
   },
 }
 
