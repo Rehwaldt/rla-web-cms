@@ -87,7 +87,9 @@ never synced with `deploy/.env.example`: a new variable needs a manual server st
 sits on a detached HEAD (`deploy.sh` checks out each commit), so `git pull` there fails; use fetch +
 `checkout --detach`. The workflow reads repository-level secrets/variables, not environment ones. pnpm is
 pinned via `packageManager`, and pnpm 12 also records that pin in `pnpm-lock.yaml`
-(`packageManagerDependencies`); without it `--frozen-lockfile` fails in the image build.
+(`packageManagerDependencies`); without it `--frozen-lockfile` fails in the image build. `pnpm add` of a
+package with peer dependencies can write it without its peer suffix (broken links): run `pnpm install --fix-lockfile`
+and revert any unrelated drift it causes.
 
 ## Schema building blocks (`src/fields`, `src/access`)
 
@@ -124,6 +126,8 @@ Projects, Project Categories (tree via `@payloadcms/plugin-nested-docs`), Topics
 Publications, Publication Categories, Jobs, Pages, Employees, Offices, Mines, Mine Features,
 Media, Users. Global: Project Gallery (curated, ordered featured projects per language).
 Slugs are plural kebab-case.
+Project Categories stay a two-level tree (groups, categories), enforced in `categoryRules.ts`. Their list view is
+replaced by a drag-and-drop layout of the website's filter menu (`src/components/cms/CategoryView`).
 
 Admin navigation: each collection's `admin.group` is a section from `src/i18n/groups.ts`, with a
 Lucide icon in `src/app/(payload)/custom.scss`. Every section must be filed in a workspace or as
